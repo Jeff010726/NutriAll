@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Research Explained | NutriAll Diabetes Care</title>
+    <meta name="description" content="Plain-English explanations of public diabetes research for food, movement, A1C, sleep, and daily care." />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a class="announcement-bar" href="insurance.html">Most clients pay $0 with insurance benefits -></a>
+      <div class="header-inner">
+        <button class="nav-toggle" type="button" aria-label="Open menu" aria-expanded="false" data-nav-toggle><span></span><span></span></button>
+        <a class="brand" href="index.html" aria-label="NutriAll Diabetes home"><img src="assets/nutriall-logo.svg" alt="" /><span>Diabetes Care</span></a>
+        <nav class="site-nav" aria-label="Primary navigation" data-desktop-nav><span class="nav-highlight" data-nav-highlight></span><button class="nav-link" type="button" data-menu-trigger="program">Program</button><button class="nav-link" type="button" data-menu-trigger="support">Recipes</button><button class="nav-link" type="button" data-menu-trigger="learn">Research</button></nav>
+        <div class="header-actions"><a href="book.html">Sign In</a><a class="get-started-link" href="book.html">Book Now</a></div>
+      </div>
+      <div class="mega-shell" data-mega-shell>
+        <section class="mega-menu" data-menu-panel="program"><a class="mega-row mega-row-feature" href="program.html"><img src="assets/generated/assessment-stilllife.png" alt="" /><span><strong>Diabetes Management</strong><small>Assessment, meal planning, glucose education, and follow-up support.</small></span></a><a class="mega-all-link" href="program.html">View all program areas <span>-></span></a></section>
+        <section class="mega-menu" data-menu-panel="support"><a class="mega-row mega-row-feature" href="recipes.html"><img src="assets/generated/heart-health-foods.png" alt="" /><span><strong>Diabetes-Friendly Recipes</strong><small>High-protein, fiber-rich, practical meals.</small></span></a><a class="mega-all-link" href="recipes.html">Browse all recipes <span>-></span></a></section>
+        <section class="mega-menu" data-menu-panel="learn"><a class="mega-row mega-row-feature" href="research.html"><img src="assets/generated/behavior-education-cards.png" alt="" /><span><strong>Research Explained</strong><small>Public diabetes studies translated into plain language.</small></span></a><a class="mega-article" href="research-detail.html?slug=walking-after-meals"><strong>Walking after meals</strong><small>What it can mean for glucose</small></a><a class="mega-article" href="research-detail.html?slug=high-fiber-foods-a1c"><strong>High-fiber foods and A1C</strong><small>Plain-English takeaway</small></a></section>
+      </div>
+      <nav class="mobile-menu" aria-label="Mobile navigation" data-nav><div class="mobile-section"><p>Pages</p><a href="program.html">Program</a><a href="recipes.html">Recipes</a><a href="research.html">Research</a></div><a class="mobile-cta" href="book.html">Book Now</a></nav>
+    </header>
+
+    <main class="research-page">
+      <section class="page-full-hero research-full-hero">
+        <div>
+          <p class="eyebrow">Research</p>
+          <h1>Public diabetes research, translated into useful language.</h1>
+          <p>Short explanations of what studies suggest, what they do not prove, and how to talk about them with your care team.</p>
+        </div>
+      </section>
+      <section class="listing-section full-library-section">
+        <div class="filter-bar" aria-label="Research filters">
+          <button class="is-active" type="button" data-filter="All">All</button>
+          <button type="button" data-filter="Physical Activity">Activity</button>
+          <button type="button" data-filter="Carbohydrates">Carbs</button>
+          <button type="button" data-filter="Diet Patterns">Diet patterns</button>
+          <button type="button" data-filter="Blood Sugar & A1C">A1C</button>
+          <button type="button" data-filter="Sleep">Sleep</button>
+        </div>
+        <div class="listing-grid research-listing-grid" id="research-list"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer"><div><a class="brand footer-brand" href="index.html"><img src="assets/nutriall-logo.svg" alt="" /><span>Diabetes Care</span></a><p>Educational summaries are not a substitute for medical care.</p></div><div class="footer-links"><a href="program.html">Program</a><a href="recipes.html">Recipes</a><a href="research.html">Research</a><a href="book.html">Book now</a></div></footer>
+    <script src="site-data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
