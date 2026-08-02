@@ -2189,6 +2189,7 @@ h3 {
 }
 
 .program-feature-card {
+  scroll-margin-top: 110px;
   min-height: 520px;
   display: grid;
   align-content: end;

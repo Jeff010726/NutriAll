@@ -1,4 +1,4 @@
-window.diabetesRecipes = [
+export const diabetesRecipes = [
   {
     slug: "cucumber-tomato-salad",
     title: "Cucumber Tomato Salad",
@@ -217,7 +217,7 @@ window.diabetesRecipes = [
   }
 ];
 
-window.diabetesResearch = [
+export const diabetesResearch = [
   {
     slug: "walking-after-meals",
     title: "Walking After Meals and Blood Sugar",
