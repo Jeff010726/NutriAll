@@ -2684,6 +2684,986 @@ h3 {
   }
 }
 
+/* Medical weight care experience */
+.header-inner::before {
+  width: 680px;
+}
+
+.weight-hero .hero-media {
+  background:
+    linear-gradient(90deg, rgba(20, 37, 29, 0.74), rgba(20, 37, 29, 0.34) 48%, rgba(20, 37, 29, 0.08)),
+    url("assets/generated/weight-management-care.png") center 42% / cover;
+}
+
+.weight-hero h1 {
+  max-width: 10ch;
+  font-size: clamp(68px, 8.2vw, 118px);
+}
+
+.weight-trust-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  background: var(--milk);
+  border-bottom: 1px solid var(--line);
+}
+
+.weight-trust-strip div {
+  min-height: 126px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+  padding: 24px 34px;
+  border-right: 1px solid var(--line);
+}
+
+.weight-trust-strip div:last-child {
+  border-right: 0;
+}
+
+.weight-trust-strip strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 26px;
+  font-weight: 500;
+}
+
+.weight-trust-strip span {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.weight-paths,
+.weight-process {
+  padding: 112px 46px;
+}
+
+.weight-section-heading {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.55fr);
+  column-gap: 64px;
+  align-items: end;
+  max-width: 1360px;
+  margin: 0 auto 56px;
+}
+
+.weight-section-heading .eyebrow {
+  grid-column: 1 / -1;
+}
+
+.weight-section-heading h2 {
+  max-width: 900px;
+  margin: 0;
+  font-size: clamp(54px, 6.2vw, 86px);
+}
+
+.weight-section-heading > p:not(.eyebrow) {
+  margin: 0;
+  color: var(--muted);
+  font-size: 17px;
+}
+
+.weight-path-grid,
+.weight-step-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  max-width: 1360px;
+  margin: 0 auto;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.weight-path-card,
+.weight-step-grid article {
+  min-height: 330px;
+  padding: 34px 30px;
+  border-right: 1px solid var(--line);
+}
+
+.weight-path-card:last-child,
+.weight-step-grid article:last-child {
+  border-right: 0;
+}
+
+.weight-path-card > span,
+.weight-step-grid article > span,
+.service-feature-grid article > span,
+.topic-grid article > span {
+  display: block;
+  margin-bottom: 48px;
+  color: var(--clay);
+  font-weight: 850;
+}
+
+.weight-path-card h3,
+.weight-step-grid h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.weight-path-card p,
+.weight-step-grid p {
+  color: var(--muted);
+}
+
+.weight-path-card a {
+  display: inline-block;
+  margin-top: 18px;
+  border-bottom: 1px solid currentColor;
+  color: var(--forest);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.care-model-band {
+  display: grid;
+  grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.35fr);
+  gap: 72px;
+  padding: 112px 46px;
+  background: var(--forest);
+  color: var(--milk);
+}
+
+.care-model-intro h2 {
+  max-width: 780px;
+  font-size: clamp(52px, 5.6vw, 82px);
+}
+
+.care-model-intro > p:not(.eyebrow) {
+  max-width: 620px;
+  color: rgba(255, 253, 248, 0.72);
+  font-size: 18px;
+}
+
+.care-model-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid rgba(255, 253, 248, 0.24);
+}
+
+.care-model-grid article {
+  padding: 34px 26px;
+  border-right: 1px solid rgba(255, 253, 248, 0.2);
+}
+
+.care-model-grid article:last-child {
+  border-right: 0;
+}
+
+.care-model-grid span {
+  display: inline-grid;
+  width: 54px;
+  height: 54px;
+  place-items: center;
+  margin-bottom: 76px;
+  border: 1px solid rgba(255, 253, 248, 0.4);
+  border-radius: 50%;
+  font-weight: 850;
+}
+
+.care-model-grid h3 {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 28px;
+  font-weight: 500;
+}
+
+.care-model-grid p {
+  color: rgba(255, 253, 248, 0.7);
+}
+
+.doctor-feature,
+.glp-home-feature,
+.nutrition-feature,
+.nutrition-team-band,
+.about-leadership {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.doctor-feature {
+  background: var(--lilac);
+}
+
+.doctor-feature-image {
+  min-height: 720px;
+  overflow: hidden;
+}
+
+.doctor-feature-image img {
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+}
+
+.doctor-feature-copy,
+.glp-home-copy,
+.nutrition-feature > div,
+.nutrition-team-band > div,
+.about-leadership > div {
+  align-self: center;
+  padding: 80px clamp(36px, 7vw, 112px);
+}
+
+.doctor-feature-copy h2,
+.glp-home-copy h2,
+.nutrition-feature h2,
+.nutrition-team-band h2,
+.about-leadership h2 {
+  font-size: clamp(50px, 5.6vw, 82px);
+}
+
+.doctor-feature-copy > p:not(.eyebrow):not(.doctor-credential),
+.glp-home-copy > p:not(.eyebrow),
+.nutrition-feature > div > p:not(.eyebrow),
+.nutrition-team-band > div > p:not(.eyebrow),
+.about-leadership > div > p:not(.eyebrow) {
+  max-width: 650px;
+  color: var(--muted);
+  font-size: 17px;
+}
+
+.doctor-credential {
+  margin-top: -10px;
+  color: var(--forest);
+  font-weight: 800;
+}
+
+.doctor-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin: 38px 0;
+  padding: 28px 0;
+  border-top: 1px solid rgba(20, 37, 29, 0.18);
+  border-bottom: 1px solid rgba(20, 37, 29, 0.18);
+}
+
+.doctor-stat-row div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.doctor-stat-row strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.doctor-stat-row span {
+  font-size: 12px;
+}
+
+.doctor-feature .button-primary,
+.glp-home-feature .button-primary,
+.weight-final-cta .button-primary,
+.service-hero .button-primary,
+.info-band .button-primary,
+.booking-flow-page .button-primary {
+  background: var(--forest);
+  color: var(--milk);
+}
+
+.glp-home-feature {
+  background: var(--milk);
+}
+
+.glp-home-feature > img,
+.nutrition-feature > img,
+.nutrition-team-band > img,
+.about-leadership > img {
+  height: 100%;
+  min-height: 650px;
+  object-fit: cover;
+}
+
+.weight-check-list,
+.service-list ul,
+.insurance-checklist ul {
+  list-style: none;
+  margin: 30px 0 36px;
+  padding: 0;
+}
+
+.weight-check-list li,
+.service-list li,
+.insurance-checklist li {
+  position: relative;
+  padding: 13px 0 13px 28px;
+  border-bottom: 1px solid var(--line);
+}
+
+.weight-check-list li::before,
+.service-list li::before,
+.insurance-checklist li::before {
+  content: "+";
+  position: absolute;
+  left: 0;
+  color: var(--clay);
+  font-weight: 900;
+}
+
+.nutrition-feature {
+  background: var(--sky);
+}
+
+.nutrition-feature .button-secondary {
+  color: var(--forest);
+  border-color: var(--forest);
+}
+
+.weight-process {
+  background: var(--milk);
+}
+
+.weight-step-grid article {
+  min-height: 280px;
+}
+
+.resource-band {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+  gap: 70px;
+  padding: 96px 46px;
+  background: var(--sage);
+}
+
+.resource-band h2 {
+  max-width: 760px;
+  font-size: clamp(52px, 5.8vw, 82px);
+}
+
+.resource-band > div > p:not(.eyebrow) {
+  max-width: 640px;
+}
+
+.resource-band-links {
+  align-self: center;
+  display: grid;
+}
+
+.resource-band-links a {
+  display: flex;
+  justify-content: space-between;
+  padding: 21px 0;
+  border-bottom: 1px solid rgba(20, 37, 29, 0.28);
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.weight-final-cta {
+  padding: 120px 46px;
+  background: var(--clay);
+  text-align: center;
+}
+
+.weight-final-cta h2 {
+  max-width: 920px;
+  margin: 0 auto 22px;
+  font-size: clamp(58px, 7vw, 98px);
+}
+
+.weight-final-cta p:not(.eyebrow) {
+  max-width: 640px;
+  margin: 0 auto 28px;
+}
+
+/* Service pages */
+.service-hero {
+  min-height: 92vh;
+  display: grid;
+  align-items: end;
+  position: relative;
+  overflow: hidden;
+  padding: 130px 46px 54px;
+  background: var(--forest);
+  color: var(--milk);
+}
+
+.service-hero > img {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  min-height: 0;
+  object-fit: cover;
+}
+
+.service-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(20, 37, 29, 0.8), rgba(20, 37, 29, 0.52) 46%, rgba(20, 37, 29, 0.08));
+}
+
+.service-hero > div {
+  position: relative;
+  z-index: 1;
+  max-width: 850px;
+  padding: 0 0 4vh 20px;
+}
+
+.service-hero h1,
+.director-hero h1 {
+  max-width: 10ch;
+  font-size: clamp(60px, 6.2vw, 94px);
+}
+
+.service-hero > div > p:not(.eyebrow) {
+  max-width: 650px;
+  color: rgba(255, 253, 248, 0.84);
+  font-size: 18px;
+}
+
+.service-hero .button-secondary {
+  color: var(--milk);
+  border-color: rgba(255, 253, 248, 0.72);
+}
+
+.service-hero .button-primary {
+  background: var(--milk);
+  color: var(--ink);
+}
+
+.service-hero-glp > img {
+  object-position: 62% center;
+}
+
+.service-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.6fr);
+  column-gap: 72px;
+  align-items: end;
+  padding: 112px 46px;
+}
+
+.service-intro .eyebrow {
+  grid-column: 1 / -1;
+}
+
+.service-intro h2 {
+  margin: 0;
+  font-size: clamp(52px, 6vw, 86px);
+}
+
+.service-intro > p:not(.eyebrow) {
+  margin: 0;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.service-feature-grid,
+.topic-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  background: var(--milk);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.service-feature-grid article,
+.topic-grid article {
+  min-height: 360px;
+  padding: 48px 42px;
+  border-right: 1px solid var(--line);
+}
+
+.service-feature-grid article:last-child,
+.topic-grid article:last-child {
+  border-right: 0;
+}
+
+.service-feature-grid h2,
+.topic-grid h2 {
+  font-size: 40px;
+}
+
+.service-feature-grid p,
+.topic-grid p {
+  color: var(--muted);
+}
+
+.topic-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.split-story,
+.glp-symptom-band,
+.insurance-checklist {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.75fr);
+  gap: 90px;
+  padding: 112px 46px;
+}
+
+.split-story-dark,
+.glp-symptom-band {
+  background: var(--forest);
+  color: var(--milk);
+}
+
+.split-story h2,
+.glp-symptom-band h2,
+.insurance-checklist h2 {
+  font-size: clamp(50px, 5.6vw, 78px);
+}
+
+.split-story p,
+.glp-symptom-band p {
+  color: rgba(255, 253, 248, 0.74);
+}
+
+.service-list {
+  align-self: center;
+}
+
+.service-list li {
+  border-bottom-color: rgba(255, 253, 248, 0.2);
+}
+
+.compact-process {
+  background: var(--paper);
+}
+
+.medical-note {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 760px);
+  gap: 28px;
+  justify-content: center;
+  padding: 34px 46px;
+  background: var(--lilac);
+}
+
+.medical-note p {
+  margin: 0;
+}
+
+.role-clarity {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  background: var(--sage);
+}
+
+.role-clarity > div {
+  min-height: 390px;
+  padding: 72px 46px;
+  border-right: 1px solid var(--line);
+}
+
+.role-clarity > div:last-child {
+  border-right: 0;
+}
+
+.role-clarity span {
+  display: block;
+  margin-bottom: 58px;
+  color: var(--forest);
+  font-size: 12px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.role-clarity h2 {
+  max-width: 650px;
+  font-size: clamp(44px, 4.6vw, 68px);
+}
+
+.role-clarity p {
+  max-width: 650px;
+  color: var(--muted);
+}
+
+.nutrition-team-band,
+.about-leadership {
+  background: var(--sky);
+}
+
+.nutrition-team-band a,
+.about-leadership a {
+  display: inline-block;
+  margin-top: 18px;
+  border-bottom: 1px solid currentColor;
+  font-weight: 800;
+}
+
+/* Medical Director */
+.director-hero {
+  min-height: 92vh;
+  display: grid;
+  grid-template-columns: minmax(390px, 0.78fr) minmax(0, 1.22fr);
+  align-items: center;
+  gap: 72px;
+  padding: 140px 7vw 70px;
+  background: var(--lilac);
+}
+
+.director-image {
+  align-self: stretch;
+  min-height: 610px;
+  overflow: hidden;
+}
+
+.director-image img {
+  height: 100%;
+  object-fit: cover;
+}
+
+.director-deck {
+  max-width: 720px;
+  color: rgba(20, 37, 29, 0.72);
+  font-size: 20px;
+}
+
+.director-credentials {
+  display: grid;
+  gap: 10px;
+  max-width: 720px;
+  margin: 34px 0;
+  padding: 24px 0;
+  border-top: 1px solid rgba(20, 37, 29, 0.2);
+  border-bottom: 1px solid rgba(20, 37, 29, 0.2);
+  font-weight: 750;
+}
+
+.director-hero .button-primary {
+  background: var(--forest);
+  color: var(--milk);
+}
+
+.director-story {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.75fr);
+  gap: 100px;
+  padding: 112px 7vw;
+}
+
+.director-story h2 {
+  font-size: clamp(52px, 6vw, 86px);
+}
+
+.director-story > div:last-child {
+  align-self: end;
+  color: var(--muted);
+  font-size: 18px;
+}
+
+.director-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  background: var(--forest);
+  color: var(--milk);
+}
+
+.director-stats article {
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 46px;
+  border-right: 1px solid rgba(255, 253, 248, 0.2);
+}
+
+.director-stats strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 70px;
+  font-weight: 500;
+}
+
+.director-stats span {
+  color: rgba(255, 253, 248, 0.68);
+}
+
+.director-source {
+  padding: 34px 46px;
+  background: var(--milk);
+  text-align: center;
+}
+
+.director-source p {
+  margin: 0;
+}
+
+.director-source a {
+  border-bottom: 1px solid currentColor;
+  font-weight: 800;
+}
+
+.insurance-checklist {
+  background: var(--sage);
+}
+
+.insurance-checklist ul {
+  margin: 0;
+}
+
+.booking-result-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+.booking-complete .button-secondary {
+  color: var(--forest);
+  border-color: var(--forest);
+}
+
+@media (max-width: 1180px) {
+  .header-inner::before {
+    width: 610px;
+  }
+
+  .site-nav {
+    gap: 4px;
+    padding-left: 10px;
+  }
+
+  .nav-link {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .header-actions a:first-child {
+    display: none;
+  }
+
+  .weight-path-grid,
+  .weight-step-grid,
+  .topic-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .weight-path-card:nth-child(2),
+  .weight-step-grid article:nth-child(2),
+  .topic-grid article:nth-child(2) {
+    border-right: 0;
+  }
+
+  .weight-path-card:nth-child(-n + 2),
+  .weight-step-grid article:nth-child(-n + 2),
+  .topic-grid article:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .care-model-band,
+  .service-intro,
+  .split-story,
+  .glp-symptom-band,
+  .director-story,
+  .insurance-checklist {
+    grid-template-columns: 1fr;
+  }
+
+  .care-model-band,
+  .split-story,
+  .glp-symptom-band,
+  .director-story,
+  .insurance-checklist {
+    gap: 42px;
+  }
+}
+
+@media (max-width: 760px) {
+  .weight-hero {
+    min-height: 92vh;
+    padding: 112px 18px 28px;
+  }
+
+  .weight-hero .hero-media {
+    background-position: 62% center;
+  }
+
+  .weight-hero h1 {
+    font-size: 58px;
+  }
+
+  .weight-hero .hero-content {
+    padding-left: 0;
+    padding-bottom: 30px;
+  }
+
+  .weight-trust-strip,
+  .weight-path-grid,
+  .weight-step-grid,
+  .care-model-grid,
+  .service-feature-grid,
+  .topic-grid,
+  .role-clarity,
+  .director-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .weight-trust-strip div,
+  .weight-path-card,
+  .weight-step-grid article,
+  .care-model-grid article,
+  .service-feature-grid article,
+  .topic-grid article,
+  .role-clarity > div,
+  .director-stats article {
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .weight-trust-strip div {
+    min-height: 96px;
+    padding: 18px;
+  }
+
+  .weight-paths,
+  .weight-process,
+  .care-model-band,
+  .service-intro,
+  .split-story,
+  .glp-symptom-band,
+  .director-story,
+  .insurance-checklist {
+    padding: 72px 18px;
+  }
+
+  .weight-section-heading,
+  .resource-band,
+  .doctor-feature,
+  .glp-home-feature,
+  .nutrition-feature,
+  .nutrition-team-band,
+  .about-leadership,
+  .service-hero,
+  .director-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .weight-section-heading {
+    gap: 22px;
+  }
+
+  .weight-section-heading h2,
+  .service-intro h2 {
+    font-size: 50px;
+  }
+
+  .weight-path-card,
+  .weight-step-grid article,
+  .service-feature-grid article,
+  .topic-grid article {
+    min-height: 0;
+    padding: 32px 18px;
+  }
+
+  .weight-path-card > span,
+  .weight-step-grid article > span,
+  .service-feature-grid article > span,
+  .topic-grid article > span {
+    margin-bottom: 28px;
+  }
+
+  .care-model-grid span {
+    margin-bottom: 32px;
+  }
+
+  .doctor-feature-image {
+    min-height: 450px;
+  }
+
+  .doctor-feature-copy,
+  .glp-home-copy,
+  .nutrition-feature > div,
+  .nutrition-team-band > div,
+  .about-leadership > div {
+    padding: 58px 18px;
+  }
+
+  .doctor-feature-copy h2,
+  .glp-home-copy h2,
+  .nutrition-feature h2,
+  .nutrition-team-band h2,
+  .about-leadership h2 {
+    font-size: 50px;
+  }
+
+  .doctor-stat-row {
+    grid-template-columns: 1fr;
+  }
+
+  .glp-home-feature > img,
+  .nutrition-feature > img,
+  .nutrition-team-band > img,
+  .about-leadership > img {
+    min-height: 360px;
+    max-height: 460px;
+  }
+
+  .glp-home-feature > img {
+    order: -1;
+  }
+
+  .resource-band,
+  .weight-final-cta {
+    padding: 72px 18px;
+  }
+
+  .service-hero {
+    min-height: 92vh;
+    padding: 120px 18px 38px;
+  }
+
+  .service-hero > img {
+    min-height: 0;
+    max-height: none;
+  }
+
+  .service-hero > div {
+    align-self: end;
+    padding: 0 0 24px;
+  }
+
+  .service-hero h1,
+  .director-hero h1 {
+    font-size: 52px;
+  }
+
+  .service-hero::after {
+    background: linear-gradient(180deg, rgba(20, 37, 29, 0.12), rgba(20, 37, 29, 0.82) 58%, rgba(20, 37, 29, 0.94));
+  }
+
+  .medical-note {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 30px 18px;
+  }
+
+  .role-clarity > div {
+    min-height: 0;
+    padding: 58px 18px;
+  }
+
+  .role-clarity span {
+    margin-bottom: 34px;
+  }
+
+  .director-hero {
+    min-height: 0;
+    gap: 38px;
+    padding: 120px 18px 64px;
+  }
+
+  .director-image {
+    min-height: 470px;
+  }
+
+  .director-stats article {
+    min-height: 190px;
+    padding: 36px 18px;
+  }
+
+  .director-source {
+    padding: 30px 18px;
+  }
+
+  .booking-result-actions {
+    flex-direction: column;
+  }
+}
+
 @media (max-width: 420px) {
   .hero-actions {
     align-items: stretch;

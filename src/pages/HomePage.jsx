@@ -1,80 +1,79 @@
-import { useState } from "react";
 import { Layout } from "../components/Layout";
 import { SiteLink } from "../components/SiteLink";
 import { asset } from "../lib";
 
-const careTiles = [
-  ["care-tile-circle care-tile-large", "/program#meal-planning", "mosaic/meal-planning.jpg", "Meal planning", "Culturally realistic meals for your schedule."],
-  ["care-tile-tall", "/program#monitoring", "mosaic/blood-sugar-patterns.jpg", "Blood sugar patterns", "Understand what your numbers are telling you."],
-  ["care-tile-tall", "/program#carb-management", "mosaic/carb-confidence.jpg", "Carb confidence", "Portions, pairing, and timing without fear."],
-  ["care-tile-pill", "/insurance", "mosaic/insurance-benefits.jpg", "Insurance benefits", "Check whether care may cost $0."],
-  ["care-tile-card", "/research", "mosaic/research-explained.jpg", "Research explained", "Plain-English takeaways from diabetes studies."],
-  ["care-tile-tall", "/book", "mosaic/dietitian-support.jpg", "Dietitian support", "Registered guidance for daily decisions."],
-  ["care-tile-pill", "/recipes", "mosaic/recipes.jpg", "Diabetes-friendly recipes", "Practical meals, snacks, and planned treats."],
+const paths = [
+  ["01", "Medical Weight Loss", "For people who want a clinical evaluation, a personalized plan, and coordinated follow-up.", "/medical-weight-loss", "Explore medical care"],
+  ["02", "1:1 Weight Loss", "For people who want a dedicated dietitian for fat loss, food strategy, and accountability.", "/one-to-one-weight-loss", "Explore 1:1 care"],
+  ["03", "GLP-1 Care", "For people considering or already using GLP-1 medication who need medical and nutrition support.", "/glp1-care", "Explore GLP-1 care"],
+  ["04", "Diabetes Care", "For people working on glucose, A1C, meal planning, and long-term cardiometabolic health.", "/diabetes-care", "Explore diabetes care"],
+];
+
+const steps = [
+  ["01", "Tell us what you need", "Choose medical weight care, GLP-1 support, 1:1 nutrition, or ask us to help you decide."],
+  ["02", "Meet the right clinician", "Your care begins with the physician or registered dietitian best suited to your goals."],
+  ["03", "Build one connected plan", "Medical context, food strategy, activity, sleep, and follow-up become one practical roadmap."],
+  ["04", "Adjust with real feedback", "Your team uses symptoms, progress, preferences, and clinical data to refine the plan."],
 ];
 
 export function HomePage() {
-  const [submitted, setSubmitted] = useState(false);
-  return (
-    <Layout>
-      <main>
-        <section className="hero diabetes-hero" aria-labelledby="hero-title">
-          <div className="hero-media" role="img" aria-label="A balanced meal and nutrition tools for diabetes care"></div>
-          <div className="hero-content">
-            <p className="eyebrow">NutriAll Diabetes Care</p>
-            <h1 id="hero-title">Diabetes nutrition care, made personal.</h1>
-            <p>Registered dietitians help you understand blood sugar, build culturally realistic meals, and create a diabetes management plan that fits your life.</p>
-            <div className="hero-actions"><SiteLink className="button button-primary" to="/book">Book a free call</SiteLink><SiteLink className="button button-secondary" to="/program">See the program</SiteLink></div>
-          </div>
-        </section>
+  return <Layout><main className="weight-home">
+    <section className="hero weight-hero" aria-labelledby="hero-title">
+      <div className="hero-media" role="img" aria-label="A one-to-one medical weight care consultation"></div>
+      <div className="hero-content">
+        <p className="eyebrow">NutriAll Medical Weight Care</p>
+        <h1 id="hero-title">Medical weight loss, built around you.</h1>
+        <p>A Medical Director and registered dietitians work together on personalized fat loss, nutrition, and GLP-1 medication care when clinically appropriate.</p>
+        <div className="hero-actions"><SiteLink className="button button-primary" to="/book">See if care fits</SiteLink><SiteLink className="button button-secondary" to="/medical-weight-loss">Explore the program</SiteLink></div>
+      </div>
+    </section>
 
-        <section className="intro-band" aria-label="Program overview">
-          <div className="intro-copy"><h2>A dedicated diabetes program from NutriAll Wellness.</h2><p>Diabetes is a chronic metabolic condition marked by elevated blood glucose. Our team focuses on what you can do day to day: meals, monitoring, medication awareness, weight goals, heart health, and sustainable behavior change.</p></div>
-          <div className="intro-stat"><span>99%</span><p>of many NutriAll clients pay $0 using eligible insurance benefits</p></div>
-        </section>
+    <section className="weight-trust-strip" aria-label="Care model highlights">
+      <div><strong>Obesity medicine</strong><span>Physician-led evaluation</span></div>
+      <div><strong>1:1 nutrition</strong><span>Registered dietitian care</span></div>
+      <div><strong>GLP-1 support</strong><span>When clinically appropriate</span></div>
+      <div><strong>Virtual access</strong><span>Medical care in NY + PA</span></div>
+    </section>
 
-        <section className="care-mosaic-section" id="program" aria-labelledby="program-title">
-          <div className="care-mosaic-heading"><p className="eyebrow">Diabetes care areas</p><h2 id="program-title">Support for the real decisions behind blood sugar.</h2></div>
-          <div className="care-mosaic" aria-label="Diabetes care topics">
-            {careTiles.slice(0, 6).map(([className, to, image, title, note]) => (
-              <SiteLink className={`care-tile ${className}`} to={to} key={title}><img src={asset(image)} alt="" /><span><strong>{title}</strong><small>{note}</small></span></SiteLink>
-            ))}
-            <SiteLink className="care-tile care-tile-card care-tile-dark" to="/recipes"><strong>Recipes you can repeat</strong><small>High-protein, fiber-forward ideas built from the NutriAll library.</small></SiteLink>
-            {careTiles.slice(6).map(([className, to, image, title, note]) => (
-              <SiteLink className={`care-tile ${className}`} to={to} key={title}><img src={asset(image)} alt="" /><span><strong>{title}</strong><small>{note}</small></span></SiteLink>
-            ))}
-          </div>
-        </section>
+    <section className="weight-paths" aria-labelledby="paths-title">
+      <div className="weight-section-heading"><p className="eyebrow">Find your path</p><h2 id="paths-title">Start with the kind of support you need now.</h2><p>You do not need to know the perfect program before reaching out. We can help clarify where medical care ends, where nutrition care begins, and how they work together.</p></div>
+      <div className="weight-path-grid">{paths.map(([number, title, text, to, label]) => <article className="weight-path-card" key={title}><span>{number}</span><h3>{title}</h3><p>{text}</p><SiteLink to={to}>{label} <b>-&gt;</b></SiteLink></article>)}</div>
+    </section>
 
-        <section className="bundle-section" id="learn" aria-labelledby="learn-title">
-          <div className="bundle-gallery"><img src={asset("generated/diabetes-symptoms-awareness.png")} alt="Diabetes symptom awareness education still life" /><img src={asset("generated/behavior-education-cards.png")} alt="Nutrition education and behavior change cards" /><img src={asset("generated/carb-education-foods.png")} alt="Diabetes carbohydrate education visual" /></div>
-          <div className="bundle-copy"><p className="eyebrow">What is diabetes?</p><h2 id="learn-title">Food choices are data, not judgment.</h2><p>Diabetes management is easier when you know how meals, medication, activity, and stress connect with glucose numbers. We translate those patterns into clear next steps you can repeat.</p><SiteLink className="button button-primary" to="/book">Talk to a dietitian</SiteLink></div>
-        </section>
+    <section className="care-model-band" aria-labelledby="care-model-title">
+      <div className="care-model-intro"><p className="eyebrow">One coordinated model</p><h2 id="care-model-title">Clinical decisions and daily habits belong in the same conversation.</h2><p>Weight care works better when the prescription, the plate, and the follow-up plan are not handled in isolation.</p></div>
+      <div className="care-model-grid">
+        <article><span>MD</span><h3>Medical assessment</h3><p>Review health history, medications, labs, risks, and whether treatment options are clinically appropriate.</p></article>
+        <article><span>RD</span><h3>Nutrition strategy</h3><p>Turn the medical plan into realistic food, protein, fiber, hydration, and behavior routines.</p></article>
+        <article><span>1:1</span><h3>Ongoing adjustment</h3><p>Track progress and tolerability, solve barriers, and adjust support as your needs change.</p></article>
+      </div>
+    </section>
 
-        <section className="science-section" id="why" aria-labelledby="why-title">
-          <div className="science-visual diabetes-visual team-visual"><img src={asset("nutriall-team.jpg")} alt="NutriAll Wellness team group photo" /><p>Registered Dietitian Nutrition Counseling</p></div>
-          <div className="science-copy"><p className="eyebrow">Why choose us</p><h2 id="why-title">Clinical guidance, cultural fluency, and insurance-aware care.</h2><p>NutriAll dietitians conduct in-depth assessments and create customized Diabetes Management Programs. Care is available across multiple languages and cultural backgrounds, and most insurances are accepted.</p><div className="science-points"><div><span>01</span><h3>Personalized</h3><p>Plans are shaped around your food preferences, culture, medications, and health goals.</p></div><div><span>02</span><h3>Holistic</h3><p>Support covers meals, monitoring, weight, cardiovascular risk, and behavior change.</p></div></div></div>
-        </section>
+    <section className="doctor-feature" aria-labelledby="doctor-title">
+      <div className="doctor-feature-image"><img src={asset("team/dr-leon-katz.jpg")} alt="Dr. Leon Katz, NutriAll Medical Director" /></div>
+      <div className="doctor-feature-copy"><p className="eyebrow">Meet our Medical Director</p><h2 id="doctor-title">Dr. Leon Katz</h2><p className="doctor-credential">Diplomate, American Board of Obesity Medicine</p><p>Dr. Katz brings more than two decades of specialized weight-management experience to NutriAll. He provides the medical evaluation and oversight that helps weight care remain personal, evidence-informed, and safe.</p><div className="doctor-stat-row"><div><strong>20+</strong><span>years of experience</span></div><div><strong>5,000+</strong><span>patients treated</span></div><div><strong>NY + PA</strong><span>virtual medical care</span></div></div><SiteLink className="button button-primary" to="/medical-director">Meet Dr. Katz</SiteLink></div>
+    </section>
 
-        <section className="video-story" id="stories" aria-labelledby="stories-title">
-          <div className="story-card"><img src={asset("generated/behavior-education-cards.png")} alt="Nutrition education and behavior change support materials" /><span className="play-button" aria-label="Diabetes care story">Story</span></div>
-          <div className="story-copy"><p className="eyebrow">Client outcomes</p><h2 id="stories-title">Support that changes how people live with diabetes.</h2><p>Clients describe clearer nutrition choices, better blood sugar control, and feeling less alone after working with NutriAll registered dietitians.</p></div>
-        </section>
+    <section className="glp-home-feature" aria-labelledby="glp-home-title">
+      <div className="glp-home-copy"><p className="eyebrow">GLP-1 medication care</p><h2 id="glp-home-title">Medication is one tool. The plan around it matters.</h2><p>Whether you are exploring semaglutide, tirzepatide, liraglutide, or another GLP-1 therapy, our team helps connect medical oversight with the everyday details that determine how treatment feels.</p><ul className="weight-check-list"><li>Injection or oral medication routines</li><li>Food, protein, hydration, and portion planning</li><li>Side-effect preparation and symptom tracking</li><li>Dose-change questions for your prescriber</li></ul><SiteLink className="button button-primary" to="/glp1-care">See GLP-1 support</SiteLink></div>
+      <img src={asset("generated/glp1-training.webp")} alt="Clinician explaining a GLP-1 injection pen during a consultation" />
+    </section>
 
-        <section className="journal-section" aria-labelledby="testimonial-title">
-          <div className="section-heading"><p className="eyebrow">Testimonials</p><h2 id="testimonial-title">Real feedback from diabetes nutrition clients.</h2><SiteLink to="/book">Start care</SiteLink></div>
-          <div className="testimonial-grid">
-            <article><p>"Cici really knew her stuff when it came to diabetes management and nutrition. Talking to her opened my eyes to a whole new understanding of diabetes and nutrition."</p><strong>Client of RD Cici</strong></article>
-            <article><p>"Kristie transformed my approach to nutrition, contributing significantly to my overall well-being and better management of diabetes."</p><strong>Client of RD Kristie</strong></article>
-            <article><p>"RD Tan helped me get through it one step at a time. I am now living like a normal person and eating healthy without medication."</p><strong>Client of RD Tan</strong></article>
-          </div>
-        </section>
+    <section className="nutrition-feature" aria-labelledby="nutrition-title">
+      <img src={asset("generated/weight-habits-lifestyle.png")} alt="Walking shoes, water, and balanced snacks for a sustainable weight-loss routine" />
+      <div><p className="eyebrow">1:1 fat-loss nutrition</p><h2 id="nutrition-title">A dedicated dietitian for the parts that happen between visits.</h2><p>Build meals you can repeat, protect lean mass with protein, increase fiber without forcing unfamiliar foods, and create routines that work through travel, work, family meals, plateaus, and appetite changes.</p><SiteLink className="button button-secondary" to="/one-to-one-weight-loss">Explore 1:1 care</SiteLink></div>
+    </section>
 
-        <section className="quiz-section" id="consult" aria-labelledby="consult-title">
-          <div><p className="eyebrow">Free intro call</p><h2 id="consult-title">Get a diabetes nutrition consult with NutriAll.</h2></div>
-          <form className="quiz-form" onSubmit={(event) => { event.preventDefault(); setSubmitted(true); }}><label>Email<input type="email" name="email" placeholder="you@example.com" required disabled={submitted} /></label><button className="button button-primary" type="submit" disabled={submitted}>{submitted ? "Request received" : "Request consultation"}</button></form>
-        </section>
-      </main>
-    </Layout>
-  );
+    <section className="weight-process" aria-labelledby="process-title">
+      <div className="weight-section-heading"><p className="eyebrow">How it works</p><h2 id="process-title">A clear start, then care that adapts.</h2></div>
+      <div className="weight-step-grid">{steps.map(([number, title, text]) => <article key={number}><span>{number}</span><h3>{title}</h3><p>{text}</p></article>)}</div>
+    </section>
+
+    <section className="resource-band" aria-labelledby="resource-title">
+      <div><p className="eyebrow">Keep learning</p><h2 id="resource-title">Useful guidance, beyond the appointment.</h2><p>Explore practical recipes, plain-English research, and focused diabetes nutrition care from the same clinical team.</p></div>
+      <div className="resource-band-links"><SiteLink to="/recipes">Browse recipes <span>-&gt;</span></SiteLink><SiteLink to="/research">Read research <span>-&gt;</span></SiteLink><SiteLink to="/diabetes-care">Diabetes care <span>-&gt;</span></SiteLink></div>
+    </section>
+
+    <section className="weight-final-cta"><p className="eyebrow">A more connected way to lose weight</p><h2>Start with the right kind of care.</h2><p>Tell us your goal and we will help identify the most appropriate next step.</p><SiteLink className="button button-primary" to="/book">Get started</SiteLink></section>
+  </main></Layout>;
 }

@@ -3,6 +3,10 @@ import { AboutPage } from "./pages/AboutPage";
 import { BookPage } from "./pages/BookPage";
 import { HomePage } from "./pages/HomePage";
 import { InsurancePage } from "./pages/InsurancePage";
+import { Glp1CarePage } from "./pages/Glp1CarePage";
+import { MedicalDirectorPage } from "./pages/MedicalDirectorPage";
+import { MedicalWeightLossPage } from "./pages/MedicalWeightLossPage";
+import { OneToOneWeightLossPage } from "./pages/OneToOneWeightLossPage";
 import { ProgramPage } from "./pages/ProgramPage";
 import { RecipeDetailPage } from "./pages/RecipeDetailPage";
 import { RecipesPage } from "./pages/RecipesPage";
@@ -18,7 +22,12 @@ function LegacyDetailRedirect({ type }) {
 export default function App() {
   return <BrowserRouter basename={import.meta.env.BASE_URL}><Routes>
     <Route path="/" element={<HomePage />} />
-    <Route path="/program" element={<ProgramPage />} />
+    <Route path="/medical-weight-loss" element={<MedicalWeightLossPage />} />
+    <Route path="/glp1-care" element={<Glp1CarePage />} />
+    <Route path="/one-to-one-weight-loss" element={<OneToOneWeightLossPage />} />
+    <Route path="/medical-director" element={<MedicalDirectorPage />} />
+    <Route path="/diabetes-care" element={<ProgramPage />} />
+    <Route path="/program" element={<Navigate replace to="/diabetes-care" />} />
     <Route path="/insurance" element={<InsurancePage />} />
     <Route path="/recipes" element={<RecipesPage />} />
     <Route path="/recipes/:slug" element={<RecipeDetailPage />} />
@@ -27,7 +36,7 @@ export default function App() {
     <Route path="/about" element={<AboutPage />} />
     <Route path="/book" element={<BookPage />} />
     <Route path="/index.html" element={<Navigate replace to="/" />} />
-    <Route path="/program.html" element={<Navigate replace to="/program" />} />
+    <Route path="/program.html" element={<Navigate replace to="/diabetes-care" />} />
     <Route path="/insurance.html" element={<Navigate replace to="/insurance" />} />
     <Route path="/recipes.html" element={<Navigate replace to="/recipes" />} />
     <Route path="/recipe-detail.html" element={<LegacyDetailRedirect type="recipes" />} />

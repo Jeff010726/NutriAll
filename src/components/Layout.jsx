@@ -7,7 +7,7 @@ import { Header } from "./Header";
 export function Layout({ children, footerProps, title }) {
   const { pathname, hash } = useLocation();
   useEffect(() => {
-    document.title = title || pageTitles[pathname] || "NutriAll Diabetes Care";
+    document.title = title || pageTitles[pathname] || "NutriAll Medical Weight Care";
     if (hash) {
       requestAnimationFrame(() => document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView());
     } else {

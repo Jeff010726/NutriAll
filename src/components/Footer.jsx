@@ -2,20 +2,21 @@ import { asset } from "../lib";
 import { SiteLink } from "./SiteLink";
 
 const defaultLinks = [
-  ["Program", "/program"],
+  ["Medical weight loss", "/medical-weight-loss"],
+  ["GLP-1 care", "/glp1-care"],
+  ["1:1 nutrition", "/one-to-one-weight-loss"],
+  ["Medical Director", "/medical-director"],
   ["Recipes", "/recipes"],
-  ["Research", "/research"],
   ["About", "/about"],
-  ["Book now", "/book"],
 ];
 
-export function Footer({ note = "A standalone diabetes nutrition management program from NutriAll Wellness.", links = defaultLinks }) {
+export function Footer({ note = "Physician-led medical weight care paired with practical, one-to-one nutrition support.", links = defaultLinks }) {
   return (
     <footer className="site-footer">
       <div>
         <SiteLink className="brand footer-brand" to="/">
           <img src={asset("nutriall-logo.svg")} alt="" />
-          <span>Diabetes Care</span>
+          <span>Medical Weight Care</span>
         </SiteLink>
         <p>{note}</p>
       </div>
