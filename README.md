@@ -40,3 +40,8 @@ npm run worker:deploy
 ```
 
 Never commit `.dev.vars`, Wrangler OAuth credentials, SMTP authorization codes, or admin passwords.
+
+## Image sources
+
+- Booking consultation photo: [Yaroslav Shuraev / Pexels](https://www.pexels.com/photo/food-man-love-people-8844891/), free to use under the Pexels license.
+- Founder portraits: NutriAll Wellness's existing team assets, used with the organization's permission.

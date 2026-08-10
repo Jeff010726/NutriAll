@@ -17,7 +17,7 @@ test("desktop home prioritizes insurance and booking", async ({ page }) => {
   await page.goto("./", { waitUntil: "networkidle" });
   await expect(page.getByRole("heading", { name: "Lose weight with a plan made for your life." })).toBeVisible();
   await expect(page.getByRole("link", { name: "Book a free consultation" })).toBeVisible();
-  await expect(page.locator(".insurance-logo-item")).toHaveCount(6);
+  await expect(page.locator(".insurance-logo-item")).toHaveCount(4);
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/home-desktop.png", fullPage: true });
 });
@@ -26,7 +26,7 @@ test("mobile home keeps the conversion path visible", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("./", { waitUntil: "networkidle" });
   await expect(page.locator(".mobile-booking-bar")).toBeVisible();
-  await expect(page.locator(".insurance-logo-item")).toHaveCount(6);
+  await expect(page.locator(".insurance-logo-item")).toHaveCount(4);
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/home-mobile.png", fullPage: true });
 });
@@ -63,4 +63,20 @@ test("mobile booking form is usable without overflow", async ({ page }) => {
   await expect(page.getByLabel("Full name")).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/booking-mobile.png", fullPage: true });
+});
+
+test("about page presents founders and diabetes dietitians", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("./about", { waitUntil: "networkidle" });
+  await expect(page.getByRole("heading", { name: "The dietitians who built NutriAll." })).toBeVisible();
+  await expect(page.locator(".founding-team .dietitian-profile")).toHaveCount(3);
+  await expect(page.locator(".diabetes-dietitian-team .dietitian-profile")).toHaveCount(3);
+  await expect(page.getByRole("heading", { name: "Siqian (Cici) Chen, MS, RD, LDN" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Yirao (Rebecca) Wang, RDN, LDN, MPH" })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await page.screenshot({ path: "test-results/about-desktop.png", fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.reload({ waitUntil: "networkidle" });
+  await expectNoHorizontalOverflow(page);
+  await page.screenshot({ path: "test-results/about-mobile.png", fullPage: true });
 });

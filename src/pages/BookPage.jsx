@@ -78,7 +78,7 @@ export function BookPage() {
         </div>
         <a className="button booking-whatsapp" href={whatsappUrl}><MessageCircle size={19} aria-hidden="true" /> Message us on WhatsApp</a>
       </div>
-      <div className="booking-hero-image" role="img" aria-label="NutriAll one-to-one care consultation"><div><span>Your starting point</span><strong>{serviceInterest}</strong><small>We can adjust this when we speak.</small></div></div>
+      <div className="booking-hero-image" role="img" aria-label="Dietitian speaking with a client during a one-to-one nutrition consultation"><div><span>Your starting point</span><strong>{serviceInterest}</strong><small>We can adjust this when we speak.</small></div></div>
     </section>
 
     <InsuranceLogos compact />
@@ -97,7 +97,7 @@ export function BookPage() {
           <legend>Optional insurance information</legend>
           <p>Share these details if you would like our team to begin checking benefits before we call.</p>
           <div className="insurance-fields-grid">
-            <div className="form-field"><label htmlFor="booking-insurance">Insurance company</label><input id="booking-insurance" type="text" value={form.insuranceCompany} onChange={updateField("insuranceCompany")} autoComplete="organization" placeholder="Aetna, UnitedHealthcare, Medicare..." /></div>
+            <div className="form-field"><label htmlFor="booking-insurance">Insurance company</label><input id="booking-insurance" type="text" value={form.insuranceCompany} onChange={updateField("insuranceCompany")} autoComplete="organization" placeholder="Aetna, UnitedHealthcare, Cigna..." /></div>
             <div className="form-field"><label htmlFor="booking-member-id">Member ID</label><input id="booking-member-id" type="text" value={form.insuranceMemberId} onChange={updateField("insuranceMemberId")} placeholder="Member ID on your card" /></div>
             <div className="form-field"><label htmlFor="booking-dob">Date of birth</label><input id="booking-dob" type="date" value={form.dateOfBirth} onChange={updateField("dateOfBirth")} autoComplete="bday" /></div>
           </div>
