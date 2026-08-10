@@ -3,10 +3,11 @@ import { asset } from "../lib";
 import { SiteLink } from "./SiteLink";
 
 const insuranceLogos = [
-  ["Aetna", "insurance/insurance-partner-2.webp"],
-  ["UnitedHealthcare", "insurance/insurance-partner-3.webp"],
-  ["Anthem Blue Cross", "insurance/insurance-partner-4.webp"],
-  ["Cigna", "insurance/insurance-partner-5.webp"],
+  ["UnitedHealthcare", "insurance/insurance-partner-2.webp"],
+  ["Aetna", "insurance/insurance-partner-3.webp"],
+  ["Fidelis Care", "insurance/insurance-partner-4.webp"],
+  ["1199SEIU Funds", "insurance/insurance-partner-5.webp"],
+  ["Healthfirst", "insurance/healthfirst.webp"],
 ];
 
 export function InsuranceLogos({ compact = false }) {

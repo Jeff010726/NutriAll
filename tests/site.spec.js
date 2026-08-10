@@ -17,7 +17,8 @@ test("desktop home prioritizes insurance and booking", async ({ page }) => {
   await page.goto("./", { waitUntil: "networkidle" });
   await expect(page.getByRole("heading", { name: "Lose weight with a plan made for your life." })).toBeVisible();
   await expect(page.getByRole("link", { name: "Book a free consultation" })).toBeVisible();
-  await expect(page.locator(".insurance-logo-item")).toHaveCount(4);
+  await expect(page.locator(".insurance-logo-item")).toHaveCount(5);
+  await expect(page.getByRole("img", { name: "Healthfirst" })).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/home-desktop.png", fullPage: true });
 });
@@ -26,7 +27,7 @@ test("mobile home keeps the conversion path visible", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("./", { waitUntil: "networkidle" });
   await expect(page.locator(".mobile-booking-bar")).toBeVisible();
-  await expect(page.locator(".insurance-logo-item")).toHaveCount(4);
+  await expect(page.locator(".insurance-logo-item")).toHaveCount(5);
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/home-mobile.png", fullPage: true });
 });
