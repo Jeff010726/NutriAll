@@ -65,12 +65,11 @@ test("mobile booking form is usable without overflow", async ({ page }) => {
   await page.screenshot({ path: "test-results/booking-mobile.png", fullPage: true });
 });
 
-test("about page presents founders and diabetes dietitians", async ({ page }) => {
+test("about page presents one unified dietitian team", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto("./about", { waitUntil: "networkidle" });
-  await expect(page.getByRole("heading", { name: "The dietitians who built NutriAll." })).toBeVisible();
-  await expect(page.locator(".founding-team .dietitian-profile")).toHaveCount(3);
-  await expect(page.locator(".diabetes-dietitian-team .dietitian-profile")).toHaveCount(3);
+  await expect(page.getByRole("heading", { name: "Meet the team behind your care." })).toBeVisible();
+  await expect(page.locator(".all-dietitians .dietitian-profile")).toHaveCount(6);
   await expect(page.getByRole("heading", { name: "Siqian (Cici) Chen, MS, RD, LDN" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Yirao (Rebecca) Wang, RDN, LDN, MPH" })).toBeVisible();
   await expectNoHorizontalOverflow(page);
