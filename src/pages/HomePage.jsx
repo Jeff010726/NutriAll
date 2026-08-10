@@ -2,6 +2,7 @@ import { Layout } from "../components/Layout";
 import { InsuranceLogos } from "../components/InsuranceLogos";
 import { SiteLink } from "../components/SiteLink";
 import { asset } from "../lib";
+import { dietitians } from "../teamData";
 
 const paths = [
   ["01", "1:1 Weight Loss", "A dedicated registered dietitian for fat loss, food strategy, and accountability, with insurance verification before care.", "/one-to-one-weight-loss", "Explore 1:1 care"],
@@ -58,6 +59,11 @@ export function HomePage() {
     <section className="nutrition-feature" aria-labelledby="nutrition-title">
       <img src={asset("generated/weight-habits-lifestyle.png")} alt="Walking shoes, water, and balanced snacks for a sustainable weight-loss routine" />
       <div><p className="eyebrow">1:1 fat-loss nutrition</p><h2 id="nutrition-title">A dedicated dietitian for the parts that happen between visits.</h2><p>Build meals you can repeat, protect lean mass with protein, increase fiber without forcing unfamiliar foods, and create routines that work through travel, work, family meals, plateaus, and appetite changes.</p><SiteLink className="button button-secondary" to="/one-to-one-weight-loss">Explore 1:1 care</SiteLink></div>
+    </section>
+
+    <section className="home-dietitian-team" aria-labelledby="home-dietitian-title">
+      <div className="home-dietitian-heading"><div><p className="eyebrow">Your nutrition care team</p><h2 id="home-dietitian-title">Meet our dietitians.</h2></div><SiteLink to="/about">Read full profiles <span aria-hidden="true">-&gt;</span></SiteLink></div>
+      <div className="home-dietitian-grid">{dietitians.map((dietitian) => <article className="home-dietitian-member" key={dietitian.name}><img src={asset(dietitian.image)} alt={dietitian.imageAlt} style={{ objectPosition: dietitian.imagePosition }} /><h3>{dietitian.name}</h3><p>{dietitian.role}</p></article>)}</div>
     </section>
 
     <section className="weight-process" aria-labelledby="process-title">

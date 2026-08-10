@@ -19,6 +19,8 @@ test("desktop home prioritizes insurance and booking", async ({ page }) => {
   await expect(page.getByRole("link", { name: "Book a free consultation" })).toBeVisible();
   await expect(page.locator(".insurance-logo-item")).toHaveCount(5);
   await expect(page.getByRole("img", { name: "Healthfirst" })).toBeVisible();
+  await expect(page.locator(".home-dietitian-member")).toHaveCount(8);
+  await expect(page.getByRole("heading", { name: "Alexandra Rodiles, RDN" })).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/home-desktop.png", fullPage: true });
 });
@@ -70,9 +72,10 @@ test("about page presents one unified dietitian team", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto("./about", { waitUntil: "networkidle" });
   await expect(page.getByRole("heading", { name: "Meet the team behind your care." })).toBeVisible();
-  await expect(page.locator(".all-dietitians .dietitian-profile")).toHaveCount(6);
+  await expect(page.locator(".all-dietitians .dietitian-profile")).toHaveCount(8);
   await expect(page.getByRole("heading", { name: "Siqian (Cici) Chen, MS, RD, LDN" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Yirao (Rebecca) Wang, RDN, LDN, MPH" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Yue Jin, MS, RD" })).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/about-desktop.png", fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
