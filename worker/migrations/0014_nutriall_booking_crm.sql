@@ -1,0 +1,20 @@
+ALTER TABLE contact_leads ADD COLUMN phone TEXT;
+ALTER TABLE contact_leads ADD COLUMN age INTEGER;
+ALTER TABLE contact_leads ADD COLUMN availability TEXT;
+ALTER TABLE contact_leads ADD COLUMN service_interest TEXT;
+ALTER TABLE contact_leads ADD COLUMN page_language TEXT;
+ALTER TABLE contact_leads ADD COLUMN utm_source TEXT;
+ALTER TABLE contact_leads ADD COLUMN utm_medium TEXT;
+ALTER TABLE contact_leads ADD COLUMN utm_campaign TEXT;
+ALTER TABLE contact_leads ADD COLUMN lead_status TEXT NOT NULL DEFAULT 'new';
+ALTER TABLE contact_leads ADD COLUMN assigned_to TEXT;
+ALTER TABLE contact_leads ADD COLUMN follow_up_at TEXT;
+ALTER TABLE contact_leads ADD COLUMN notes TEXT;
+ALTER TABLE contact_leads ADD COLUMN last_contacted_at TEXT;
+ALTER TABLE contact_leads ADD COLUMN confirmation_email_status TEXT NOT NULL DEFAULT 'pending';
+ALTER TABLE contact_leads ADD COLUMN confirmation_email_error TEXT;
+ALTER TABLE contact_leads ADD COLUMN confirmation_email_sent_at TEXT;
+
+CREATE INDEX IF NOT EXISTS idx_contact_leads_status ON contact_leads(lead_status);
+CREATE INDEX IF NOT EXISTS idx_contact_leads_service ON contact_leads(service_interest);
+CREATE INDEX IF NOT EXISTS idx_contact_leads_follow_up ON contact_leads(follow_up_at);

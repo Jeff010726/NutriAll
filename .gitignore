@@ -2,3 +2,10 @@ node_modules/
 dist/
 *.log
 .DS_Store
+.wrangler/
+.wrangler-config/
+test-results/
+playwright-report/
+.dev.vars
+.env.local
+.npm-cache/

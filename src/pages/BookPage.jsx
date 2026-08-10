@@ -1,32 +1,112 @@
+import { ArrowRight, CheckCircle2, MessageCircle, ShieldCheck } from "lucide-react";
 import { useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { apiRequest } from "../api";
+import { trackEvent } from "../analytics";
+import { InsuranceLogos } from "../components/InsuranceLogos";
 import { Layout } from "../components/Layout";
-import { SiteLink } from "../components/SiteLink";
 
-const steps = [
-  { eyebrow: "Step 01", title: "What kind of care are you looking for?", key: "goal", options: ["Medical weight-loss evaluation", "I am already using a GLP-1 medication", "1:1 nutrition and fat-loss coaching", "Diabetes nutrition care", "Help me decide"] },
-  { eyebrow: "Step 02", title: "Where are you located?", key: "location", options: ["New York", "Pennsylvania", "Another state"] },
-  { eyebrow: "Step 03", title: "What should we help clarify?", key: "access", options: ["Medical treatment options", "Nutrition counseling", "Insurance and expected cost", "I am not sure yet"] },
-  { eyebrow: "Step 04", title: "Do you have a language preference?", key: "language", options: ["English", "Mandarin", "Cantonese", "Spanish", "No preference"] },
-  { eyebrow: "Step 05", title: "Choose the next step that works for you.", key: "next", options: ["Book a medical visit", "Request a nutrition match", "Talk with care navigation"] },
+const availabilityOptions = [
+  "8AM - 10AM", "10AM - 12PM", "12PM - 2PM", "2PM - 4PM",
+  "4PM - 6PM", "6PM - 7PM", "7PM - 9PM",
 ];
 
-export function BookPage() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const complete = currentStep === steps.length;
-  const selectOption = (key, value) => setAnswers((current) => ({ ...current, [key]: value }));
+const languageOptions = ["English", "Mandarin", "Cantonese", "Spanish", "No preference"];
+const serviceLabels = {
+  "medical-weight-loss": "Medical weight loss",
+  "one-to-one": "1:1 weight-loss nutrition",
+  glp1: "GLP-1 support",
+  diabetes: "Diabetes nutrition care",
+  insurance: "Insurance benefit check",
+  general: "General consultation",
+};
 
-  return <Layout footerProps={{ note: "Care options, professional fees, insurance benefits, and medication coverage are confirmed separately before treatment begins." }}><main className="booking-flow-page">
-    <section className="page-full-hero booking-full-hero"><div><p className="eyebrow">Start care</p><h1>Find the right first conversation.</h1><p>Answer a few non-clinical questions to identify whether your next step should be a medical evaluation, registered dietitian visit, or care-navigation conversation.</p></div><aside className="hero-proof-panel"><span>One coordinated entry point</span><strong>Medical weight care, GLP-1 support, and 1:1 nutrition.</strong><small>Medical visits are currently available virtually to eligible patients located in New York and Pennsylvania.</small></aside></section>
-    <section className="booking-flow-section">
-      <aside className="booking-flow-copy"><p className="eyebrow">How this works</p><h2>Five quick choices. No health details needed here.</h2><div className="booking-flow-points"><p><strong>01</strong> Choose a care goal.</p><p><strong>02</strong> Confirm your location.</p><p><strong>03</strong> Identify what needs clarification.</p><p><strong>04</strong> Share a language preference.</p><p><strong>05</strong> Continue to an appropriate scheduling path.</p></div></aside>
-      <form className="booking-shell booking-shell-wide" onSubmit={(event) => { event.preventDefault(); setCurrentStep(steps.length); }}>
-        <div className="booking-progress"><span style={{ width: `${(Math.min(currentStep + 1, steps.length) / steps.length) * 100}%` }}></span></div>
-        {steps.map((step, index) => <section className={`booking-step${currentStep === index ? " is-active" : ""}`} key={step.key}><p className="eyebrow">{step.eyebrow}</p><h2>{step.title}</h2><div className="booking-options">{step.options.map((option) => <button className={`option-card${answers[step.key] === option ? " is-selected" : ""}`} type="button" key={option} onClick={() => selectOption(step.key, option)}>{option}</button>)}</div><div className="booking-actions">{index > 0 && <button className="button button-secondary" type="button" onClick={() => setCurrentStep(index - 1)}>Back</button>}{index < 4 ? <button className="button button-primary" type="button" disabled={!answers[step.key]} onClick={() => setCurrentStep(index + 1)}>Continue</button> : <button className="button button-primary" type="submit" disabled={!answers[step.key]}>See next steps</button>}</div></section>)}
-        <section className={`booking-step booking-complete${complete ? " is-active" : ""}`}><p className="eyebrow">Your next step</p><h2>Choose a secure scheduling path.</h2><p>This website does not collect or transmit health information. Use the medical scheduler for a physician visit, or contact NutriAll through your established secure intake channel for nutrition matching.</p><div className="booking-result-actions"><a className="button button-primary" href="https://www.zocdoc.com/practice/dr-leon-katz-medical-weight-loss-center-116140?lock=true&isNewPatient=false&referrerType=widget" target="_blank" rel="noreferrer">Book medical visit</a><SiteLink className="button button-secondary" to="/about">Review nutrition care</SiteLink></div></section>
+const whatsappUrl = import.meta.env.VITE_WHATSAPP_BOOKING_URL || "https://wa.me/16466395011?text=Hi%2C%20I%27d%20like%20to%20book%20a%20free%2015-minute%20consultation%20and%20check%20whether%20my%20insurance%20may%20cover%20care.";
+
+export function BookPage() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const requestedService = searchParams.get("service") || "general";
+  const serviceInterest = serviceLabels[requestedService] || serviceLabels.general;
+  const [status, setStatus] = useState("idle");
+  const [error, setError] = useState("");
+  const [started, setStarted] = useState(false);
+  const [form, setForm] = useState({
+    name: "", email: "", phone: "", age: "", preferredLanguage: "", availability: "",
+    insuranceCompany: "", insuranceMemberId: "", dateOfBirth: "",
+  });
+
+  const updateField = (field) => (event) => setForm((current) => ({ ...current, [field]: event.target.value }));
+
+  const submit = async (event) => {
+    event.preventDefault();
+    setStatus("submitting");
+    setError("");
+    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+    try {
+      await apiRequest("/api/contact", {
+        method: "POST",
+        body: {
+          ...form,
+          sourcePage: `${window.location.pathname}${window.location.search}`,
+          serviceInterest,
+          timeZone,
+          pageLanguage: document.documentElement.lang || "en",
+          utmSource: searchParams.get("utm_source") || "",
+          utmMedium: searchParams.get("utm_medium") || "",
+          utmCampaign: searchParams.get("utm_campaign") || "",
+        },
+      });
+      trackEvent("contact_submit", "booking_form", { service: requestedService });
+      navigate("/booking-confirmation");
+    } catch {
+      setStatus("error");
+      setError("We could not submit your request. Please try again or contact us on WhatsApp.");
+    }
+  };
+
+  return <Layout footerProps={{ note: "Insurance benefits are verified before care begins. Coverage and out-of-pocket cost vary by plan." }}><main className="booking-page-new">
+    <section className="booking-hero-new">
+      <div className="booking-hero-copy">
+        <p className="eyebrow"><ShieldCheck size={17} aria-hidden="true" /> Free 15-minute consultation</p>
+        <h1>Start with a quick insurance and care check.</h1>
+        <p>Tell us when to reach you. We will verify your benefits, answer your first questions, and help identify the right NutriAll service.</p>
+        <div className="booking-hero-highlights">
+          <span><CheckCircle2 aria-hidden="true" /> One short form</span>
+          <span><CheckCircle2 aria-hidden="true" /> No commitment</span>
+          <span><CheckCircle2 aria-hidden="true" /> Insurance verification</span>
+        </div>
+        <a className="button booking-whatsapp" href={whatsappUrl}><MessageCircle size={19} aria-hidden="true" /> Message us on WhatsApp</a>
+      </div>
+      <div className="booking-hero-image" role="img" aria-label="NutriAll one-to-one care consultation"><div><span>Your starting point</span><strong>{serviceInterest}</strong><small>We can adjust this when we speak.</small></div></div>
+    </section>
+
+    <InsuranceLogos compact />
+
+    <section className="booking-form-section" id="booking-form">
+      <div className="booking-form-intro"><p className="eyebrow">Request a call</p><h2>Choose a time that works for you.</h2><p>Required fields help us contact you. Insurance details are optional and can help us prepare before the call.</p></div>
+      <form className="intake-form" onSubmit={submit} onFocus={() => { if (!started) { setStarted(true); trackEvent("form_start", "booking_form", { service: requestedService }); } }}>
+        <div className="form-field full"><label htmlFor="booking-name">Full name</label><input id="booking-name" type="text" value={form.name} onChange={updateField("name")} autoComplete="name" required placeholder="Your full name" /></div>
+        <div className="form-field"><label htmlFor="booking-email">Email</label><input id="booking-email" type="email" value={form.email} onChange={updateField("email")} autoComplete="email" required placeholder="you@example.com" /></div>
+        <div className="form-field"><label htmlFor="booking-phone">Phone</label><input id="booking-phone" type="tel" value={form.phone} onChange={updateField("phone")} autoComplete="tel" required placeholder="(000) 000-0000" /></div>
+        <div className="form-field"><label htmlFor="booking-age">Age</label><input id="booking-age" type="number" min="1" max="120" value={form.age} onChange={updateField("age")} required placeholder="Age" /></div>
+        <div className="form-field"><label htmlFor="booking-language">Preferred language</label><select id="booking-language" value={form.preferredLanguage} onChange={updateField("preferredLanguage")} required><option value="">Select a language</option>{languageOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
+        <div className="form-field full"><label htmlFor="booking-availability">Best time to reach you</label><select id="booking-availability" value={form.availability} onChange={updateField("availability")} required><option value="">Select a time window</option>{availabilityOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
+
+        <fieldset className="insurance-fields">
+          <legend>Optional insurance information</legend>
+          <p>Share these details if you would like our team to begin checking benefits before we call.</p>
+          <div className="insurance-fields-grid">
+            <div className="form-field"><label htmlFor="booking-insurance">Insurance company</label><input id="booking-insurance" type="text" value={form.insuranceCompany} onChange={updateField("insuranceCompany")} autoComplete="organization" placeholder="Aetna, UnitedHealthcare, Medicare..." /></div>
+            <div className="form-field"><label htmlFor="booking-member-id">Member ID</label><input id="booking-member-id" type="text" value={form.insuranceMemberId} onChange={updateField("insuranceMemberId")} placeholder="Member ID on your card" /></div>
+            <div className="form-field"><label htmlFor="booking-dob">Date of birth</label><input id="booking-dob" type="date" value={form.dateOfBirth} onChange={updateField("dateOfBirth")} autoComplete="bday" /></div>
+          </div>
+        </fieldset>
+
+        {status === "error" && <p className="form-error" role="alert">{error}</p>}
+        <button className="button button-primary intake-submit" type="submit" disabled={status === "submitting"}>{status === "submitting" ? "Submitting..." : <>Request my free consultation <ArrowRight size={19} aria-hidden="true" /></>}</button>
+        <p className="form-disclaimer">By submitting, you authorize NutriAll to contact you about this request. Do not use this form for urgent medical concerns.</p>
       </form>
     </section>
-    <section className="booking-info-band"><div><p className="eyebrow">Before you book</p><h2>Different parts of care can have different costs.</h2><p>A physician visit, a registered dietitian visit, laboratory work, and a prescription are separate services. Coverage and out-of-pocket cost should be verified for each.</p></div><div className="booking-mini-grid"><article><span>MD</span><strong>Medical evaluation</strong><small>Eligibility depends on state and clinical fit.</small></article><article><span>RD</span><strong>Nutrition care</strong><small>Benefits vary by plan and diagnosis.</small></article><article><span>Rx</span><strong>Medication</strong><small>Formulary and authorization rules apply.</small></article><article><span>?</span><strong>Not sure</strong><small>Use care navigation to choose a path.</small></article></div></section>
-    <section className="booking-note-section"><p>Do not submit urgent symptoms through a website form. Call emergency services for a medical emergency or contact your clinician promptly for serious treatment concerns.</p></section>
   </main></Layout>;
 }

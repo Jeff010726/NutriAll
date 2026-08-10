@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { AboutPage } from "./pages/AboutPage";
 import { BookPage } from "./pages/BookPage";
+import { BookingConfirmationPage } from "./pages/BookingConfirmationPage";
 import { HomePage } from "./pages/HomePage";
 import { InsurancePage } from "./pages/InsurancePage";
 import { Glp1CarePage } from "./pages/Glp1CarePage";
@@ -35,6 +36,7 @@ export default function App() {
     <Route path="/research/:slug" element={<ResearchDetailPage />} />
     <Route path="/about" element={<AboutPage />} />
     <Route path="/book" element={<BookPage />} />
+    <Route path="/booking-confirmation" element={<BookingConfirmationPage />} />
     <Route path="/index.html" element={<Navigate replace to="/" />} />
     <Route path="/program.html" element={<Navigate replace to="/diabetes-care" />} />
     <Route path="/insurance.html" element={<Navigate replace to="/insurance" />} />

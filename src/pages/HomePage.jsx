@@ -1,11 +1,12 @@
 import { Layout } from "../components/Layout";
+import { InsuranceLogos } from "../components/InsuranceLogos";
 import { SiteLink } from "../components/SiteLink";
 import { asset } from "../lib";
 
 const paths = [
-  ["01", "Medical Weight Loss", "For people who want a clinical evaluation, a personalized plan, and coordinated follow-up.", "/medical-weight-loss", "Explore medical care"],
-  ["02", "1:1 Weight Loss", "For people who want a dedicated dietitian for fat loss, food strategy, and accountability.", "/one-to-one-weight-loss", "Explore 1:1 care"],
-  ["03", "GLP-1 Care", "For people considering or already using GLP-1 medication who need medical and nutrition support.", "/glp1-care", "Explore GLP-1 care"],
+  ["01", "1:1 Weight Loss", "A dedicated registered dietitian for fat loss, food strategy, and accountability, with insurance verification before care.", "/one-to-one-weight-loss", "Explore 1:1 care"],
+  ["02", "GLP-1 Support", "Nutrition and medical support for people considering or already using GLP-1 medication.", "/glp1-care", "Explore GLP-1 support"],
+  ["03", "Medical Weight Loss", "Clinical evaluation and physician oversight when medication or a medical treatment plan may be appropriate.", "/medical-weight-loss", "Explore medical care"],
   ["04", "Diabetes Care", "For people working on glucose, A1C, meal planning, and long-term cardiometabolic health.", "/diabetes-care", "Explore diabetes care"],
 ];
 
@@ -21,22 +22,17 @@ export function HomePage() {
     <section className="hero weight-hero" aria-labelledby="hero-title">
       <div className="hero-media" role="img" aria-label="A one-to-one medical weight care consultation"></div>
       <div className="hero-content">
-        <p className="eyebrow">NutriAll Medical Weight Care</p>
-        <h1 id="hero-title">Medical weight loss, built around you.</h1>
-        <p>A Medical Director and registered dietitians work together on personalized fat loss, nutrition, and GLP-1 medication care when clinically appropriate.</p>
-        <div className="hero-actions"><SiteLink className="button button-primary" to="/book">See if care fits</SiteLink><SiteLink className="button button-secondary" to="/medical-weight-loss">Explore the program</SiteLink></div>
+        <p className="eyebrow">1:1 weight loss care + insurance support</p>
+        <h1 id="hero-title">Lose weight with a plan made for your life.</h1>
+        <p>Work one-to-one with a registered dietitian on sustainable fat loss, with GLP-1 nutrition support and Medical Director oversight available when needed. Many insurance plans may cover eligible visits.</p>
+        <div className="hero-actions"><SiteLink className="button button-primary" to="/book?service=one-to-one">Book a free consultation</SiteLink><SiteLink className="button button-secondary" to="/insurance">Check insurance</SiteLink></div>
       </div>
     </section>
 
-    <section className="weight-trust-strip" aria-label="Care model highlights">
-      <div><strong>Obesity medicine</strong><span>Physician-led evaluation</span></div>
-      <div><strong>1:1 nutrition</strong><span>Registered dietitian care</span></div>
-      <div><strong>GLP-1 support</strong><span>When clinically appropriate</span></div>
-      <div><strong>Virtual access</strong><span>Medical care in NY + PA</span></div>
-    </section>
+    <InsuranceLogos />
 
     <section className="weight-paths" aria-labelledby="paths-title">
-      <div className="weight-section-heading"><p className="eyebrow">Find your path</p><h2 id="paths-title">Start with the kind of support you need now.</h2><p>You do not need to know the perfect program before reaching out. We can help clarify where medical care ends, where nutrition care begins, and how they work together.</p></div>
+      <div className="weight-section-heading"><p className="eyebrow">Choose your starting point</p><h2 id="paths-title">Weight care that meets you where you are.</h2><p>Start with one-to-one nutrition, build support around a GLP-1 medication, or request a medical evaluation. One short consultation helps us route you correctly.</p></div>
       <div className="weight-path-grid">{paths.map(([number, title, text, to, label]) => <article className="weight-path-card" key={title}><span>{number}</span><h3>{title}</h3><p>{text}</p><SiteLink to={to}>{label} <b>-&gt;</b></SiteLink></article>)}</div>
     </section>
 
@@ -49,9 +45,9 @@ export function HomePage() {
       </div>
     </section>
 
-    <section className="doctor-feature" aria-labelledby="doctor-title">
+    <section className="doctor-feature doctor-feature-compact" aria-labelledby="doctor-title">
       <div className="doctor-feature-image"><img src={asset("team/dr-leon-katz.jpg")} alt="Dr. Leon Katz, NutriAll Medical Director" /></div>
-      <div className="doctor-feature-copy"><p className="eyebrow">Meet our Medical Director</p><h2 id="doctor-title">Dr. Leon Katz</h2><p className="doctor-credential">Diplomate, American Board of Obesity Medicine</p><p>Dr. Katz brings more than two decades of specialized weight-management experience to NutriAll. He provides the medical evaluation and oversight that helps weight care remain personal, evidence-informed, and safe.</p><div className="doctor-stat-row"><div><strong>20+</strong><span>years of experience</span></div><div><strong>5,000+</strong><span>patients treated</span></div><div><strong>NY + PA</strong><span>virtual medical care</span></div></div><SiteLink className="button button-primary" to="/medical-director">Meet Dr. Katz</SiteLink></div>
+      <div className="doctor-feature-copy"><p className="eyebrow">Medical oversight when needed</p><h2 id="doctor-title">Care supported by an experienced Medical Director.</h2><p className="doctor-credential">Leon Katz, MD · Diplomate, American Board of Obesity Medicine</p><p>Dr. Katz supports NutriAll&apos;s medical weight-care pathway with clinical evaluation and oversight. Your day-to-day NutriAll experience remains centered on your goals and your care team.</p><SiteLink className="text-link" to="/medical-director">About our Medical Director -&gt;</SiteLink></div>
     </section>
 
     <section className="glp-home-feature" aria-labelledby="glp-home-title">
@@ -74,6 +70,6 @@ export function HomePage() {
       <div className="resource-band-links"><SiteLink to="/recipes">Browse recipes <span>-&gt;</span></SiteLink><SiteLink to="/research">Read research <span>-&gt;</span></SiteLink><SiteLink to="/diabetes-care">Diabetes care <span>-&gt;</span></SiteLink></div>
     </section>
 
-    <section className="weight-final-cta"><p className="eyebrow">A more connected way to lose weight</p><h2>Start with the right kind of care.</h2><p>Tell us your goal and we will help identify the most appropriate next step.</p><SiteLink className="button button-primary" to="/book">Get started</SiteLink></section>
+    <section className="weight-final-cta"><p className="eyebrow">A lower-friction first step</p><h2>See whether your insurance may cover care.</h2><p>Request a free 15-minute consultation. We will check benefits and help identify the right next step.</p><SiteLink className="button button-primary" to="/book?service=insurance">Check my benefits</SiteLink></section>
   </main></Layout>;
 }

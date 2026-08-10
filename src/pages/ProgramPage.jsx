@@ -13,6 +13,6 @@ export function ProgramPage() {
       <article id="heart-health" className="program-feature-card program-feature-dark"><p className="tag">Long-term health</p><h2>Support cholesterol, blood pressure, and cardiovascular risk.</h2><p>Diabetes nutrition care is also heart-health care.</p></article>
       <article id="assessment" className="program-feature-card"><img src={asset("mosaic/dietitian-support.jpg")} alt="" /><div><p className="tag">Dietitian support</p><h2>Personalized assessment.</h2><p>Review food habits, labs, medications, goals, barriers, and preferences.</p></div></article>
     </section>
-    <section className="info-band"><h2>Ready to start?</h2><p>Use the care-path flow so the team can confirm fit, insurance questions, and next steps.</p><SiteLink className="button button-primary" to="/book">Start care</SiteLink></section>
+    <section className="info-band"><h2>Ready to start?</h2><p>Request a free call so the team can confirm fit, insurance questions, and next steps.</p><SiteLink className="button button-primary" to="/book?service=diabetes">Book a free consultation</SiteLink></section>
   </main></Layout>;
 }

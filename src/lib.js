@@ -12,4 +12,5 @@ export const pageTitles = {
   "/research": "Research Explained | NutriAll",
   "/about": "About NutriAll Medical Weight Care",
   "/book": "Start Medical Weight Care | NutriAll",
+  "/booking-confirmation": "Consultation Request Received | NutriAll",
 };

@@ -6,22 +6,22 @@ const menuContent = {
   programs: {
     label: "Programs",
     rows: [
-      ["/medical-weight-loss", "generated/weight-management-care.png", "Medical Weight Loss", "A physician-led plan with nutrition and ongoing follow-up."],
       ["/one-to-one-weight-loss", "generated/weight-habits-lifestyle.png", "1:1 Weight Loss", "Personal nutrition care for sustainable fat loss."],
       ["/glp1-care", "generated/glp1-training.webp", "GLP-1 Care", "Medication education, side-effect planning, and nutrition support."],
+      ["/medical-weight-loss", "generated/weight-management-care.png", "Medical Weight Loss", "A physician-led plan with nutrition and ongoing follow-up."],
     ],
     articles: [["/diabetes-care", "Diabetes care", "A focused nutrition program"], ["/insurance", "Cost and insurance", "Understand each part of care"]],
     all: ["/medical-weight-loss", "Explore medical weight care"],
   },
   team: {
-    label: "Medical Team",
+    label: "Our Care",
     rows: [
       ["/medical-director", "team/dr-leon-katz.jpg", "Dr. Leon Katz", "Medical Director and obesity medicine specialist."],
       ["/about", "nutriall-team.jpg", "Registered Dietitians", "Practical, culturally responsive nutrition counseling."],
       ["/about", "generated/nutrition-education-care.png", "One coordinated team", "Medical decisions and daily habits connected through follow-up."],
     ],
     articles: [["/medical-director", "Medical oversight", "Evaluation, risk review, and prescribing"], ["/one-to-one-weight-loss", "Nutrition partnership", "Food strategy and accountability"]],
-    all: ["/about", "Meet the NutriAll team"],
+    all: ["/about", "Meet the NutriAll care team"],
   },
   resources: {
     label: "Resources",
@@ -67,22 +67,22 @@ export function Header() {
   const closeAll = () => { setOpenMenu(null); setMobileOpen(false); };
 
   return <header className={`site-header${scrolled ? " is-scrolled" : ""}${openMenu || mobileOpen ? " has-open-menu" : ""}`} onMouseLeave={() => setOpenMenu(null)}>
-    <SiteLink className="announcement-bar" to="/medical-weight-loss">Physician-led weight care + 1:1 nutrition support -&gt;</SiteLink>
+    <SiteLink className="announcement-bar" to="/book?service=insurance">Many insurance plans may cover eligible nutrition visits · Check your benefits -&gt;</SiteLink>
     <div className="header-inner">
       <button className="nav-toggle" type="button" aria-label={mobileOpen ? "Close menu" : "Open menu"} aria-expanded={mobileOpen} onClick={() => setMobileOpen((value) => !value)}><span></span><span></span></button>
-      <SiteLink className="brand" to="/" aria-label="NutriAll Medical Weight Care home" onClick={closeAll}><img src={asset("nutriall-logo.svg")} alt="" /><span>Medical Weight Care</span></SiteLink>
+      <SiteLink className="brand" to="/" aria-label="NutriAll Weight and Nutrition Care home" onClick={closeAll}><img src={asset("nutriall-logo.svg")} alt="" /><span>Weight &amp; Nutrition Care</span></SiteLink>
       <nav className="site-nav" aria-label="Primary navigation">
         <span className="nav-highlight"></span>
         {Object.entries(menuContent).map(([name, menu]) => <button className={`nav-link${openMenu === name ? " is-active" : ""}`} type="button" key={name} aria-expanded={openMenu === name} onMouseEnter={() => setOpenMenu(name)} onClick={() => setOpenMenu(openMenu === name ? null : name)}>{menu.label}</button>)}
       </nav>
-      <div className="header-actions"><SiteLink to="/insurance">Cost & Insurance</SiteLink><SiteLink className="get-started-link" to="/book">Get Started</SiteLink></div>
+      <div className="header-actions"><SiteLink to="/insurance">Insurance</SiteLink><SiteLink className="get-started-link" to="/book">Book Free Call</SiteLink></div>
     </div>
     <div className={`mega-shell${openMenu ? " is-open" : ""}`}>{Object.keys(menuContent).map((name) => <MegaMenu key={name} name={name} active={openMenu === name} onEnter={() => setOpenMenu(name)} />)}</div>
     <nav className={`mobile-menu${mobileOpen ? " is-open" : ""}`} aria-label="Mobile navigation" onClick={closeAll}>
       <div className="mobile-section"><p>Programs</p><SiteLink to="/medical-weight-loss">Medical weight loss</SiteLink><SiteLink to="/one-to-one-weight-loss">1:1 weight loss</SiteLink><SiteLink to="/glp1-care">GLP-1 care</SiteLink><SiteLink to="/diabetes-care">Diabetes care</SiteLink></div>
       <div className="mobile-section"><p>Team</p><SiteLink to="/medical-director">Medical Director</SiteLink><SiteLink to="/about">Registered dietitians</SiteLink></div>
       <div className="mobile-section"><p>Resources</p><SiteLink to="/recipes">Recipes</SiteLink><SiteLink to="/research">Research explained</SiteLink><SiteLink to="/insurance">Cost & insurance</SiteLink></div>
-      <SiteLink className="mobile-cta" to="/book">Get Started</SiteLink>
+      <SiteLink className="mobile-cta" to="/book">Book Free Call</SiteLink>
     </nav>
   </header>;
 }

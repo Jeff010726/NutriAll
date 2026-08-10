@@ -1,0 +1,28 @@
+name = "nutriall-api"
+account_id = "811cbfdf5fdcd2556b4ef1a0143312f8"
+main = "worker/src/index.ts"
+compatibility_date = "2026-05-19"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+preview_urls = false
+
+[[routes]]
+pattern = "nutriall-api.xtdiabetescare.com"
+custom_domain = true
+
+[vars]
+APP_ENV = "production"
+BRAND_NAME = "NutriAll"
+ADMIN_EMAIL = "xtdiabetescare@outlook.com"
+ALLOWED_ORIGINS = "https://jeff010726.github.io,https://nutriallwellness.org,https://www.nutriallwellness.org"
+SMTP_HOST = "smtp.qq.com"
+SMTP_PORT = "465"
+SMTP_USER = "3359746636@qq.com"
+SMTP_FROM = "3359746636@qq.com"
+BOOKING_NOTIFY_TO = "xtdiabetescare@gmail.com"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nutriall-db"
+database_id = "d663af50-b387-4937-b5b7-8598d204c318"
+migrations_dir = "worker/migrations"

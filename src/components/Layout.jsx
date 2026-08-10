@@ -3,6 +3,8 @@ import { useLocation } from "react-router-dom";
 import { pageTitles } from "../lib";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
+import { SiteLink } from "./SiteLink";
+import { trackEvent } from "../analytics";
 
 export function Layout({ children, footerProps, title }) {
   const { pathname, hash } = useLocation();
@@ -15,5 +17,10 @@ export function Layout({ children, footerProps, title }) {
     }
   }, [hash, pathname, title]);
 
-  return <><Header />{children}<Footer {...footerProps} /></>;
+  useEffect(() => {
+    const timer = window.setTimeout(() => trackEvent("page_view", pathname), 0);
+    return () => window.clearTimeout(timer);
+  }, [pathname]);
+
+  return <><Header />{children}<Footer {...footerProps} /><SiteLink className="mobile-booking-bar" to="/book?service=general"><span>Insurance may cover care</span><strong>Book free call</strong></SiteLink></>;
 }

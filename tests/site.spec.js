@@ -1,0 +1,66 @@
+import { expect, test } from "@playwright/test";
+
+test.beforeEach(async ({ page }) => {
+  await page.route("**/api/analytics/collect", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "{\"ok\":true}" }));
+});
+
+async function expectNoHorizontalOverflow(page) {
+  const sizes = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    content: document.documentElement.scrollWidth,
+  }));
+  expect(sizes.content).toBeLessThanOrEqual(sizes.viewport + 1);
+}
+
+test("desktop home prioritizes insurance and booking", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("./", { waitUntil: "networkidle" });
+  await expect(page.getByRole("heading", { name: "Lose weight with a plan made for your life." })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Book a free consultation" })).toBeVisible();
+  await expect(page.locator(".insurance-logo-item")).toHaveCount(6);
+  await expectNoHorizontalOverflow(page);
+  await page.screenshot({ path: "test-results/home-desktop.png", fullPage: true });
+});
+
+test("mobile home keeps the conversion path visible", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("./", { waitUntil: "networkidle" });
+  await expect(page.locator(".mobile-booking-bar")).toBeVisible();
+  await expect(page.locator(".insurance-logo-item")).toHaveCount(6);
+  await expectNoHorizontalOverflow(page);
+  await page.screenshot({ path: "test-results/home-mobile.png", fullPage: true });
+});
+
+test("validated booking form submits the expected contract", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  let submitted;
+  await page.route("https://nutriall-api.xtdiabetescare.com/api/contact", async (route) => {
+    submitted = route.request().postDataJSON();
+    await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, id: "lead_e2e" }) });
+  });
+  await page.goto("./book?service=glp1&utm_source=qa", { waitUntil: "networkidle" });
+  await expect(page.getByText("GLP-1 support", { exact: true })).toBeVisible();
+  await page.getByLabel("Full name").fill("Jane Test");
+  await page.getByLabel("Email").fill("jane@example.com");
+  await page.getByLabel("Phone").fill("2125550198");
+  await page.getByLabel("Age", { exact: true }).fill("42");
+  await page.getByLabel("Preferred language").selectOption("English");
+  await page.getByLabel("Best time to reach you").selectOption("10AM - 12PM");
+  await page.getByLabel("Insurance company").fill("Aetna");
+  await page.getByLabel("Member ID").fill("TEST-001");
+  await page.getByLabel("Date of birth").fill("1984-01-15");
+  await page.screenshot({ path: "test-results/booking-desktop.png", fullPage: true });
+  await page.getByRole("button", { name: "Request my free consultation" }).click();
+  await expect(page.getByRole("heading", { name: "We will be in touch shortly." })).toBeVisible();
+  expect(submitted.serviceInterest).toBe("GLP-1 support");
+  expect(submitted.utmSource).toBe("qa");
+  expect(submitted.insuranceMemberId).toBe("TEST-001");
+});
+
+test("mobile booking form is usable without overflow", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("./book?service=one-to-one", { waitUntil: "networkidle" });
+  await expect(page.getByLabel("Full name")).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await page.screenshot({ path: "test-results/booking-mobile.png", fullPage: true });
+});

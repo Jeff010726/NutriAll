@@ -5,22 +5,32 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "worker:dev": "wrangler dev --local",
+    "worker:deploy": "wrangler deploy",
+    "worker:migrate:local": "wrangler d1 migrations apply nutriall-db --local",
+    "worker:migrate:remote": "wrangler d1 migrations apply nutriall-db --remote",
+    "worker:types": "tsc --noEmit -p worker/tsconfig.json",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint ."
   },
   "dependencies": {
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
+    "lucide-react": "^1.31.0",
     "react": "latest",
     "react-dom": "latest",
-    "react-router-dom": "latest"
+    "react-router-dom": "latest",
+    "vite": "latest"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260810.1",
     "@eslint/js": "latest",
+    "@playwright/test": "^1.62.1",
     "eslint": "latest",
     "eslint-plugin-react-hooks": "latest",
     "eslint-plugin-react-refresh": "latest",
-    "globals": "latest"
+    "globals": "latest",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.120.0"
   }
 }

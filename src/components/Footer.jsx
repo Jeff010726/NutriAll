@@ -10,13 +10,13 @@ const defaultLinks = [
   ["About", "/about"],
 ];
 
-export function Footer({ note = "Physician-led medical weight care paired with practical, one-to-one nutrition support.", links = defaultLinks }) {
+export function Footer({ note = "One-to-one weight-loss nutrition, GLP-1 support, and medical oversight when needed.", links = defaultLinks }) {
   return (
     <footer className="site-footer">
       <div>
         <SiteLink className="brand footer-brand" to="/">
           <img src={asset("nutriall-logo.svg")} alt="" />
-          <span>Medical Weight Care</span>
+          <span>Weight &amp; Nutrition Care</span>
         </SiteLink>
         <p>{note}</p>
       </div>
