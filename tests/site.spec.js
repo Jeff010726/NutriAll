@@ -38,7 +38,7 @@ test("mobile home keeps the conversion path visible", async ({ page }) => {
 test("validated booking form submits the expected contract", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   let submitted;
-  await page.route("https://nutriall-api.xtdiabetescare.com/api/contact", async (route) => {
+  await page.route("https://admin.nutriallwellness.com/api/contact", async (route) => {
     submitted = route.request().postDataJSON();
     await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, id: "lead_e2e" }) });
   });
@@ -76,6 +76,24 @@ test("legacy booking confirmation resolves to the conversion route", async ({ pa
   await page.goto("./booking-confirmation", { waitUntil: "networkidle" });
   await expect(page).toHaveURL(/\/booking-redirect$/);
   await expect(page.getByRole("heading", { name: "We will be in touch shortly." })).toBeVisible();
+});
+
+test("WhatsApp booking route records attribution before redirecting", async ({ page }) => {
+  const analyticsEvents = [];
+  await page.unroute("**/api/analytics/collect");
+  await page.route("**/api/analytics/collect", async (route) => {
+    analyticsEvents.push(route.request().postDataJSON());
+    await route.fulfill({ status: 200, contentType: "application/json", body: "{\"ok\":true}" });
+  });
+  await page.route("https://wa.me/**", (route) => route.abort());
+  await page.goto("./booking-whatsapp?utm_source=facebook&utm_medium=paid_social&utm_campaign=weight-loss&utm_content=creative-01", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { name: "Opening WhatsApp..." })).toBeVisible();
+  await expect.poll(() => analyticsEvents.some((event) => event.eventType === "whatsapp_booking_click")).toBe(true);
+  const event = analyticsEvents.find((item) => item.eventType === "whatsapp_booking_click");
+  expect(event.utmCampaign).toBe("weight-loss");
+  expect(event.utmContent).toBe("creative-01");
+  const pixelQueue = await page.evaluate(() => window.fbq?.queue || []);
+  expect(pixelQueue).toContainEqual(["trackCustom", "ExternalLinkClick"]);
 });
 
 test("mobile booking form is usable without overflow", async ({ page }) => {

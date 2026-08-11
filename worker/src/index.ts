@@ -62,11 +62,18 @@ function adminResponse(request: Request, env: Env) {
 async function route(request: Request, env: Env, ctx: ExecutionContext) {
   const url = new URL(request.url);
 
+  if (url.hostname === "www.nutriallwellness.com") {
+    const destination = new URL(request.url);
+    destination.hostname = "nutriallwellness.com";
+    return Response.redirect(destination.toString(), 301);
+  }
+
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: responseHeaders(request, env) });
   }
 
-  if (url.pathname === "/admin" || url.pathname.startsWith("/admin/") || (env.ADMIN_HOST && url.hostname === env.ADMIN_HOST)) {
+  const isAdminHostPage = env.ADMIN_HOST && url.hostname === env.ADMIN_HOST && !url.pathname.startsWith("/api/");
+  if (url.pathname === "/admin" || url.pathname.startsWith("/admin/") || isAdminHostPage) {
     return adminResponse(request, env);
   }
 
@@ -84,6 +91,8 @@ async function route(request: Request, env: Env, ctx: ExecutionContext) {
 
   if (url.pathname === "/api/analytics/collect" && request.method === "POST") return collectAnalytics(request, env);
   if (url.pathname === "/api/contact" && request.method === "POST") return submitContact(request, env, ctx);
+  if (url.pathname.startsWith("/api/")) return json(request, env, { error: "Not found" }, { status: 404 });
+  if (env.ASSETS) return env.ASSETS.fetch(request);
   return json(request, env, { error: "Not found" }, { status: 404 });
 }
 

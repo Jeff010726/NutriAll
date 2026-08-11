@@ -10,11 +10,32 @@ preview_urls = false
 pattern = "nutriall-api.xtdiabetescare.com"
 custom_domain = true
 
+[[routes]]
+pattern = "admin.nutriallwellness.com"
+custom_domain = true
+
+[[routes]]
+pattern = "nutriallwellness.com"
+custom_domain = true
+
+[[routes]]
+pattern = "www.nutriallwellness.com"
+custom_domain = true
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = true
+
 [vars]
 APP_ENV = "production"
 BRAND_NAME = "NutriAll"
 ADMIN_EMAIL = "xtdiabetescare@outlook.com"
-ALLOWED_ORIGINS = "https://jeff010726.github.io,https://nutriallwellness.org,https://www.nutriallwellness.org"
+APP_ORIGIN = "https://nutriallwellness.com"
+ADMIN_HOST = "admin.nutriallwellness.com"
+ADMIN_URL = "https://admin.nutriallwellness.com"
+ALLOWED_ORIGINS = "https://nutriallwellness.com,https://www.nutriallwellness.com,https://jeff010726.github.io,https://nutriallwellness.org,https://www.nutriallwellness.org"
 SMTP_HOST = "smtp.qq.com"
 SMTP_PORT = "465"
 SMTP_USER = "3359746636@qq.com"

@@ -19,6 +19,7 @@ export interface Env {
   SMTP_EHLO_DOMAIN?: string;
   BOOKING_NOTIFY_TO?: string;
   DB?: D1Database;
+  ASSETS?: Fetcher;
   INSURANCE_CARDS?: R2Bucket;
 }
 

@@ -21,6 +21,7 @@ const routes = [
   "about",
   "book",
   "booking-redirect",
+  "booking-whatsapp",
   "booking-confirmation",
 ];
 

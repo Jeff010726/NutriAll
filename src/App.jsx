@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-route
 import { AboutPage } from "./pages/AboutPage";
 import { BookPage } from "./pages/BookPage";
 import { BookingRedirectPage } from "./pages/BookingRedirectPage";
+import { BookingWhatsAppPage } from "./pages/BookingWhatsAppPage";
 import { HomePage } from "./pages/HomePage";
 import { InsurancePage } from "./pages/InsurancePage";
 import { Glp1CarePage } from "./pages/Glp1CarePage";
@@ -37,6 +38,7 @@ export default function App() {
     <Route path="/about" element={<AboutPage />} />
     <Route path="/book" element={<BookPage />} />
     <Route path="/booking-redirect" element={<BookingRedirectPage />} />
+    <Route path="/booking-whatsapp" element={<BookingWhatsAppPage />} />
     <Route path="/booking-confirmation" element={<Navigate replace to="/booking-redirect" />} />
     <Route path="/index.html" element={<Navigate replace to="/" />} />
     <Route path="/program.html" element={<Navigate replace to="/diabetes-care" />} />

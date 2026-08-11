@@ -13,5 +13,6 @@ export const pageTitles = {
   "/about": "About NutriAll Medical Weight Care",
   "/book": "Start Medical Weight Care | NutriAll",
   "/booking-redirect": "Consultation Request Received | NutriAll",
+  "/booking-whatsapp": "Opening WhatsApp | NutriAll",
   "/booking-confirmation": "Consultation Request Received | NutriAll",
 };
