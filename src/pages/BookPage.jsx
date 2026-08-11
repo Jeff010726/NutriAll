@@ -2,7 +2,7 @@ import { ArrowRight, CheckCircle2, MessageCircle, ShieldCheck } from "lucide-rea
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiRequest } from "../api";
-import { trackEvent } from "../analytics";
+import { getAttribution, trackEvent } from "../analytics";
 import { InsuranceLogos } from "../components/InsuranceLogos";
 import { Layout } from "../components/Layout";
 
@@ -43,6 +43,7 @@ export function BookPage() {
     setStatus("submitting");
     setError("");
     const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || "";
+    const attribution = getAttribution();
     try {
       await apiRequest("/api/contact", {
         method: "POST",
@@ -52,13 +53,13 @@ export function BookPage() {
           serviceInterest,
           timeZone,
           pageLanguage: document.documentElement.lang || "en",
-          utmSource: searchParams.get("utm_source") || "",
-          utmMedium: searchParams.get("utm_medium") || "",
-          utmCampaign: searchParams.get("utm_campaign") || "",
+          utmSource: attribution.utmSource,
+          utmMedium: attribution.utmMedium,
+          utmCampaign: attribution.utmCampaign,
         },
       });
       trackEvent("contact_submit", "booking_form", { service: requestedService });
-      navigate("/booking-confirmation");
+      navigate("/booking-redirect");
     } catch {
       setStatus("error");
       setError("We could not submit your request. Please try again or contact us on WhatsApp.");

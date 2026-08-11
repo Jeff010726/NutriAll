@@ -1,8 +1,14 @@
 import { ArrowRight, CheckCircle2, Mail, Phone } from "lucide-react";
+import { useEffect } from "react";
+import { trackEvent } from "../analytics";
 import { Layout } from "../components/Layout";
 import { SiteLink } from "../components/SiteLink";
 
-export function BookingConfirmationPage() {
+export function BookingRedirectPage() {
+  useEffect(() => {
+    trackEvent("booking_click", "booking_form_success", { destination: "booking-redirect" });
+  }, []);
+
   return <Layout title="Consultation Request Received | NutriAll"><main className="booking-confirmation-page">
     <section className="booking-confirmation-panel">
       <CheckCircle2 className="booking-confirmation-icon" aria-hidden="true" />

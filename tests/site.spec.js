@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/analytics/collect", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "{\"ok\":true}" }));
+  await page.route("https://connect.facebook.net/en_US/fbevents.js", (route) => route.fulfill({ status: 200, contentType: "application/javascript", body: "" }));
 });
 
 async function expectNoHorizontalOverflow(page) {
@@ -41,8 +42,11 @@ test("validated booking form submits the expected contract", async ({ page }) =>
     submitted = route.request().postDataJSON();
     await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, id: "lead_e2e" }) });
   });
-  await page.goto("./book?service=glp1&utm_source=qa", { waitUntil: "networkidle" });
+  await page.goto("./?utm_source=facebook&utm_medium=paid_social&utm_campaign=weight-loss", { waitUntil: "networkidle" });
+  await page.goto("./book?service=glp1", { waitUntil: "networkidle" });
   await expect(page.getByText("GLP-1 support", { exact: true })).toBeVisible();
+  const pixelQueueBeforeSubmit = await page.evaluate(() => window.fbq?.queue || []);
+  expect(pixelQueueBeforeSubmit).not.toContainEqual(["trackCustom", "ExternalLinkClick"]);
   await page.getByLabel("Full name").fill("Jane Test");
   await page.getByLabel("Email").fill("jane@example.com");
   await page.getByLabel("Phone").fill("2125550198");
@@ -55,9 +59,23 @@ test("validated booking form submits the expected contract", async ({ page }) =>
   await page.screenshot({ path: "test-results/booking-desktop.png", fullPage: true });
   await page.getByRole("button", { name: "Request my free consultation" }).click();
   await expect(page.getByRole("heading", { name: "We will be in touch shortly." })).toBeVisible();
+  await expect(page).toHaveURL(/\/booking-redirect$/);
   expect(submitted.serviceInterest).toBe("GLP-1 support");
-  expect(submitted.utmSource).toBe("qa");
+  expect(submitted.utmSource).toBe("facebook");
+  expect(submitted.utmMedium).toBe("paid_social");
+  expect(submitted.utmCampaign).toBe("weight-loss");
   expect(submitted.insuranceMemberId).toBe("TEST-001");
+  const pixelQueue = await page.evaluate(() => window.fbq?.queue || []);
+  expect(pixelQueue).toContainEqual(["init", "1809933399979917"]);
+  expect(pixelQueue).toContainEqual(["track", "PageView"]);
+  expect(pixelQueue).toContainEqual(["trackCustom", "ContactFormSubmit"]);
+  expect(pixelQueue).toContainEqual(["trackCustom", "ExternalLinkClick"]);
+});
+
+test("legacy booking confirmation resolves to the conversion route", async ({ page }) => {
+  await page.goto("./booking-confirmation", { waitUntil: "networkidle" });
+  await expect(page).toHaveURL(/\/booking-redirect$/);
+  await expect(page.getByRole("heading", { name: "We will be in touch shortly." })).toBeVisible();
 });
 
 test("mobile booking form is usable without overflow", async ({ page }) => {

@@ -5,6 +5,7 @@ import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { SiteLink } from "./SiteLink";
 import { trackEvent } from "../analytics";
+import { trackMetaPageView } from "../metaPixel";
 
 export function Layout({ children, footerProps, title }) {
   const { pathname, hash } = useLocation();
@@ -18,7 +19,10 @@ export function Layout({ children, footerProps, title }) {
   }, [hash, pathname, title]);
 
   useEffect(() => {
-    const timer = window.setTimeout(() => trackEvent("page_view", pathname), 0);
+    const timer = window.setTimeout(() => {
+      trackMetaPageView();
+      trackEvent("page_view", pathname);
+    }, 0);
     return () => window.clearTimeout(timer);
   }, [pathname]);
 

@@ -10,7 +10,7 @@
     "worker:migrate:local": "wrangler d1 migrations apply nutriall-db --local",
     "worker:migrate:remote": "wrangler d1 migrations apply nutriall-db --remote",
     "worker:types": "tsc --noEmit -p worker/tsconfig.json",
-    "build": "vite build",
+    "build": "vite build && node scripts/postbuild.mjs",
     "preview": "vite preview",
     "lint": "eslint ."
   },
