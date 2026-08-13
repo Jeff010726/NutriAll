@@ -2960,7 +2960,7 @@ h3 {
 }
 
 .form-field.full,
-.customer-type-field,
+.patient-type-field,
 .insurance-fields,
 .form-error,
 .intake-submit,
@@ -2994,38 +2994,38 @@ h3 {
   box-shadow: 0 0 0 4px rgba(34, 69, 54, 0.1);
 }
 
-.customer-type-field {
+.patient-type-field {
   margin: 0;
   padding: 0;
   border: 0;
 }
 
-.customer-type-field legend {
+.patient-type-field legend {
   margin-bottom: 7px;
   font-size: 14px;
   font-weight: 800;
 }
 
-.customer-type-options {
+.patient-type-options {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-.customer-type-options label {
+.patient-type-options label {
   position: relative;
   min-width: 0;
   cursor: pointer;
 }
 
-.customer-type-options input {
+.patient-type-options input {
   position: absolute;
   width: 1px;
   height: 1px;
   opacity: 0;
 }
 
-.customer-type-options span {
+.patient-type-options span {
   display: flex;
   min-height: 52px;
   align-items: center;
@@ -3040,14 +3040,14 @@ h3 {
   text-align: center;
 }
 
-.customer-type-options input:checked + span {
+.patient-type-options input:checked + span {
   border-color: var(--forest);
   background: #edf5ea;
   color: var(--forest);
   box-shadow: inset 0 0 0 1px var(--forest);
 }
 
-.customer-type-options input:focus-visible + span {
+.patient-type-options input:focus-visible + span {
   outline: 3px solid rgba(34, 69, 54, 0.18);
   outline-offset: 2px;
 }
@@ -3302,7 +3302,7 @@ h3 {
     grid-template-columns: 1fr;
   }
 
-  .customer-type-options {
+  .patient-type-options {
     grid-template-columns: 1fr;
   }
 

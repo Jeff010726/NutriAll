@@ -52,7 +52,7 @@ test("validated booking form submits the expected contract", async ({ page }) =>
   await page.getByLabel("Phone").fill("2125550198");
   await page.getByLabel("Age", { exact: true }).fill("42");
   await page.getByLabel("Preferred language").selectOption("English");
-  await page.getByLabel("I'm a returning customer").check();
+  await page.getByLabel("I'm a returning patient").check();
   await page.getByLabel("Best time to reach you").selectOption("10AM - 12PM");
   await page.getByLabel("Insurance company").fill("Aetna");
   await page.getByLabel("Member ID").fill("TEST-001");
@@ -66,7 +66,7 @@ test("validated booking form submits the expected contract", async ({ page }) =>
   expect(submitted.utmMedium).toBe("paid_social");
   expect(submitted.utmCampaign).toBe("weight-loss");
   expect(submitted.insuranceMemberId).toBe("TEST-001");
-  expect(submitted.customerType).toBe("returning");
+  expect(submitted.patientType).toBe("returning");
   const pixelQueue = await page.evaluate(() => window.fbq?.queue || []);
   expect(pixelQueue).toContainEqual(["init", "1809933399979917"]);
   expect(pixelQueue).toContainEqual(["track", "PageView"]);

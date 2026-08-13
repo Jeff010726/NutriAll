@@ -33,7 +33,7 @@ export function BookPage() {
   const [started, setStarted] = useState(false);
   const [form, setForm] = useState({
     name: "", email: "", phone: "", age: "", preferredLanguage: "", availability: "",
-    customerType: "", insuranceCompany: "", insuranceMemberId: "", dateOfBirth: "",
+    patientType: "", insuranceCompany: "", insuranceMemberId: "", dateOfBirth: "",
   });
 
   const updateField = (field) => (event) => setForm((current) => ({ ...current, [field]: event.target.value }));
@@ -92,11 +92,11 @@ export function BookPage() {
         <div className="form-field"><label htmlFor="booking-phone">Phone</label><input id="booking-phone" type="tel" value={form.phone} onChange={updateField("phone")} autoComplete="tel" required placeholder="(000) 000-0000" /></div>
         <div className="form-field"><label htmlFor="booking-age">Age</label><input id="booking-age" type="number" min="1" max="120" value={form.age} onChange={updateField("age")} required placeholder="Age" /></div>
         <div className="form-field"><label htmlFor="booking-language">Preferred language</label><select id="booking-language" value={form.preferredLanguage} onChange={updateField("preferredLanguage")} required><option value="">Select a language</option>{languageOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
-        <fieldset className="customer-type-field">
+        <fieldset className="patient-type-field">
           <legend>Have you worked with NutriAll before?</legend>
-          <div className="customer-type-options">
-            <label><input type="radio" name="customerType" value="new" checked={form.customerType === "new"} onChange={updateField("customerType")} required /><span>I'm a new customer</span></label>
-            <label><input type="radio" name="customerType" value="returning" checked={form.customerType === "returning"} onChange={updateField("customerType")} required /><span>I'm a returning customer</span></label>
+          <div className="patient-type-options">
+            <label><input type="radio" name="patientType" value="new" checked={form.patientType === "new"} onChange={updateField("patientType")} required /><span>I'm a new patient</span></label>
+            <label><input type="radio" name="patientType" value="returning" checked={form.patientType === "returning"} onChange={updateField("patientType")} required /><span>I'm a returning patient</span></label>
           </div>
         </fieldset>
         <div className="form-field full"><label htmlFor="booking-availability">Best time to reach you</label><select id="booking-availability" value={form.availability} onChange={updateField("availability")} required><option value="">Select a time window</option>{availabilityOptions.map((option) => <option key={option}>{option}</option>)}</select></div>

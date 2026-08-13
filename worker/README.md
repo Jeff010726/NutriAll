@@ -1,6 +1,6 @@
 # NutriAll Worker
 
-The Worker owns the production API, consultation intake, D1 persistence, internal and customer email notifications, analytics collection, authentication, and the operations dashboard.
+The Worker owns the production API, consultation intake, D1 persistence, internal and patient email notifications, analytics collection, authentication, and the operations dashboard.
 
 ## Public routes
 

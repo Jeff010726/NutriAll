@@ -13,7 +13,7 @@ type ContactPayload = {
   age?: string | number;
   preferredLanguage?: string;
   availability?: string;
-  customerType?: string;
+  patientType?: string;
   sourcePage?: string;
   serviceInterest?: string;
   pageLanguage?: string;
@@ -43,7 +43,7 @@ function internalEmailBody(input: {
   age: number;
   preferredLanguage: string;
   availability: string;
-  customerType: string;
+  patientType: string;
   serviceInterest: string;
   timeZone: string;
   insuranceCompany: string;
@@ -62,7 +62,7 @@ function internalEmailBody(input: {
     `Age: ${input.age}`,
     `Preferred language: ${input.preferredLanguage}`,
     `Available time: ${input.availability}`,
-    `Customer type: ${input.customerType === "returning" ? "Returning customer" : "New customer"}`,
+    `Patient type: ${input.patientType === "returning" ? "Returning patient" : "New patient"}`,
     `Time zone: ${input.timeZone || "-"}`,
     `Insurance company: ${input.insuranceCompany || "-"}`,
     `Source page: ${input.sourcePage || "-"}`,
@@ -72,12 +72,12 @@ function internalEmailBody(input: {
   ].join("\n");
 }
 
-function confirmationEmailBody(name: string, customerType: string) {
+function confirmationEmailBody(name: string, patientType: string) {
   return [
     `Hi ${name},`,
     "",
     "We received your request for a free 15-minute NutriAll consultation.",
-    `Customer type: ${customerType === "returning" ? "Returning customer" : "New customer"}`,
+    `Patient type: ${patientType === "returning" ? "Returning patient" : "New patient"}`,
     "Our care team will review the information you provided and contact you about insurance benefits and the next available time.",
     "",
     "Please do not reply with urgent medical concerns or additional insurance details. Call emergency services for a medical emergency.",
@@ -99,7 +99,7 @@ export async function submitContact(request: Request, env: Env, ctx?: ExecutionC
   const age = Number(payload.age);
   const preferredLanguage = clean(payload.preferredLanguage, 40);
   const availability = clean(payload.availability, 40);
-  const customerType = clean(payload.customerType, 20);
+  const patientType = clean(payload.patientType, 20);
   const sourcePage = clean(payload.sourcePage, 300);
   const serviceInterest = clean(payload.serviceInterest, 100) || "General consultation";
   const pageLanguage = clean(payload.pageLanguage, 16);
@@ -118,7 +118,7 @@ export async function submitContact(request: Request, env: Env, ctx?: ExecutionC
   if (!Number.isInteger(age) || age < 1 || age > 120) return badRequest(request, env, "Valid age is required");
   if (!preferredLanguage) return badRequest(request, env, "Preferred language is required");
   if (!availability) return badRequest(request, env, "Availability is required");
-  if (!['new', 'returning'].includes(customerType)) return badRequest(request, env, "Customer type is required");
+  if (!["new", "returning"].includes(patientType)) return badRequest(request, env, "Patient type is required");
 
   const now = new Date().toISOString();
   const leadId = randomId("lead_");
@@ -131,9 +131,9 @@ export async function submitContact(request: Request, env: Env, ctx?: ExecutionC
     `Age: ${age}`,
     `Preferred language: ${preferredLanguage}`,
     `Available time: ${availability}`,
-    `Customer type: ${customerType}`,
+    `Patient type: ${patientType}`,
   ].join("\n");
-  const sheetRow = [now, "NutriAll", serviceInterest, name, email, phone, String(age), preferredLanguage, availability, timeZone, sourcePage, [utmSource, utmMedium, utmCampaign].filter(Boolean).join(" / "), customerType === "returning" ? "Returning customer" : "New customer"];
+  const sheetRow = [now, "NutriAll", serviceInterest, name, email, phone, String(age), preferredLanguage, availability, timeZone, sourcePage, [utmSource, utmMedium, utmCampaign].filter(Boolean).join(" / "), patientType === "returning" ? "Returning patient" : "New patient"];
   let sheetStatus = env.GOOGLE_SHEETS_SPREADSHEET_ID ? "pending" : "not_configured";
   let sheetError: string | null = null;
 
@@ -153,12 +153,12 @@ export async function submitContact(request: Request, env: Env, ctx?: ExecutionC
     await db.prepare(
       `INSERT INTO contact_leads
        (id, name, email, phone, age, message, source_page, preferred_language, availability, service_interest,
-        customer_type, page_language, time_zone, insurance_company, insurance_member_id, date_of_birth, utm_source, utm_medium,
+        patient_type, page_language, time_zone, insurance_company, insurance_member_id, date_of_birth, utm_source, utm_medium,
         utm_campaign, ip, user_agent, sheet_status, sheet_error, email_status, confirmation_email_status, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', 'pending', ?, ?)`,
     ).bind(
       leadId, name, email, phone, age, message, sourcePage, preferredLanguage, availability, serviceInterest,
-      customerType, pageLanguage, timeZone, insuranceCompany, insuranceMemberId, dateOfBirth, utmSource, utmMedium,
+      patientType, pageLanguage, timeZone, insuranceCompany, insuranceMemberId, dateOfBirth, utmSource, utmMedium,
       utmCampaign, ip, userAgent, sheetStatus, sheetError, now, now,
     ).run();
 
@@ -166,7 +166,7 @@ export async function submitContact(request: Request, env: Env, ctx?: ExecutionC
     const internalNotification = sendSmtpEmail(env, {
       subject: `New NutriAll consultation request from ${name}`,
       replyTo: email,
-      text: internalEmailBody({ leadId, createdAt: now, name, email, phone, age, preferredLanguage, availability, customerType, serviceInterest, timeZone, insuranceCompany, sourcePage, adminUrl }),
+      text: internalEmailBody({ leadId, createdAt: now, name, email, phone, age, preferredLanguage, availability, patientType, serviceInterest, timeZone, insuranceCompany, sourcePage, adminUrl }),
     }).then(async (result) => {
       const status = result.skipped ? "skipped" : "sent";
       const error = result.skipped ? `Missing SMTP config: ${(result.missing || []).join(", ")}`.slice(0, 500) : null;
@@ -180,11 +180,11 @@ export async function submitContact(request: Request, env: Env, ctx?: ExecutionC
         .bind(message, notifiedAt, notifiedAt, leadId).run();
     });
 
-    const customerConfirmation = sendSmtpEmail(env, {
+    const patientConfirmation = sendSmtpEmail(env, {
       to: email,
       subject: "We received your NutriAll consultation request",
       replyTo: env.BOOKING_NOTIFY_TO,
-      text: confirmationEmailBody(name, customerType),
+      text: confirmationEmailBody(name, patientType),
     }).then(async (result) => {
       const status = result.skipped ? "skipped" : "sent";
       const error = result.skipped ? `Missing SMTP config: ${(result.missing || []).join(", ")}`.slice(0, 500) : null;
@@ -192,13 +192,13 @@ export async function submitContact(request: Request, env: Env, ctx?: ExecutionC
       await db.prepare("UPDATE contact_leads SET confirmation_email_status = ?, confirmation_email_error = ?, confirmation_email_sent_at = ?, updated_at = ? WHERE id = ?")
         .bind(status, error, sentAt, sentAt, leadId).run();
     }).catch(async (error) => {
-      const message = error instanceof Error ? error.message.slice(0, 500) : "Customer confirmation email failed";
+      const message = error instanceof Error ? error.message.slice(0, 500) : "Patient confirmation email failed";
       const sentAt = new Date().toISOString();
       await db.prepare("UPDATE contact_leads SET confirmation_email_status = 'failed', confirmation_email_error = ?, confirmation_email_sent_at = ?, updated_at = ? WHERE id = ?")
         .bind(message, sentAt, sentAt, leadId).run();
     });
 
-    const notifications = Promise.all([internalNotification, customerConfirmation]);
+    const notifications = Promise.all([internalNotification, patientConfirmation]);
     if (ctx) ctx.waitUntil(notifications);
     else await notifications;
 
