@@ -193,7 +193,7 @@ export async function adminBookings(request: Request, env: Env) {
   const rows = await getDb(env)
     .prepare(
       `SELECT id, name, email, phone, age, message, source_page, preferred_language, availability, service_interest,
-              page_language, time_zone, insurance_company, insurance_member_id, date_of_birth, utm_source, utm_medium,
+              customer_type, page_language, time_zone, insurance_company, insurance_member_id, date_of_birth, utm_source, utm_medium,
               utm_campaign, lead_status, assigned_to, follow_up_at, notes, last_contacted_at, sheet_status, sheet_error,
               email_status, email_error, email_notified_at, confirmation_email_status, confirmation_email_error,
               confirmation_email_sent_at, created_at
@@ -993,6 +993,7 @@ export function adminPage(request: Request, env: Env) {
         const cells = [
           date(booking.created_at),
           booking.service_interest,
+          booking.customer_type === "returning" ? "Returning customer" : booking.customer_type === "new" ? "New customer" : "",
           booking.name,
           booking.email,
           booking.phone || parsed.phone,
@@ -1034,7 +1035,7 @@ export function adminPage(request: Request, env: Env) {
         tr.appendChild(statusTd);
         cells.forEach((cell, index) => {
           const td = document.createElement("td");
-          if (index === 16 || index === 17 || index === 18) {
+          if (index === 17 || index === 18 || index === 19) {
             const span = document.createElement("span");
             span.className = "badge " + (cell === "failed" ? "failed" : "");
             span.textContent = text(cell || "unknown");
@@ -1070,7 +1071,7 @@ export function adminPage(request: Request, env: Env) {
         tr.appendChild(actionTd);
         return tr;
       });
-      renderRows(["Status", "Created", "Service", "Name", "Email", "Phone", "Age", "Date of Birth", "Preferred Language", "Available Time", "Time Zone", "Insurance Company", "Insurance ID", "Assigned", "Follow-up", "Notes", "Source", "Sheet", "Internal Email", "Confirmation Email", "Actions"], rows, smtpPanelHtml(smtp));
+      renderRows(["Status", "Created", "Service", "Customer Type", "Name", "Email", "Phone", "Age", "Date of Birth", "Preferred Language", "Available Time", "Time Zone", "Insurance Company", "Insurance ID", "Assigned", "Follow-up", "Notes", "Source", "Sheet", "Internal Email", "Confirmation Email", "Actions"], rows, smtpPanelHtml(smtp));
       bindSmtpTestButton();
     }
     async function loadClassSignups() {

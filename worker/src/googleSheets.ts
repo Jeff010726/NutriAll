@@ -73,7 +73,7 @@ export async function appendContactToSheet(env: Env, values: string[]) {
   }
 
   const accessToken = await getAccessToken(env);
-  const range = encodeURIComponent("'Contact Leads'!A:L");
+  const range = encodeURIComponent("'Contact Leads'!A:M");
   const url = `https://sheets.googleapis.com/v4/spreadsheets/${env.GOOGLE_SHEETS_SPREADSHEET_ID}/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
   const response = await fetch(url, {
     method: "POST",
