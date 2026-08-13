@@ -1,6 +1,6 @@
 import { trackMetaConversion } from "./metaPixel";
 
-const analyticsUrl = `${import.meta.env.VITE_API_BASE_URL || "https://admin.nutriallwellness.com"}/api/analytics/collect`;
+const analyticsUrl = `${import.meta.env.VITE_API_BASE_URL || "https://admin.nutriallwellness.org"}/api/analytics/collect`;
 const attributionKey = "nutriall_attribution";
 
 function randomId(prefix) {

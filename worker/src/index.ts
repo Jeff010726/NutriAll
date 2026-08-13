@@ -62,9 +62,18 @@ function adminResponse(request: Request, env: Env) {
 async function route(request: Request, env: Env, ctx: ExecutionContext) {
   const url = new URL(request.url);
 
-  if (url.hostname === "www.nutriallwellness.com") {
+  const legacySiteHosts = new Set(["nutriallwellness.com", "www.nutriallwellness.com"]);
+  const legacyAdminHost = "admin.nutriallwellness.com";
+
+  if (url.hostname === "www.nutriallwellness.org" || (legacySiteHosts.has(url.hostname) && ["GET", "HEAD"].includes(request.method))) {
     const destination = new URL(request.url);
-    destination.hostname = "nutriallwellness.com";
+    destination.hostname = "nutriallwellness.org";
+    return Response.redirect(destination.toString(), 301);
+  }
+
+  if (url.hostname === legacyAdminHost && ["GET", "HEAD"].includes(request.method) && !url.pathname.startsWith("/api/")) {
+    const destination = new URL(request.url);
+    destination.hostname = env.ADMIN_HOST || "admin.nutriallwellness.org";
     return Response.redirect(destination.toString(), 301);
   }
 
@@ -72,7 +81,8 @@ async function route(request: Request, env: Env, ctx: ExecutionContext) {
     return new Response(null, { status: 204, headers: responseHeaders(request, env) });
   }
 
-  const isAdminHostPage = env.ADMIN_HOST && url.hostname === env.ADMIN_HOST && !url.pathname.startsWith("/api/");
+  const isAdminHostPage =
+    (url.hostname === env.ADMIN_HOST || url.hostname === legacyAdminHost) && !url.pathname.startsWith("/api/");
   if (url.pathname === "/admin" || url.pathname.startsWith("/admin/") || isAdminHostPage) {
     return adminResponse(request, env);
   }

@@ -38,7 +38,7 @@ test("mobile home keeps the conversion path visible", async ({ page }) => {
 test("validated booking form submits the expected contract", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   let submitted;
-  await page.route("https://admin.nutriallwellness.com/api/contact", async (route) => {
+  await page.route("https://admin.nutriallwellness.org/api/contact", async (route) => {
     submitted = route.request().postDataJSON();
     await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true, id: "lead_e2e" }) });
   });
