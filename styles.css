@@ -5027,6 +5027,10 @@ body.nav-open { overflow: hidden; }
 .clinical-service-insurance svg { color: var(--clinic-green); }
 .clinical-service-insurance p { margin: 0; }
 .clinical-service-insurance a { display: inline-flex; align-items: center; gap: 5px; color: var(--clinic-green); font-weight: 800; }
+.weight-service-page > .insurance-logo-band { width: 100%; margin: 0; }
+.weight-service-note { margin-top: -30px; margin-bottom: 58px; padding: 18px 20px; display: flex; align-items: flex-start; gap: 12px; background: var(--clinic-paper); border: 1px solid var(--clinic-line); border-radius: 8px; }
+.weight-service-note svg { flex: 0 0 auto; color: var(--clinic-green); }
+.weight-service-note p { margin: 0; color: var(--clinic-muted); font-size: 13px; line-height: 1.6; }
 
 /* Team and footer */
 .about-page .about-hero h1, .about-page .dietitian-team-heading h2 { font-size: 40px; line-height: 1.16; letter-spacing: 0; }

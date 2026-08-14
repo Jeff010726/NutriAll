@@ -73,6 +73,19 @@ test("all migrated diabetes service routes render", async ({ page }) => {
   }
 });
 
+test("core weight and insurance routes follow the selected language", async ({ page }) => {
+  for (const [path, heading] of [
+    ["one-to-one-weight-loss", "Pérdida de peso 1:1"],
+    ["glp1-care", "Control de peso con GLP-1"],
+    ["medical-weight-loss", "Pérdida de peso médica"],
+    ["insurance", "Seguro y costo"],
+  ]) {
+    await page.goto(`./${path}?lng=es`, { waitUntil: "networkidle" });
+    await expect(page.locator("h1")).toHaveText(heading);
+    await expectNoHorizontalOverflow(page);
+  }
+});
+
 test("validated booking form submits the expected contract", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   let submitted;

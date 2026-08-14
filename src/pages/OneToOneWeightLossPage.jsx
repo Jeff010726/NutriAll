@@ -1,13 +1,5 @@
-import { Layout } from "../components/Layout";
-import { SiteLink } from "../components/SiteLink";
-import { asset } from "../lib";
+import { WeightServicePage } from "./WeightServicePage";
 
 export function OneToOneWeightLossPage() {
-  return <Layout><main className="service-page">
-    <section className="service-hero service-hero-nutrition"><img src={asset("generated/weight-habits-lifestyle.png")} alt="Tools for sustainable food, movement, and hydration routines" /><div><p className="eyebrow">1:1 Weight Loss</p><h1>Fat-loss nutrition that fits your actual life.</h1><p>Work with a registered dietitian who can turn your goals, food preferences, health needs, and weekly reality into a plan you can repeat. Many insurance plans may cover eligible nutrition visits.</p><SiteLink className="button button-primary" to="/book?service=one-to-one">Book a free consultation</SiteLink></div></section>
-    <section className="service-intro"><p className="eyebrow">Personal, not generic</p><h2>One person, one context, one evolving plan.</h2><p>Your first assessment looks at weight history, appetite, meals, schedule, culture, health conditions, medications, movement, sleep, stress, and the barriers that have made prior plans difficult to sustain.</p></section>
-    <section className="topic-grid nutrition-topic-grid"><article><span>01</span><h2>Protect lean mass</h2><p>Build a practical protein pattern and pair it with resistance activity appropriate for you.</p></article><article><span>02</span><h2>Make meals work harder</h2><p>Use fiber, volume, timing, and familiar foods to support fullness and metabolic health.</p></article><article><span>03</span><h2>Plan for friction</h2><p>Create alternatives for restaurant meals, travel, long workdays, family food, and low-motivation weeks.</p></article><article><span>04</span><h2>Adjust without shame</h2><p>Use plateaus, hunger, energy, and progress as information for the next change, not proof of failure.</p></article></section>
-    <section className="nutrition-team-band"><img src={asset("nutriall-team.jpg")} alt="NutriAll registered dietitian team" /><div><p className="eyebrow">Registered dietitian support</p><h2>Clinical skill with cultural fluency.</h2><p>NutriAll dietitians work across cuisines and lifestyles. Care can support English, Mandarin, Cantonese, Spanish, and other language preferences based on clinician availability.</p><p>If your needs include medication evaluation, the team can help direct you to the medical care path.</p><SiteLink to="/about">Meet the team -&gt;</SiteLink></div></section>
-    <section className="weight-final-cta"><p className="eyebrow">Your plan should sound like you</p><h2>Start one-to-one.</h2><SiteLink className="button button-primary" to="/book?service=one-to-one">Check benefits and get matched</SiteLink></section>
-  </main></Layout>;
+  return <WeightServicePage service="oneToOne" />;
 }
