@@ -1,28 +1,19 @@
+import { useTranslation } from "react-i18next";
 import { asset } from "../lib";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { SiteLink } from "./SiteLink";
 
-const defaultLinks = [
-  ["Medical weight loss", "/medical-weight-loss"],
-  ["GLP-1 care", "/glp1-care"],
-  ["1:1 nutrition", "/one-to-one-weight-loss"],
-  ["Medical Director", "/medical-director"],
-  ["Recipes", "/recipes"],
-  ["About", "/about"],
-];
-
-export function Footer({ note = "One-to-one weight-loss nutrition, GLP-1 support, and medical oversight when needed.", links = defaultLinks }) {
-  return (
-    <footer className="site-footer">
-      <div>
-        <SiteLink className="brand footer-brand" to="/">
-          <img src={asset("nutriall-logo.svg")} alt="" />
-          <span>Weight &amp; Nutrition Care</span>
-        </SiteLink>
-        <p>{note}</p>
-      </div>
-      <div className="footer-links">
-        {links.map(([label, to]) => <SiteLink key={to} to={to}>{label}</SiteLink>)}
-      </div>
-    </footer>
-  );
+export function Footer({ note }) {
+  const { t } = useTranslation();
+  const links = [
+    ["nav.oneToOne", "/one-to-one-weight-loss"], ["nav.glpCare", "/glp1-care"],
+    ["nav.classes", "/diabetes-classes"], ["nav.pump", "/pump-training"],
+    ["nav.cgm", "/cgm-training"], ["nav.insurance", "/insurance"],
+    ["nav.about", "/about"], ["nav.providers", "/providers"],
+  ];
+  return <footer className="site-footer clinic-footer">
+    <div className="clinic-footer-brand"><SiteLink className="brand footer-brand" to="/"><img src={asset("nutriall-logo.svg")} alt="NutriAll Wellness" /></SiteLink><p>{note || t("footer.note")}</p><LanguageSwitcher /></div>
+    <nav aria-label="Footer">{links.map(([key, to]) => <SiteLink key={to} to={to}>{t(key)}</SiteLink>)}</nav>
+    <p className="clinic-footer-legal">© {new Date().getFullYear()} {t("footer.copyright")}</p>
+  </footer>;
 }

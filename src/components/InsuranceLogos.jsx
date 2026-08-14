@@ -1,6 +1,7 @@
 import { ShieldCheck } from "lucide-react";
 import { asset } from "../lib";
 import { SiteLink } from "./SiteLink";
+import { useTranslation } from "react-i18next";
 
 const insuranceLogos = [
   ["UnitedHealthcare", "insurance/insurance-partner-2.webp"],
@@ -11,14 +12,15 @@ const insuranceLogos = [
 ];
 
 export function InsuranceLogos({ compact = false }) {
+  const { t } = useTranslation();
   return <section className={`insurance-logo-band${compact ? " is-compact" : ""}`} aria-labelledby={compact ? undefined : "insurance-band-title"}>
     <div className="insurance-logo-copy">
-      <span><ShieldCheck size={18} aria-hidden="true" /> Commercial insurance-friendly care</span>
-      {!compact && <><h2 id="insurance-band-title">Your plan may cover nutrition visits.</h2><p>We work with many major commercial insurance plans and verify your individual benefits before care begins.</p></>}
+      <span><ShieldCheck size={18} aria-hidden="true" /> {t("insurance.badge")}</span>
+      {!compact && <><h2 id="insurance-band-title">{t("insurance.title")}</h2><p>{t("insurance.text")}</p></>}
     </div>
     <div className="insurance-logo-row" aria-label="Commonly accepted commercial insurance plans">
       {insuranceLogos.map(([name, file]) => <div className="insurance-logo-item" key={name}><img src={asset(file)} alt={name} /></div>)}
     </div>
-    <div className="insurance-logo-action"><SiteLink to="/book?service=insurance">Check my benefits <span aria-hidden="true">-&gt;</span></SiteLink><small>Coverage and cost vary by plan and eligibility.</small></div>
+    <div className="insurance-logo-action"><SiteLink to="/book?service=insurance">{t("insurance.action")} <span aria-hidden="true">-&gt;</span></SiteLink><small>{t("insurance.note")}</small></div>
   </section>;
 }

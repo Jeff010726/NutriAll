@@ -14,6 +14,7 @@ import { RecipeDetailPage } from "./pages/RecipeDetailPage";
 import { RecipesPage } from "./pages/RecipesPage";
 import { ResearchDetailPage } from "./pages/ResearchDetailPage";
 import { ResearchPage } from "./pages/ResearchPage";
+import { ClinicalServicePage } from "./pages/ClinicalServicePage";
 
 function LegacyDetailRedirect({ type }) {
   const { search } = useLocation();
@@ -29,6 +30,14 @@ export default function App() {
     <Route path="/one-to-one-weight-loss" element={<OneToOneWeightLossPage />} />
     <Route path="/medical-director" element={<MedicalDirectorPage />} />
     <Route path="/diabetes-care" element={<ProgramPage />} />
+    <Route path="/diabetes-classes" element={<ClinicalServicePage service="classes" />} />
+    <Route path="/pump-training" element={<ClinicalServicePage service="pump" />} />
+    <Route path="/cgm-training" element={<ClinicalServicePage service="cgm" />} />
+    <Route path="/glp1-training" element={<ClinicalServicePage service="glpTraining" />} />
+    <Route path="/providers" element={<ClinicalServicePage service="providers" />} />
+    <Route path="/classes" element={<Navigate replace to="/diabetes-classes" />} />
+    <Route path="/cgm" element={<Navigate replace to="/cgm-training" />} />
+    <Route path="/coverage" element={<Navigate replace to="/insurance" />} />
     <Route path="/program" element={<Navigate replace to="/diabetes-care" />} />
     <Route path="/insurance" element={<InsurancePage />} />
     <Route path="/recipes" element={<RecipesPage />} />

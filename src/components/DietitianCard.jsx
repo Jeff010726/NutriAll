@@ -11,13 +11,13 @@ export function DietitianCard({ dietitian }) {
     <div className="dietitian-profile-copy">
       <p className="dietitian-role">{dietitian.role}</p>
       <h3>{dietitian.name}</h3>
-      <div className="dietitian-bio">{dietitian.bio.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</div>
       <div className="dietitian-details">
         {dietitian.details.map((detail, index) => <span key={detail}>
           {index === 0 ? <BadgeCheck size={17} aria-hidden="true" /> : <Stethoscope size={17} aria-hidden="true" />}
           {detail}
         </span>)}
       </div>
+      <details className="dietitian-bio"><summary>Read profile</summary>{dietitian.bio.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}</details>
     </div>
   </article>;
 }

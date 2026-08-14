@@ -1,5 +1,6 @@
 import { ArrowRight, CheckCircle2, MessageCircle, ShieldCheck } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiRequest } from "../api";
 import { getAttribution, trackEvent } from "../analytics";
@@ -24,6 +25,7 @@ const serviceLabels = {
 const whatsappUrl = `${import.meta.env.BASE_URL}booking-whatsapp`;
 
 export function BookPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const requestedService = searchParams.get("service") || "general";
@@ -62,58 +64,58 @@ export function BookPage() {
       navigate("/booking-redirect");
     } catch {
       setStatus("error");
-      setError("We could not submit your request. Please try again or contact us on WhatsApp.");
+      setError(t("book.error"));
     }
   };
 
   return <Layout footerProps={{ note: "Insurance benefits are verified before care begins. Coverage and out-of-pocket cost vary by plan." }}><main className="booking-page-new">
     <section className="booking-hero-new">
       <div className="booking-hero-copy">
-        <p className="eyebrow"><ShieldCheck size={17} aria-hidden="true" /> Free 15-minute consultation</p>
-        <h1>Start with a quick insurance and care check.</h1>
-        <p>Tell us when to reach you. We will verify your benefits, answer your first questions, and help identify the right NutriAll service.</p>
+        <p className="eyebrow"><ShieldCheck size={17} aria-hidden="true" /> {t("book.badge")}</p>
+        <h1>{t("book.title")}</h1>
+        <p>{t("book.intro")}</p>
         <div className="booking-hero-highlights">
-          <span><CheckCircle2 aria-hidden="true" /> One short form</span>
-          <span><CheckCircle2 aria-hidden="true" /> No commitment</span>
-          <span><CheckCircle2 aria-hidden="true" /> Insurance verification</span>
+          <span><CheckCircle2 aria-hidden="true" /> {t("book.short")}</span>
+          <span><CheckCircle2 aria-hidden="true" /> {t("book.noCommitment")}</span>
+          <span><CheckCircle2 aria-hidden="true" /> {t("book.verification")}</span>
         </div>
-        <a className="button booking-whatsapp" href={whatsappUrl}><MessageCircle size={19} aria-hidden="true" /> Message us on WhatsApp</a>
+        <a className="button booking-whatsapp" href={whatsappUrl}><MessageCircle size={19} aria-hidden="true" /> {t("book.whatsapp")}</a>
       </div>
-      <div className="booking-hero-image" role="img" aria-label="Dietitian speaking with a client during a one-to-one nutrition consultation"><div><span>Your starting point</span><strong>{serviceInterest}</strong><small>We can adjust this when we speak.</small></div></div>
+      <div className="booking-hero-image" role="img" aria-label="Dietitian speaking with a client during a one-to-one nutrition consultation"><div><span>{t("book.starting")}</span><strong>{serviceInterest}</strong><small>{t("book.adjust")}</small></div></div>
     </section>
 
     <InsuranceLogos compact />
 
     <section className="booking-form-section" id="booking-form">
-      <div className="booking-form-intro"><p className="eyebrow">Request a call</p><h2>Choose a time that works for you.</h2><p>Required fields help us contact you. Insurance details are optional and can help us prepare before the call.</p></div>
+      <div className="booking-form-intro"><p className="eyebrow">{t("book.request")}</p><h2>{t("book.timeTitle")}</h2><p>{t("book.required")}</p></div>
       <form className="intake-form" onSubmit={submit} onFocus={() => { if (!started) { setStarted(true); trackEvent("form_start", "booking_form", { service: requestedService }); } }}>
-        <div className="form-field full"><label htmlFor="booking-name">Full name</label><input id="booking-name" type="text" value={form.name} onChange={updateField("name")} autoComplete="name" required placeholder="Your full name" /></div>
-        <div className="form-field"><label htmlFor="booking-email">Email</label><input id="booking-email" type="email" value={form.email} onChange={updateField("email")} autoComplete="email" required placeholder="you@example.com" /></div>
-        <div className="form-field"><label htmlFor="booking-phone">Phone</label><input id="booking-phone" type="tel" value={form.phone} onChange={updateField("phone")} autoComplete="tel" required placeholder="(000) 000-0000" /></div>
-        <div className="form-field"><label htmlFor="booking-age">Age</label><input id="booking-age" type="number" min="1" max="120" value={form.age} onChange={updateField("age")} required placeholder="Age" /></div>
-        <div className="form-field"><label htmlFor="booking-language">Preferred language</label><select id="booking-language" value={form.preferredLanguage} onChange={updateField("preferredLanguage")} required><option value="">Select a language</option>{languageOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
+        <div className="form-field full"><label htmlFor="booking-name">{t("book.name")}</label><input id="booking-name" type="text" value={form.name} onChange={updateField("name")} autoComplete="name" required /></div>
+        <div className="form-field"><label htmlFor="booking-email">{t("book.email")}</label><input id="booking-email" type="email" value={form.email} onChange={updateField("email")} autoComplete="email" required placeholder="you@example.com" /></div>
+        <div className="form-field"><label htmlFor="booking-phone">{t("book.phone")}</label><input id="booking-phone" type="tel" value={form.phone} onChange={updateField("phone")} autoComplete="tel" required placeholder="(000) 000-0000" /></div>
+        <div className="form-field"><label htmlFor="booking-age">{t("book.age")}</label><input id="booking-age" type="number" min="1" max="120" value={form.age} onChange={updateField("age")} required /></div>
+        <div className="form-field"><label htmlFor="booking-language">{t("book.preferred")}</label><select id="booking-language" value={form.preferredLanguage} onChange={updateField("preferredLanguage")} required><option value="">{t("book.selectLanguage")}</option>{languageOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
         <fieldset className="patient-type-field">
-          <legend>Have you worked with NutriAll before?</legend>
+          <legend>{t("book.patientQuestion")}</legend>
           <div className="patient-type-options">
-            <label><input type="radio" name="patientType" value="new" checked={form.patientType === "new"} onChange={updateField("patientType")} required /><span>I'm a new patient</span></label>
-            <label><input type="radio" name="patientType" value="returning" checked={form.patientType === "returning"} onChange={updateField("patientType")} required /><span>I'm a returning patient</span></label>
+            <label><input type="radio" name="patientType" value="new" checked={form.patientType === "new"} onChange={updateField("patientType")} required /><span>{t("book.newPatient")}</span></label>
+            <label><input type="radio" name="patientType" value="returning" checked={form.patientType === "returning"} onChange={updateField("patientType")} required /><span>{t("book.returningPatient")}</span></label>
           </div>
         </fieldset>
-        <div className="form-field full"><label htmlFor="booking-availability">Best time to reach you</label><select id="booking-availability" value={form.availability} onChange={updateField("availability")} required><option value="">Select a time window</option>{availabilityOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
+        <div className="form-field full"><label htmlFor="booking-availability">{t("book.bestTime")}</label><select id="booking-availability" value={form.availability} onChange={updateField("availability")} required><option value="">{t("book.selectTime")}</option>{availabilityOptions.map((option) => <option key={option}>{option}</option>)}</select></div>
 
         <fieldset className="insurance-fields">
-          <legend>Optional insurance information</legend>
-          <p>Share these details if you would like our team to begin checking benefits before we call.</p>
+          <legend>{t("book.optionalInsurance")}</legend>
+          <p>{t("book.insuranceHelp")}</p>
           <div className="insurance-fields-grid">
-            <div className="form-field"><label htmlFor="booking-insurance">Insurance company</label><input id="booking-insurance" type="text" value={form.insuranceCompany} onChange={updateField("insuranceCompany")} autoComplete="organization" placeholder="Aetna, UnitedHealthcare, Cigna..." /></div>
-            <div className="form-field"><label htmlFor="booking-member-id">Member ID</label><input id="booking-member-id" type="text" value={form.insuranceMemberId} onChange={updateField("insuranceMemberId")} placeholder="Member ID on your card" /></div>
-            <div className="form-field"><label htmlFor="booking-dob">Date of birth</label><input id="booking-dob" type="date" value={form.dateOfBirth} onChange={updateField("dateOfBirth")} autoComplete="bday" /></div>
+            <div className="form-field"><label htmlFor="booking-insurance">{t("book.company")}</label><input id="booking-insurance" type="text" value={form.insuranceCompany} onChange={updateField("insuranceCompany")} autoComplete="organization" placeholder="Aetna, UnitedHealthcare..." /></div>
+            <div className="form-field"><label htmlFor="booking-member-id">{t("book.memberId")}</label><input id="booking-member-id" type="text" value={form.insuranceMemberId} onChange={updateField("insuranceMemberId")} /></div>
+            <div className="form-field"><label htmlFor="booking-dob">{t("book.dob")}</label><input id="booking-dob" type="date" value={form.dateOfBirth} onChange={updateField("dateOfBirth")} autoComplete="bday" /></div>
           </div>
         </fieldset>
 
         {status === "error" && <p className="form-error" role="alert">{error}</p>}
-        <button className="button button-primary intake-submit" type="submit" disabled={status === "submitting"}>{status === "submitting" ? "Submitting..." : <>Request my free consultation <ArrowRight size={19} aria-hidden="true" /></>}</button>
-        <p className="form-disclaimer">By submitting, you authorize NutriAll to contact you about this request. Do not use this form for urgent medical concerns.</p>
+        <button className="button button-primary intake-submit" type="submit" disabled={status === "submitting"}>{status === "submitting" ? t("book.submitting") : <>{t("book.submit")} <ArrowRight size={19} aria-hidden="true" /></>}</button>
+        <p className="form-disclaimer">{t("book.disclaimer")}</p>
       </form>
     </section>
   </main></Layout>;

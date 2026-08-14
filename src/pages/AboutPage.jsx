@@ -1,25 +1,40 @@
-import { Layout } from "../components/Layout";
+import { HeartHandshake, Scale, Stethoscope } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { DietitianCard } from "../components/DietitianCard";
+import { Layout } from "../components/Layout";
 import { SiteLink } from "../components/SiteLink";
 import { asset } from "../lib";
 import { dietitians } from "../teamData";
 
-const values = [
-  ["01", "Medical accountability", "Weight-loss treatment decisions are grounded in medical history, risk review, and appropriate physician follow-up."],
-  ["02", "Nutrition that travels", "Registered dietitians build plans around culture, family meals, schedules, access, and the situations that make consistency hard."],
-  ["03", "Care without shame", "Progress and setbacks are treated as information. The plan changes with the person instead of blaming the person."],
-];
-
 export function AboutPage() {
-  return <Layout footerProps={{ note: "NutriAll combines physician-led medical weight care with registered dietitian nutrition support." }}><main className="about-page">
-    <section className="about-hero about-full-hero"><div><p className="eyebrow">About NutriAll</p><h1>Medical weight care with nutrition at its center.</h1><p>NutriAll connects a Medical Director and registered dietitians so clinical decisions, food strategy, and ongoing behavior support can work as one plan.</p></div><img src={asset("nutriall-team.jpg")} alt="Three NutriAll dietitians together" /></section>
-    <section className="about-grid full-about-grid">{values.map(([number, title, text]) => <article key={number}><span>{number}</span><h2>{title}</h2><p>{text}</p></article>)}</section>
-    <section className="role-clarity"><div><span>Medical care</span><h2>Physician scope</h2><p>Clinical evaluation, risk review, prescribing when appropriate, medication monitoring, and medical follow-up.</p></div><div><span>Nutrition care</span><h2>Dietitian scope</h2><p>Nutrition assessment, meal strategy, behavior support, symptom-aware eating, and sustainable follow-through.</p></div></section>
-    <section className="dietitian-team-section all-dietitians" aria-labelledby="dietitian-team-title">
-      <div className="dietitian-team-heading"><p className="eyebrow">Our dietitians</p><h2 id="dietitian-team-title">Meet the team behind your care.</h2><p>Our dietitian team brings complementary experience across weight management, diabetes, intuitive eating, digestive health, eating disorders, sports nutrition, oncology, and culturally responsive care. Your clinician is matched to your needs and availability.</p></div>
+  const { t } = useTranslation();
+  const values = [
+    [Stethoscope, "value1", "value1Text"],
+    [Scale, "value2", "value2Text"],
+    [HeartHandshake, "value3", "value3Text"],
+  ];
+
+  return <Layout><main className="clinic-about">
+    <section className="clinic-about-hero">
+      <div><p className="eyebrow">{t("about.eyebrow")}</p><h1>{t("about.title")}</h1><p>{t("about.intro")}</p></div>
+      <img src={asset("nutriall-team.jpg")} alt="Three NutriAll dietitians together" />
+    </section>
+
+    <section className="clinic-about-values" aria-labelledby="about-values-title">
+      <h2 id="about-values-title">{t("about.valuesTitle")}</h2>
+      <div>{values.map(([Icon, title, text]) => <article key={title}><Icon size={23} aria-hidden="true" /><h3>{t(`about.${title}`)}</h3><p>{t(`about.${text}`)}</p></article>)}</div>
+    </section>
+
+    <section className="clinic-dietitians all-dietitians" aria-labelledby="dietitian-team-title">
+      <div className="clinic-dietitian-heading"><div><p className="eyebrow">{t("about.teamEyebrow")}</p><h2 id="dietitian-team-title">{t("about.teamTitle")}</h2></div><p>{t("about.teamText")}</p></div>
       <div className="dietitian-profile-grid">{dietitians.map((dietitian) => <DietitianCard key={dietitian.name} dietitian={dietitian} />)}</div>
     </section>
-    <section className="medical-director-note"><img src={asset("team/dr-leon-katz.jpg")} alt="Dr. Leon Katz" /><div><p className="eyebrow">Medical oversight</p><h2>Supported by an obesity medicine Medical Director.</h2><p>Dr. Leon Katz provides medical leadership for clinical evaluation, prescribing when appropriate, and treatment monitoring. NutriAll&apos;s identity and day-to-day support remain centered on its registered dietitian team.</p><SiteLink to="/medical-director">Meet Dr. Katz <span aria-hidden="true">-&gt;</span></SiteLink></div></section>
-    <section className="weight-final-cta"><p className="eyebrow">One team, a clearer plan</p><h2>Start with the care you need.</h2><SiteLink className="button button-primary" to="/book">Get started</SiteLink></section>
+
+    <section className="clinic-director-note">
+      <img src={asset("team/dr-leon-katz.jpg")} alt="Leon Katz, MD" />
+      <div><p className="eyebrow">{t("about.director")}</p><h2>Leon Katz, MD</h2><p>{t("about.directorText")}</p><SiteLink to="/medical-director">{t("home.learn")}</SiteLink></div>
+    </section>
+
+    <section className="clinic-final-cta"><h2>{t("about.cta")}</h2><SiteLink className="button button-primary" to="/book">{t("nav.book")}</SiteLink></section>
   </main></Layout>;
 }

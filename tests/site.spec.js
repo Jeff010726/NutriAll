@@ -15,24 +15,62 @@ async function expectNoHorizontalOverflow(page) {
 
 test("desktop home prioritizes insurance and booking", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
-  await page.goto("./", { waitUntil: "networkidle" });
-  await expect(page.getByRole("heading", { name: "Lose weight with a plan made for your life." })).toBeVisible();
+  await page.goto("./?lng=en", { waitUntil: "networkidle" });
+  await expect(page.getByRole("heading", { name: "Weight loss care built around your health and your life." })).toBeVisible();
   await expect(page.getByRole("link", { name: "Book a free consultation" })).toBeVisible();
   await expect(page.locator(".insurance-logo-item")).toHaveCount(5);
   await expect(page.getByRole("img", { name: "Healthfirst" })).toBeVisible();
-  await expect(page.locator(".home-dietitian-member")).toHaveCount(8);
-  await expect(page.getByRole("heading", { name: "Alexandra Rodiles, RDN" })).toBeVisible();
+  await expect(page.locator(".clinic-capability-grid > a")).toHaveCount(5);
+  await expect(page.getByRole("heading", { name: "Registered dietitians, supported by medical oversight." })).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/home-desktop.png", fullPage: true });
 });
 
 test("mobile home keeps the conversion path visible", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("./", { waitUntil: "networkidle" });
+  await page.goto("./?lng=en", { waitUntil: "networkidle" });
   await expect(page.locator(".mobile-booking-bar")).toBeVisible();
   await expect(page.locator(".insurance-logo-item")).toHaveCount(5);
+  await page.getByRole("button", { name: "Menu" }).click();
+  await expect(page.locator(".clinic-mobile-menu")).toHaveClass(/is-open/);
+  await expect(page.getByRole("link", { name: "Insulin Pump Training" }).last()).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/home-mobile.png", fullPage: true });
+});
+
+test("desktop clinical menu stays open and its service links are clickable", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("./?lng=en", { waitUntil: "networkidle" });
+  const menuButton = page.getByRole("button", { name: "Diabetes & Training" });
+  await menuButton.click();
+  await expect(menuButton).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator(".nav-dropdown-clinical")).toBeVisible();
+  await page.locator(".nav-dropdown-clinical").getByRole("link", { name: /CGM Training & Reports/ }).click();
+  await expect(page).toHaveURL(/\/cgm-training$/);
+  await expect(page.locator("h1")).toHaveText("CGM Training & Reports");
+});
+
+test("language switcher updates conversion content", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("./?lng=en", { waitUntil: "networkidle" });
+  await page.locator(".clinic-header-actions").getByLabel("Language").selectOption("es");
+  await expect(page.locator("h1")).toHaveText("Atención para bajar de peso adaptada a su salud y a su vida.");
+  await expect(page.getByRole("link", { name: "Reservar consulta gratuita" })).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("lang", "es");
+});
+
+test("all migrated diabetes service routes render", async ({ page }) => {
+  for (const [path, heading] of [
+    ["diabetes-classes", "Diabetes Classes"],
+    ["pump-training", "Insulin Pump Training"],
+    ["cgm-training", "CGM Training & Reports"],
+    ["glp1-training", "GLP-1 Medication Training"],
+    ["providers", "For Providers"],
+  ]) {
+    await page.goto(`./${path}?lng=en`, { waitUntil: "networkidle" });
+    await expect(page.locator("h1")).toHaveText(heading);
+    await expectNoHorizontalOverflow(page);
+  }
 });
 
 test("validated booking form submits the expected contract", async ({ page }) => {
@@ -108,7 +146,7 @@ test("mobile booking form is usable without overflow", async ({ page }) => {
 
 test("about page presents one unified dietitian team", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
-  await page.goto("./about", { waitUntil: "networkidle" });
+  await page.goto("./about?lng=en", { waitUntil: "networkidle" });
   await expect(page.getByRole("heading", { name: "Meet the team behind your care." })).toBeVisible();
   await expect(page.locator(".all-dietitians .dietitian-profile")).toHaveCount(8);
   await expect(page.getByRole("heading", { name: "Siqian (Cici) Chen, MS, RD, LDN" })).toBeVisible();
