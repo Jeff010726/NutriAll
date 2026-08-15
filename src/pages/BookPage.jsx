@@ -19,6 +19,11 @@ const serviceLabels = {
   glp1: "GLP-1 support",
   diabetes: "Diabetes nutrition care",
   insurance: "Insurance benefit check",
+  "diabetes-classes": "Diabetes classes",
+  "pump-training": "Insulin pump training",
+  "cgm-training": "CGM training and report analysis",
+  "glp1-training": "GLP-1 medication training",
+  "provider-referral": "Provider referral support",
   general: "General consultation",
 };
 

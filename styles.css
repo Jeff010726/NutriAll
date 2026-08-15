@@ -5032,6 +5032,166 @@ body.nav-open { overflow: hidden; }
 .weight-service-note svg { flex: 0 0 auto; color: var(--clinic-green); }
 .weight-service-note p { margin: 0; color: var(--clinic-muted); font-size: 13px; line-height: 1.6; }
 
+/* Detailed diabetes service content migrated from XT Diabetes Care. */
+.detailed-clinical-page { background: #fff; }
+.detailed-clinical-page h1, .detailed-clinical-page h2 { margin: 0; color: var(--clinic-ink); font-family: Georgia, "Times New Roman", serif; letter-spacing: 0; }
+.detailed-clinical-page h1 { font-size: 48px; line-height: 1.1; }
+.detailed-clinical-page h2 { font-size: 34px; line-height: 1.2; }
+.detailed-clinical-page h3, .detailed-clinical-page h4 { margin: 0; color: var(--clinic-ink); letter-spacing: 0; }
+.detailed-clinical-page > section:not(.clinic-final-cta), .pump-catalog > section, .pump-catalog > .detailed-section-heading { width: min(1240px, calc(100% - 56px)); margin-left: auto; margin-right: auto; }
+.detailed-section-heading { max-width: 780px; margin-bottom: 38px; }
+.detailed-section-heading > p:last-child { margin: 14px 0 0; font-size: 16px; line-height: 1.65; }
+.detailed-book-button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
+.detailed-badge { width: fit-content; margin: 0 0 16px !important; padding: 7px 10px; border-radius: 5px; background: var(--clinic-sage); color: var(--clinic-green); font-size: 13px !important; font-weight: 800; }
+.detailed-hero { min-height: 560px; padding: 70px 0; display: grid; grid-template-columns: 1.15fr .85fr; gap: 70px; align-items: center; }
+.detailed-hero > div > p:not(.eyebrow,.detailed-badge) { margin: 20px 0 26px; font-size: 18px; line-height: 1.7; }
+.detailed-hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.detailed-hero > aside { padding: 32px; background: var(--clinic-ink); color: #fff; border-radius: 8px; }
+.detailed-hero > aside > svg { color: #91c9ae; }
+.detailed-hero > aside > strong { display: block; margin-top: 20px; color: #fff; font-family: Georgia, serif; font-size: 28px; line-height: 1.25; }
+.detailed-hero > aside > p { margin: 8px 0 20px; color: rgba(255,255,255,.75); }
+.detailed-hero > aside ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+.detailed-hero > aside li { padding-top: 9px; border-top: 1px solid rgba(255,255,255,.17); font-size: 14px; }
+.detailed-image-hero { min-height: 540px; padding: 60px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+.detailed-image-hero > img { width: 100%; height: 420px; border-radius: 8px; object-fit: cover; }
+.detailed-image-hero > div > p:not(.eyebrow) { margin: 20px 0 26px; font-size: 18px; line-height: 1.7; }
+.hero-chip-row { margin: -4px 0 26px; display: flex; flex-wrap: wrap; gap: 8px; }
+.hero-chip-row span, .pump-tags span { padding: 6px 9px; border-radius: 5px; background: var(--clinic-sage); color: var(--clinic-green); font-size: 12px; font-weight: 800; }
+.detailed-credentials { padding: 72px 0; border-top: 1px solid var(--clinic-line); }
+.detailed-credentials > div:last-child { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
+.detailed-credentials article { padding: 24px; border: 1px solid var(--clinic-line); border-radius: 8px; }
+.detailed-credentials article img { width: 100%; height: 82px; margin-bottom: 18px; object-fit: contain; object-position: left center; }
+.detailed-credentials article h3 { font-size: 19px; }
+.detailed-credentials article p { margin: 9px 0 0; color: var(--clinic-muted); font-size: 14px; line-height: 1.6; }
+.detailed-curriculum { padding: 82px 0; }
+.curriculum-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.curriculum-grid article { padding: 26px; border: 1px solid var(--clinic-line); border-radius: 8px; }
+.curriculum-grid article > span { color: var(--clinic-coral); font-size: 13px; font-weight: 800; }
+.curriculum-grid h3 { margin-top: 10px; font-family: Georgia, serif; font-size: 24px; }
+.curriculum-grid article > strong { display: block; margin-top: 5px; color: var(--clinic-muted); font-size: 13px; }
+.curriculum-grid ul { margin: 20px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.curriculum-grid li { display: flex; align-items: flex-start; gap: 8px; font-size: 14px; line-height: 1.55; }
+.curriculum-grid li svg { flex: 0 0 auto; margin-top: 2px; color: var(--clinic-green); }
+.detailed-instructors { padding: 82px 0; }
+.detailed-instructors > div:last-child { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+.detailed-instructors article { overflow: hidden; border: 1px solid var(--clinic-line); border-radius: 8px; }
+.detailed-instructors article > img { width: 100%; aspect-ratio: 4/3; object-fit: cover; background: var(--clinic-sage); }
+.detailed-instructors article > h3, .detailed-instructors article > .detailed-role, .detailed-instructors article > details { margin-left: 20px; margin-right: 20px; }
+.detailed-instructors article > h3 { margin-top: 18px; font-family: Georgia, serif; font-size: 20px; }
+.detailed-role { color: var(--clinic-green); font-size: 12px; font-weight: 800; }
+.detailed-instructors details { margin-top: 14px; margin-bottom: 18px; padding-top: 12px; border-top: 1px solid var(--clinic-line); }
+.detailed-instructors summary { min-height: 42px; display: flex; align-items: center; color: var(--clinic-green); font-size: 13px; font-weight: 800; cursor: pointer; }
+.detailed-instructors details p { font-size: 13px; line-height: 1.6; }
+.detailed-testimonials { padding: 78px 0; }
+.detailed-testimonials > div:last-child { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
+.detailed-testimonials article { padding: 22px; border: 1px solid var(--clinic-line); border-radius: 8px; }
+.detailed-testimonials article img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; }
+.detailed-testimonials blockquote { min-height: 110px; margin: 18px 0; color: var(--clinic-text); font-family: Georgia, serif; font-size: 17px; line-height: 1.55; }
+.detailed-testimonials article strong, .detailed-testimonials article span { display: block; }
+.detailed-testimonials article span { color: var(--clinic-muted); font-size: 12px; }
+.detailed-start { width: 100% !important; padding: 74px max(28px, calc((100% - 1240px) / 2)); background: var(--clinic-sage); }
+.detailed-start > div:last-child { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; }
+.detailed-start article { padding: 20px; background: #fff; border: 1px solid #d1dfd7; border-radius: 7px; }
+.detailed-start article > span { color: var(--clinic-coral); font-size: 12px; font-weight: 800; }
+.detailed-start article h3 { margin-top: 9px; font-size: 17px; }
+.detailed-start article p { margin: 8px 0 0; font-size: 13px; line-height: 1.55; }
+.detailed-disclaimer { margin-top: 34px; margin-bottom: 68px; padding: 18px; display: flex; align-items: flex-start; gap: 11px; background: var(--clinic-paper); border: 1px solid var(--clinic-line); border-radius: 7px; }
+.detailed-disclaimer svg { flex: 0 0 auto; color: var(--clinic-green); }
+.detailed-disclaimer p { margin: 0; color: var(--clinic-muted); font-size: 12px; line-height: 1.65; }
+.pump-catalog { padding: 78px 0; }
+.pump-brand-list { width: min(1240px, calc(100% - 56px)); margin: 0 auto; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; }
+.pump-catalog .pump-brand { width: auto; margin: 0; padding: 24px; border: 1px solid var(--clinic-line); border-radius: 8px; }
+.pump-brand > div:first-child { max-width: 720px; margin-bottom: 22px; }
+.pump-brand > div:first-child h3 { font-family: Georgia, serif; font-size: 28px; }
+.pump-brand > div:first-child p { margin: 7px 0 0; color: var(--clinic-muted); }
+.pump-product-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(210px,1fr)); gap: 12px; }
+.pump-product-grid article { padding: 20px; border: 1px solid var(--clinic-line); border-radius: 8px; }
+.pump-product-image { height: 210px; margin-bottom: 17px; display: grid; place-items: center; }
+.pump-product-image img { width: 100%; height: 100%; object-fit: contain; }
+.pump-tags { display: flex; flex-wrap: wrap; gap: 5px; }
+.pump-product-grid h4 { margin-top: 14px; font-size: 20px; }
+.pump-product-grid article > p { min-height: 72px; margin: 9px 0 14px; color: var(--clinic-muted); font-size: 14px; line-height: 1.55; }
+.pump-product-grid article > a, .cgm-devices a { min-height: 40px; display: inline-flex; align-items: center; gap: 6px; color: var(--clinic-green); font-size: 13px; font-weight: 800; }
+.detailed-expect { margin-top: 20px; margin-bottom: 72px; padding: 42px; display: grid; grid-template-columns: .8fr 1.2fr; gap: 54px; background: var(--clinic-paper); border: 1px solid var(--clinic-line); border-radius: 8px; }
+.detailed-expect > div > p:not(.eyebrow) { margin: 12px 0 22px; }
+.detailed-expect ul, .glp-side-effects ul, .provider-referral ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 11px; }
+.detailed-expect li, .glp-side-effects li, .provider-referral li { padding: 13px; display: flex; align-items: flex-start; gap: 9px; background: #fff; border: 1px solid var(--clinic-line); border-radius: 6px; font-size: 14px; line-height: 1.55; }
+.detailed-expect li svg, .glp-side-effects li svg { flex: 0 0 auto; margin-top: 2px; color: var(--clinic-green); }
+.cgm-devices { padding: 70px 0; display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 14px; }
+.cgm-devices article { padding: 22px; display: flex; flex-direction: column; border: 1px solid var(--clinic-line); border-radius: 8px; }
+.cgm-devices article > div { height: 72px; margin-bottom: 18px; display: grid; place-items: center; }
+.cgm-devices article img { width: 100%; height: 48px; object-fit: contain; }
+.cgm-devices h3 { font-size: 21px; }
+.cgm-devices article > strong { margin-top: 4px; color: var(--clinic-green); font-size: 12px; }
+.cgm-devices article > p { flex: 1; margin: 12px 0; color: var(--clinic-muted); font-size: 14px; line-height: 1.55; }
+.cgm-analysis { margin-bottom: 72px; padding: 50px; display: grid; grid-template-columns: .9fr 1.1fr; gap: 60px; background: var(--clinic-sage); border-radius: 8px; }
+.cgm-feature-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+.cgm-feature-grid article { min-height: 118px; padding: 18px; display: flex; flex-direction: column; justify-content: center; gap: 10px; background: #fff; border: 1px solid #d1dfd7; border-radius: 6px; }
+.cgm-feature-grid article:last-child { grid-column: 1 / -1; }
+.cgm-feature-grid svg { color: var(--clinic-green); }
+.cgm-analysis > div:last-child > p:not(.eyebrow) { line-height: 1.65; }
+.glp-training-topics { padding: 78px 0; }
+.glp-training-topics > div:last-child { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 14px; }
+.glp-training-topics article { padding: 24px; border: 1px solid var(--clinic-line); border-radius: 8px; }
+.glp-training-topics article svg { margin-bottom: 18px; color: var(--clinic-green); }
+.glp-training-topics article h3 { font-size: 19px; }
+.glp-training-topics article p { margin: 9px 0 0; color: var(--clinic-muted); font-size: 14px; line-height: 1.6; }
+.glp-side-effects { margin-bottom: 72px; padding: 46px; display: grid; grid-template-columns: .9fr 1.1fr; gap: 58px; background: var(--clinic-sage); border-radius: 8px; }
+.glp-side-effects > div > p:not(.eyebrow) { line-height: 1.65; }
+.provider-hero { width: 100% !important; padding: 82px max(28px, calc((100% - 900px) / 2)); text-align: center; background: var(--clinic-ink); color: #fff; }
+.provider-hero > svg { color: #91c9ae; }
+.provider-hero .eyebrow { margin-top: 12px; color: #a9d7c2; }
+.provider-hero h1 { color: #fff; }
+.provider-hero > p:last-child { max-width: 760px; margin: 18px auto 0; color: rgba(255,255,255,.78); font-size: 17px; line-height: 1.65; }
+.provider-values { padding: 70px 0; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 14px; }
+.provider-values article { padding: 26px; border: 1px solid var(--clinic-line); border-radius: 8px; }
+.provider-values svg { margin-bottom: 16px; color: var(--clinic-coral); }
+.provider-values h3 { font-size: 20px; }
+.provider-values p { margin: 9px 0 0; color: var(--clinic-muted); font-size: 14px; line-height: 1.6; }
+.provider-referral { margin-bottom: 72px; padding: 44px; display: grid; grid-template-columns: 1fr .9fr; gap: 55px; background: var(--clinic-paper); border: 1px solid var(--clinic-line); border-radius: 8px; }
+.provider-referral > div > p:not(.eyebrow) { line-height: 1.65; }
+.provider-fax { display: block; margin: 18px 0; padding: 12px; border-left: 3px solid var(--clinic-coral); background: #fff; color: var(--clinic-ink); }
+.provider-referral ul { margin-bottom: 22px; }
+.provider-referral li svg { flex: 0 0 auto; margin-top: 2px; color: var(--clinic-green); }
+.provider-referral aside { padding: 26px; background: #fff; border: 1px solid var(--clinic-line); border-radius: 8px; text-align: center; }
+.provider-referral aside > img:first-child { width: 100%; height: 92px; object-fit: contain; }
+.provider-referral aside h3 { margin-top: 16px; font-size: 21px; }
+.provider-referral aside > strong { display: block; margin-top: 4px; color: var(--clinic-green); font-size: 12px; }
+.provider-referral aside p { font-size: 13px; line-height: 1.55; }
+.provider-certificate { width: 100%; margin-top: 20px; border: 1px solid var(--clinic-line); }
+.detailed-final-cta { margin-top: 0; }
+
+@media (max-width: 900px) {
+  .detailed-clinical-page h1 { font-size: 40px; }
+  .detailed-clinical-page h2 { font-size: 30px; }
+  .detailed-hero, .detailed-image-hero { grid-template-columns: 1fr; gap: 32px; }
+  .detailed-image-hero > img { height: 340px; }
+  .detailed-credentials > div:last-child, .detailed-instructors > div:last-child, .detailed-testimonials > div:last-child, .provider-values { grid-template-columns: 1fr 1fr; }
+  .curriculum-grid, .detailed-expect, .cgm-analysis, .glp-side-effects, .provider-referral { grid-template-columns: 1fr; }
+  .detailed-start > div:last-child, .glp-training-topics > div:last-child { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .pump-product-grid, .cgm-devices { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .pump-brand-list { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .detailed-clinical-page h1 { font-size: 34px; }
+  .detailed-clinical-page h2 { font-size: 27px; }
+  .detailed-clinical-page > section:not(.clinic-final-cta), .pump-catalog > section, .pump-catalog > .detailed-section-heading { width: calc(100% - 32px); }
+  .pump-brand-list { width: calc(100% - 32px); grid-template-columns: 1fr; }
+  .detailed-hero, .detailed-image-hero { min-height: 0; padding: 46px 0; }
+  .detailed-hero-actions { flex-direction: column; }
+  .detailed-hero-actions .button { width: 100%; justify-content: center; }
+  .detailed-image-hero > img { height: 250px; }
+  .detailed-credentials, .detailed-curriculum, .detailed-instructors, .detailed-testimonials, .pump-catalog, .glp-training-topics { padding: 58px 0; }
+  .detailed-credentials > div:last-child, .detailed-instructors > div:last-child, .detailed-testimonials > div:last-child, .provider-values, .detailed-start > div:last-child, .glp-training-topics > div:last-child, .pump-product-grid, .cgm-devices { grid-template-columns: 1fr; }
+  .detailed-start { width: 100% !important; padding: 58px 18px; }
+  .detailed-testimonials blockquote, .pump-product-grid article > p { min-height: 0; }
+  .detailed-expect, .cgm-analysis, .glp-side-effects, .provider-referral { width: calc(100% - 32px); padding: 24px; }
+  .cgm-feature-grid { grid-template-columns: 1fr; }
+  .cgm-feature-grid article:last-child { grid-column: auto; }
+  .provider-hero { width: 100% !important; padding: 62px 18px; }
+}
+
 /* Team and footer */
 .about-page .about-hero h1, .about-page .dietitian-team-heading h2 { font-size: 40px; line-height: 1.16; letter-spacing: 0; }
 .dietitian-profile-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }

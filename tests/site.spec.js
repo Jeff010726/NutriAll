@@ -47,7 +47,7 @@ test("desktop clinical menu stays open and its service links are clickable", asy
   await expect(page.locator(".nav-dropdown-clinical")).toBeVisible();
   await page.locator(".nav-dropdown-clinical").getByRole("link", { name: /CGM Training & Reports/ }).click();
   await expect(page).toHaveURL(/\/cgm-training$/);
-  await expect(page.locator("h1")).toHaveText("CGM Training & Reports");
+  await expect(page.locator("h1")).toHaveText("CGM Training & Report Analysis");
 });
 
 test("language switcher updates conversion content", async ({ page }) => {
@@ -61,16 +61,53 @@ test("language switcher updates conversion content", async ({ page }) => {
 
 test("all migrated diabetes service routes render", async ({ page }) => {
   for (const [path, heading] of [
-    ["diabetes-classes", "Diabetes Classes"],
+    ["diabetes-classes", "Diabetes Self-Management Education (DSME)"],
     ["pump-training", "Insulin Pump Training"],
-    ["cgm-training", "CGM Training & Reports"],
+    ["cgm-training", "CGM Training & Report Analysis"],
     ["glp1-training", "GLP-1 Medication Training"],
-    ["providers", "For Providers"],
+    ["providers", /Partnering with Physicians.*Improve Patient Outcomes/],
   ]) {
     await page.goto(`./${path}?lng=en`, { waitUntil: "networkidle" });
     await expect(page.locator("h1")).toHaveText(heading);
     await expectNoHorizontalOverflow(page);
   }
+});
+
+test("migrated clinical pages retain the full XT service content", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("./diabetes-classes?lng=en", { waitUntil: "networkidle" });
+  await expect(page.locator(".curriculum-grid article")).toHaveCount(6);
+  await expect(page.locator(".detailed-credentials article")).toHaveCount(3);
+  await expect(page.locator(".detailed-instructors article")).toHaveCount(3);
+  await expect(page.getByText("The first Chinese-language accredited DSME course in the U.S.")).toBeVisible();
+  await page.screenshot({ path: "test-results/classes-desktop.png", fullPage: true });
+
+  await page.goto("./pump-training?lng=en", { waitUntil: "networkidle" });
+  await expect(page.locator(".pump-product-grid article")).toHaveCount(8);
+  await expect(page.getByRole("heading", { name: "Omnipod 5" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "iLet Bionic Pancreas" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "MiniMed 780G" })).toBeVisible();
+  await page.screenshot({ path: "test-results/pump-desktop.png", fullPage: true });
+
+  await page.goto("./cgm-training?lng=en", { waitUntil: "networkidle" });
+  await expect(page.locator(".cgm-devices article")).toHaveCount(4);
+  await expect(page.getByText("Ambulatory Glucose Profile (AGP)")).toBeVisible();
+  await expect(page.getByText("Time In Range", { exact: true })).toBeVisible();
+
+  await page.goto("./glp1-training?lng=en", { waitUntil: "networkidle" });
+  await expect(page.locator(".glp-training-topics article")).toHaveCount(4);
+  await expect(page.locator(".glp-side-effects li")).toHaveCount(4);
+
+  await page.goto("./providers?lng=en", { waitUntil: "networkidle" });
+  await expect(page.locator(".provider-values article")).toHaveCount(3);
+  await expect(page.getByText("ID# 1001155")).toBeVisible();
+  await expect(page.getByText("Fax form to us at (888) 370-1981.")).toBeVisible();
+  await page.screenshot({ path: "test-results/providers-desktop.png", fullPage: true });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("./cgm-training?lng=zh-CN", { waitUntil: "networkidle" });
+  await expectNoHorizontalOverflow(page);
+  await page.screenshot({ path: "test-results/cgm-mobile.png", fullPage: true });
 });
 
 test("core weight and insurance routes follow the selected language", async ({ page }) => {
