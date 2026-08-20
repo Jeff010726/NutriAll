@@ -17,13 +17,8 @@ const serviceLabels = {
   "medical-weight-loss": "Medical weight loss",
   "one-to-one": "1:1 weight-loss nutrition",
   glp1: "GLP-1 support",
-  diabetes: "Diabetes nutrition care",
   insurance: "Insurance benefit check",
-  "diabetes-classes": "Diabetes classes",
-  "pump-training": "Insulin pump training",
-  "cgm-training": "CGM training and report analysis",
-  "glp1-training": "GLP-1 medication training",
-  "provider-referral": "Provider referral support",
+  community: "Community and church program partnership",
   general: "General consultation",
 };
 

@@ -11,18 +11,6 @@ const groups = {
     ["/glp1-care", "nav.glpCare", "GLP-1"],
     ["/medical-weight-loss", "nav.medical", "MD"],
   ],
-  clinical: [
-    ["/diabetes-classes", "nav.classes", "01"],
-    ["/pump-training", "nav.pump", "02"],
-    ["/cgm-training", "nav.cgm", "03"],
-    ["/glp1-training", "nav.glpTraining", "04"],
-    ["/providers", "nav.providers", "05"],
-  ],
-  resources: [
-    ["/recipes", "nav.recipes", "01"],
-    ["/research", "nav.research", "02"],
-    ["/about", "nav.about", "03"],
-  ],
 };
 
 function Dropdown({ name, open, close }) {
@@ -30,7 +18,7 @@ function Dropdown({ name, open, close }) {
   return <div className={`nav-dropdown nav-dropdown-${name}${open ? " is-open" : ""}`} aria-hidden={!open}>
     <div className="nav-dropdown-copy">
       <p>{t(`nav.${name}`)}</p>
-      <span>{t(name === "weight" ? "nav.weightIntro" : name === "clinical" ? "nav.clinicalIntro" : "home.clinicalIntro")}</span>
+      <span>{t("nav.weightIntro")}</span>
     </div>
     <div className="nav-dropdown-links">
       {groups[name].map(([to, key, number]) => <SiteLink to={to} key={to} onClick={close} tabIndex={open ? 0 : -1}>
@@ -66,15 +54,16 @@ export function Header() {
   return <header className="site-header clinic-header" ref={headerRef}>
     <div className="header-inner clinic-header-inner">
       <SiteLink className="brand clinic-brand" to="/" aria-label="NutriAll Wellness home" onClick={closeAll}>
-        <img src={asset("nutriall-logo.svg")} alt="NutriAll Wellness" />
+        <img src={asset("nutriall-logo.png")} alt="NutriAll Wellness" />
       </SiteLink>
 
       <nav className="clinic-nav" aria-label="Primary navigation">
-        {[["weight", "nav.weight"], ["clinical", "nav.clinical"], ["resources", "nav.resources"]].map(([name, key]) => <button type="button" className={openMenu === name ? "is-active" : ""} aria-expanded={openMenu === name} aria-controls={`menu-${name}`} onClick={() => toggle(name)} key={name}>
+        {[["weight", "nav.weight"]].map(([name, key]) => <button type="button" className={openMenu === name ? "is-active" : ""} aria-expanded={openMenu === name} aria-controls={`menu-${name}`} onClick={() => toggle(name)} key={name}>
           {t(key)} <ChevronDown size={16} aria-hidden="true" />
         </button>)}
         <SiteLink to="/insurance" onClick={closeAll}>{t("nav.insurance")}</SiteLink>
         <SiteLink to="/about" onClick={closeAll}>{t("nav.team")}</SiteLink>
+        <SiteLink to="/community-programs" onClick={closeAll}>{t("nav.community")}</SiteLink>
       </nav>
 
       <div className="clinic-header-actions">
@@ -96,7 +85,7 @@ export function Header() {
         <p>{t(`nav.${name}`)}</p>
         {links.map(([to, key]) => <SiteLink to={to} onClick={closeAll} key={to}>{t(key)}</SiteLink>)}
       </section>)}
-      <section><p>{t("nav.team")}</p><SiteLink to="/about" onClick={closeAll}>{t("nav.about")}</SiteLink><SiteLink to="/insurance" onClick={closeAll}>{t("nav.insurance")}</SiteLink></section>
+      <section><p>{t("nav.team")}</p><SiteLink to="/about" onClick={closeAll}>{t("nav.about")}</SiteLink><SiteLink to="/community-programs" onClick={closeAll}>{t("nav.community")}</SiteLink><SiteLink to="/insurance" onClick={closeAll}>{t("nav.insurance")}</SiteLink></section>
       <LanguageSwitcher onChange={closeAll} />
       <SiteLink className="button button-primary" to="/book" onClick={closeAll}>{t("nav.book")}</SiteLink>
     </nav>

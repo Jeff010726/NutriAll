@@ -24,31 +24,6 @@ export const dietitians = [
     details: ["English, Cantonese, Mandarin, Hakka", "Diabetes / Sports nutrition / Digestive health"],
   },
   {
-    name: "Lisa Van Leeuwen, MS, RDN, LDN",
-    role: "Trauma-informed Registered Dietitian Nutritionist",
-    image: "team/lisa-van-leeuwen-studio.jpg",
-    imageAlt: "Lisa Van Leeuwen, registered dietitian nutritionist",
-    imagePosition: "center",
-    bio: [
-      "Lisa earned her Bachelor of Science in Foods and Nutrition from San Diego State University and her Master of Science in Nutrition and Health Promotion, with an eating disorders concentration, from Simmons University.",
-      "Her background includes dietetic training and work in inpatient, residential, and partial-hospitalization eating-disorder care. She also completed CBT-E training through the University of Oxford and specialized trauma-informed training.",
-      "Her interests include eating disorders and disordered eating, religious trauma, LGBTQIA+ care, mental health, intuitive eating, and sports nutrition.",
-    ],
-    details: ["English", "Eating disorders / Trauma-informed care / Intuitive eating"],
-  },
-  {
-    name: "Alexandra Rodiles, RDN",
-    role: "Registered Dietitian Nutritionist / Oncology Nutrition",
-    image: "team/alexandra-rodiles-studio.jpg",
-    imageAlt: "Alexandra Rodiles, registered dietitian nutritionist",
-    imagePosition: "center",
-    bio: [
-      "Alexandra earned her Bachelor of Science in Nutrition and Dietetics at Queens College and completed her dietetic internship with Northwell Health.",
-      "She is a bilingual Registered Dietitian Nutritionist specializing in oncology and bone marrow transplant nutrition. Her professional interests also include diabetes, chronic kidney disease, weight management, and nutrition support.",
-    ],
-    details: ["English, Spanish", "Oncology / Diabetes / Kidney health / Weight management"],
-  },
-  {
     name: "Yue Jin, MS, RD",
     role: "Registered Dietitian / Weight-inclusive Nutrition",
     image: "team/yue-jin-studio.jpg",

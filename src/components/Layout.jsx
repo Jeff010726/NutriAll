@@ -8,17 +8,26 @@ import { trackEvent } from "../analytics";
 import { trackMetaPageView } from "../metaPixel";
 import { useTranslation } from "react-i18next";
 
-export function Layout({ children, footerProps, title }) {
+const defaultDescription = "Physician-led medical weight loss, GLP-1 care, and one-to-one nutrition support from NutriAll.";
+
+export function Layout({ children, description = defaultDescription, footerProps, title }) {
   const { i18n, t } = useTranslation();
   const { pathname, hash } = useLocation();
   useEffect(() => {
-    document.title = title || pageTitles[pathname] || "NutriAll Medical Weight Care";
+    const pageTitle = title || pageTitles[pathname] || "NutriAll Medical Weight Care";
+    const canonicalUrl = `https://nutriallwellness.org${pathname === "/" ? "/" : pathname}`;
+    document.title = pageTitle;
+    document.querySelector('meta[name="description"]')?.setAttribute("content", description);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", pageTitle);
+    document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
+    document.querySelector('meta[property="og:url"]')?.setAttribute("content", canonicalUrl);
+    document.querySelector('link[rel="canonical"]')?.setAttribute("href", canonicalUrl);
     if (hash) {
       requestAnimationFrame(() => document.getElementById(decodeURIComponent(hash.slice(1)))?.scrollIntoView());
     } else {
       window.scrollTo({ top: 0, behavior: "auto" });
     }
-  }, [hash, pathname, title]);
+  }, [description, hash, pathname, title]);
 
   useEffect(() => {
     document.documentElement.lang = i18n.resolvedLanguage || "en";

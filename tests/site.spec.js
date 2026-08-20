@@ -16,98 +16,211 @@ async function expectNoHorizontalOverflow(page) {
 test("desktop home prioritizes insurance and booking", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto("./?lng=en", { waitUntil: "networkidle" });
-  await expect(page.getByRole("heading", { name: "Weight loss care built around your health and your life." })).toBeVisible();
-  await expect(page.getByRole("link", { name: "Book a free consultation" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Food, health, and real life belong in the same conversation." })).toBeVisible();
+  await expect(page.locator(".clinic-hero").getByRole("link", { name: "Book a free 15-minute call" })).toBeVisible();
   await expect(page.locator(".insurance-logo-item")).toHaveCount(5);
   await expect(page.getByRole("img", { name: "Healthfirst" })).toBeVisible();
-  await expect(page.locator(".clinic-capability-grid > a")).toHaveCount(5);
-  await expect(page.getByRole("heading", { name: "Registered dietitians, supported by medical oversight." })).toBeVisible();
+  await expect(page.locator(".clinic-capability-grid > a")).toHaveCount(3);
+  await expect(page.getByRole("heading", { name: "Need nutrition classes for your members? We can run the whole program." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "You will not be handed the same plan as everyone else." })).toBeVisible();
+  await expect(page.locator("body")).toHaveCSS("font-size", "18px");
+  await expect(page.locator(".clinic-language-trust")).toHaveCSS("font-size", "16px");
+  await expect(page.locator(".clinic-footer-brand > p")).toHaveCSS("color", "rgb(63, 81, 76)");
+  await expect(page.locator(".clinic-footer-brand > p")).toHaveCSS("font-size", "17px");
+  const headerLogo = page.locator(".clinic-brand img");
+  const footerLogo = page.locator(".clinic-footer-brand img");
+  await expect(headerLogo).toHaveAttribute("src", /nutriall-logo\.png$/);
+  await expect(footerLogo).toHaveAttribute("src", /nutriall-logo\.png$/);
+  const [headerLogoBox, footerLogoBox] = await Promise.all([headerLogo.boundingBox(), footerLogo.boundingBox()]);
+  expect(headerLogoBox?.width).toBe(128);
+  expect(Math.abs((headerLogoBox?.x ?? 0) - (footerLogoBox?.x ?? 0))).toBeLessThanOrEqual(1);
+  await expect(page.locator(".clinic-team-preview > img")).toHaveAttribute("src", /team\/xiaofang-tan\.webp$/);
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/home-desktop.png", fullPage: true });
+});
+
+test("2K home keeps the hero copy readable", async ({ page }) => {
+  await page.setViewportSize({ width: 2560, height: 1440 });
+  await page.goto("./?lng=zh-CN", { waitUntil: "networkidle" });
+  const headingBox = await page.locator(".clinic-hero-copy h1").boundingBox();
+  expect(headingBox?.width).toBeGreaterThan(400);
+  expect(headingBox?.height).toBeLessThan(240);
+  await expectNoHorizontalOverflow(page);
+  await page.screenshot({ path: "test-results/home-2k.png", fullPage: false });
+});
+
+test("care needs uses varied looping bubbles instead of service cards", async ({ page }) => {
+  await page.setViewportSize({ width: 2560, height: 1100 });
+  await page.goto("./?lng=zh-CN", { waitUntil: "networkidle" });
+  const needs = page.locator(".care-needs");
+  await expect(needs.getByRole("heading", { name: "今天最想先解决什么？" })).toBeVisible();
+  await expect(page.locator(".clinic-path-grid")).toHaveCount(0);
+  await expect(needs.locator(".care-needs-group")).toHaveCount(12);
+  await expect(needs.locator('.care-needs-group:not([aria-hidden="true"]) .is-featured')).toHaveCount(6);
+  await expect(needs.getByText("GLP-1", { exact: true }).first()).toBeVisible();
+
+  const featuredBox = await needs.locator('.care-needs-group:not([aria-hidden="true"]) .is-featured').first().boundingBox();
+  const smallBox = await needs.locator('.care-needs-group:not([aria-hidden="true"]) .is-small').first().boundingBox();
+  expect(featuredBox?.width).toBeGreaterThan(smallBox?.width ?? 0);
+  await expect(needs.locator(".care-needs-group").first()).toHaveCSS("align-items", "flex-end");
+  await expect(needs.locator(".care-needs-bubble").first()).toHaveCSS("color", "rgb(255, 255, 255)");
+  await expect(needs.locator(".care-needs-bubble").first()).toHaveCSS("box-shadow", "none");
+  await expect(needs.locator(".care-needs-track").first()).toHaveCSS("animation-name", "care-needs-scroll");
+  const activeBubbleLinks = needs.locator('.care-needs-group:not([aria-hidden="true"]) .care-needs-bubble');
+  await expect(activeBubbleLinks).toHaveCount(22);
+  const bubbleDestinations = await activeBubbleLinks.evaluateAll((links) => links.map((link) => link.getAttribute("href")));
+  expect(bubbleDestinations).toContain("/one-to-one-weight-loss");
+  expect(bubbleDestinations).toContain("/glp1-care");
+  expect(bubbleDestinations).toContain("/conditions/pcos");
+  expect(bubbleDestinations).toContain("/conditions/food-allergies");
+  const coverage = await needs.locator(".care-needs-track").evaluateAll((tracks) => tracks.map((track) => ({
+    trackWidth: track.scrollWidth,
+    viewportWidth: track.parentElement?.clientWidth ?? 0,
+  })));
+  expect(coverage.every(({ trackWidth, viewportWidth }) => trackWidth * .75 >= viewportWidth)).toBe(true);
+  await expectNoHorizontalOverflow(page);
+});
+
+test("every condition bubble has a detailed plain-language Chinese guide", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  const conditionRoutes = [
+    "pcos", "thyroid-health", "digestive-health", "sports-nutrition", "menopause-nutrition",
+    "heart-health", "pregnancy-postpartum", "eating-disorders", "celiac-disease", "kidney-health",
+    "cancer-nutrition", "high-cholesterol", "food-allergies",
+  ];
+
+  for (const route of conditionRoutes) {
+    await page.goto(`./conditions/${route}?lng=zh-CN`, { waitUntil: "networkidle" });
+    await expect(page.locator(".care-guide-hero h1")).not.toBeEmpty();
+    await expect(page.locator(".care-guide-overview-copy p")).toHaveCount(2);
+    await expect(page.locator(".care-guide-focus-grid article")).toHaveCount(4);
+    await expect(page.locator(".care-guide-visit li")).toHaveCount(3);
+    await expect(page.locator(".care-guide-sources a").first()).toHaveAttribute("href", /^https:\/\//);
+    await expect(page.locator(".care-guide-booking").getByRole("link", { name: "免费聊 15 分钟" })).toBeVisible();
+    await expect(page.locator(".care-guide-booking")).toHaveCSS("background-color", "rgb(23, 53, 46)");
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://nutriallwellness.org/conditions/${route}`);
+    await expect(page.locator('meta[name="description"]')).not.toHaveAttribute("content", /Physician-led medical weight loss/);
+    await expectNoHorizontalOverflow(page);
+  }
+});
+
+test("weight, GLP-1, and medical weight pages include the full guide", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const route of ["one-to-one-weight-loss", "glp1-care", "medical-weight-loss"]) {
+    await page.goto(`./${route}?lng=en`, { waitUntil: "networkidle" });
+    await expect(page.locator(".care-guide-overview-copy p")).toHaveCount(2);
+    await expect(page.locator(".care-guide-focus-grid article")).toHaveCount(4);
+    await expect(page.locator(".care-guide-faq details").first()).toBeVisible();
+    await expect(page.locator(".care-guide-sources a").first()).toBeVisible();
+    await expect(page.locator(".care-guide-booking").getByRole("link", { name: "Book a free 15-minute call" })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+  }
+});
+
+test("care journey changes the scene with each step", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("./?lng=en", { waitUntil: "networkidle" });
+  const journey = page.locator(".care-journey");
+  await expect(journey.getByRole("heading", { name: "What should we talk about?" })).toBeVisible();
+  const secondStep = journey.getByRole("button", { name: /We check and match/ });
+  await secondStep.click();
+  await expect(secondStep).toHaveAttribute("aria-expanded", "true");
+  await expect(journey.getByRole("heading", { name: "The right care, clearly matched" })).toBeVisible();
+  await expect(journey.getByText("Insurance checked first")).toBeVisible();
+  await page.mouse.move(1, 1);
+  await expect(journey.locator("article").nth(1).locator(".care-journey-row-progress")).toHaveCSS("animation-duration", "6.5s");
+  await expect(journey.getByRole("button", { name: /Meet your dietitian/ })).toHaveAttribute("aria-expanded", "true", { timeout: 7_000 });
+});
+
+test("home FAQ expands one plain-language answer at a time", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("./?lng=zh-CN", { waitUntil: "networkidle" });
+  const faq = page.locator(".home-faq");
+  await expect(faq.getByRole("heading", { name: "常见问题" })).toBeVisible();
+  await expect(faq.locator(".home-faq-item")).toHaveCount(5);
+
+  const firstQuestion = faq.getByRole("button", { name: "营养师可以帮我解决哪些问题？" });
+  const secondQuestion = faq.getByRole("button", { name: "保险可以报销营养咨询吗？" });
+  await expect(firstQuestion).toHaveAttribute("aria-expanded", "true");
+  await expect(faq.getByText(/减重、GLP-1 营养支持/)).toBeVisible();
+  await secondQuestion.click();
+  await expect(firstQuestion).toHaveAttribute("aria-expanded", "false");
+  await expect(secondQuestion).toHaveAttribute("aria-expanded", "true");
+  await expect(faq.getByText(/不少商业保险会报销/)).toBeVisible();
+  const insuranceCall = faq.getByRole("link", { name: /免费聊 15 分钟，先把保险问清楚/ });
+  await expect(insuranceCall).toBeVisible();
+  await expect(insuranceCall).toHaveAttribute("href", "/book?service=insurance");
+  await expect(faq.locator(".home-faq-answer p").nth(1)).toHaveCSS("font-size", "17px");
+  await expectNoHorizontalOverflow(page);
 });
 
 test("mobile home keeps the conversion path visible", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("./?lng=en", { waitUntil: "networkidle" });
   await expect(page.locator(".mobile-booking-bar")).toBeVisible();
+  await expect(page.locator("body")).toHaveCSS("font-size", "17px");
   await expect(page.locator(".insurance-logo-item")).toHaveCount(5);
+  const [mobileHeaderLogoBox, mobileFooterLogoBox] = await Promise.all([
+    page.locator(".clinic-brand img").boundingBox(),
+    page.locator(".clinic-footer-brand img").boundingBox(),
+  ]);
+  expect(Math.abs((mobileHeaderLogoBox?.x ?? 0) - (mobileFooterLogoBox?.x ?? 0))).toBeLessThanOrEqual(1);
   await page.getByRole("button", { name: "Menu" }).click();
   await expect(page.locator(".clinic-mobile-menu")).toHaveClass(/is-open/);
-  await expect(page.getByRole("link", { name: "Insulin Pump Training" }).last()).toBeVisible();
+  await expect(page.getByRole("link", { name: "Community Programs" }).last()).toBeVisible();
+  await page.getByRole("button", { name: "Menu" }).click();
+  const journey = page.locator(".care-journey");
+  await expect(journey).toBeVisible();
+  await journey.getByRole("button", { name: /Meet your dietitian/ }).click();
+  await expect(journey.getByRole("heading", { name: "A few useful next steps" })).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/home-mobile.png", fullPage: true });
 });
 
-test("desktop clinical menu stays open and its service links are clickable", async ({ page }) => {
+test("desktop weight-loss menu stays open and its service links are clickable", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto("./?lng=en", { waitUntil: "networkidle" });
-  const menuButton = page.getByRole("button", { name: "Diabetes & Training" });
+  const menuButton = page.getByRole("button", { name: "Weight Loss" });
   await menuButton.click();
   await expect(menuButton).toHaveAttribute("aria-expanded", "true");
-  await expect(page.locator(".nav-dropdown-clinical")).toBeVisible();
-  await page.locator(".nav-dropdown-clinical").getByRole("link", { name: /CGM Training & Reports/ }).click();
-  await expect(page).toHaveURL(/\/cgm-training$/);
-  await expect(page.locator("h1")).toHaveText("CGM Training & Report Analysis");
+  await expect(page.locator(".nav-dropdown-weight")).toBeVisible();
+  await page.locator(".nav-dropdown-weight").getByRole("link", { name: /GLP-1 Weight Management/ }).click();
+  await expect(page).toHaveURL(/\/glp1-care$/);
+  await expect(page.locator("h1")).toHaveText("GLP-1 Weight Management");
 });
 
 test("language switcher updates conversion content", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto("./?lng=en", { waitUntil: "networkidle" });
   await page.locator(".clinic-header-actions").getByLabel("Language").selectOption("es");
-  await expect(page.locator("h1")).toHaveText("Atención para bajar de peso adaptada a su salud y a su vida.");
-  await expect(page.getByRole("link", { name: "Reservar consulta gratuita" })).toBeVisible();
+  await expect(page.locator("h1")).toHaveText("La comida, la salud y la vida merecen una sola conversación.");
+  await expect(page.locator(".clinic-hero").getByRole("link", { name: "Llamada gratuita de 15 minutos" })).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
 });
 
-test("all migrated diabetes service routes render", async ({ page }) => {
-  for (const [path, heading] of [
-    ["diabetes-classes", "Diabetes Self-Management Education (DSME)"],
-    ["pump-training", "Insulin Pump Training"],
-    ["cgm-training", "CGM Training & Report Analysis"],
-    ["glp1-training", "GLP-1 Medication Training"],
-    ["providers", /Partnering with Physicians.*Improve Patient Outcomes/],
-  ]) {
+test("retired diabetes routes return visitors to the focused home page", async ({ page }) => {
+  for (const path of ["diabetes-care", "diabetes-classes", "pump-training", "cgm-training", "providers", "recipes", "research"]) {
     await page.goto(`./${path}?lng=en`, { waitUntil: "networkidle" });
-    await expect(page.locator("h1")).toHaveText(heading);
-    await expectNoHorizontalOverflow(page);
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.getByRole("heading", { name: "Food, health, and real life belong in the same conversation." })).toBeVisible();
   }
+  await expect(page.getByText("Diabetes & Training", { exact: true })).toHaveCount(0);
 });
 
-test("migrated clinical pages retain the full XT service content", async ({ page }) => {
+test("community contracting page explains the offer and keeps a free-call path visible", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
-  await page.goto("./diabetes-classes?lng=en", { waitUntil: "networkidle" });
-  await expect(page.locator(".curriculum-grid article")).toHaveCount(6);
-  await expect(page.locator(".detailed-credentials article")).toHaveCount(3);
-  await expect(page.locator(".detailed-instructors article")).toHaveCount(3);
-  await expect(page.getByText("The first Chinese-language accredited DSME course in the U.S.")).toBeVisible();
-  await page.screenshot({ path: "test-results/classes-desktop.png", fullPage: true });
-
-  await page.goto("./pump-training?lng=en", { waitUntil: "networkidle" });
-  await expect(page.locator(".pump-product-grid article")).toHaveCount(8);
-  await expect(page.getByRole("heading", { name: "Omnipod 5" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "iLet Bionic Pancreas" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "MiniMed 780G" })).toBeVisible();
-  await page.screenshot({ path: "test-results/pump-desktop.png", fullPage: true });
-
-  await page.goto("./cgm-training?lng=en", { waitUntil: "networkidle" });
-  await expect(page.locator(".cgm-devices article")).toHaveCount(4);
-  await expect(page.getByText("Ambulatory Glucose Profile (AGP)")).toBeVisible();
-  await expect(page.getByText("Time In Range", { exact: true })).toBeVisible();
-
-  await page.goto("./glp1-training?lng=en", { waitUntil: "networkidle" });
-  await expect(page.locator(".glp-training-topics article")).toHaveCount(4);
-  await expect(page.locator(".glp-side-effects li")).toHaveCount(4);
-
-  await page.goto("./providers?lng=en", { waitUntil: "networkidle" });
-  await expect(page.locator(".provider-values article")).toHaveCount(3);
-  await expect(page.getByText("ID# 1001155")).toBeVisible();
-  await expect(page.getByText("Fax form to us at (888) 370-1981.")).toBeVisible();
-  await page.screenshot({ path: "test-results/providers-desktop.png", fullPage: true });
-
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("./cgm-training?lng=zh-CN", { waitUntil: "networkidle" });
+  await page.goto("./community-programs?lng=en", { waitUntil: "networkidle" });
+  await expect(page.getByRole("heading", { name: "Nutrition classes, contracted and run for your community." })).toBeVisible();
+  await expect(page.locator(".community-format-grid article")).toHaveCount(3);
+  await expect(page.getByText("Churches and faith communities", { exact: true })).toBeVisible();
+  await expect(page.locator(".community-program-hero").getByRole("link", { name: /Book a Free Call/ })).toHaveAttribute("href", "/book?service=community");
   await expectNoHorizontalOverflow(page);
-  await page.screenshot({ path: "test-results/cgm-mobile.png", fullPage: true });
+  await page.screenshot({ path: "test-results/community-desktop.png", fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("./community-programs?lng=zh-CN", { waitUntil: "networkidle" });
+  await expect(page.getByRole("heading", { name: "社区、教会需要营养福利课程，我们可以整套承接。" })).toBeVisible();
+  await expectNoHorizontalOverflow(page);
+  await page.screenshot({ path: "test-results/community-mobile.png", fullPage: true });
 });
 
 test("core weight and insurance routes follow the selected language", async ({ page }) => {
@@ -198,7 +311,10 @@ test("about page presents one unified dietitian team", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto("./about?lng=en", { waitUntil: "networkidle" });
   await expect(page.getByRole("heading", { name: "Meet the team behind your care." })).toBeVisible();
-  await expect(page.locator(".all-dietitians .dietitian-profile")).toHaveCount(8);
+  await expect(page.locator(".all-dietitians .dietitian-profile")).toHaveCount(6);
+  await expect(page.getByRole("heading", { name: /Lisa Van Leeuwen/ })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: /Alexandra Rodiles/ })).toHaveCount(0);
+  await expect(page.locator(".dietitian-profile > img").first()).toHaveCSS("object-fit", "contain");
   await expect(page.getByRole("heading", { name: "Siqian (Cici) Chen, MS, RD, LDN" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Yirao (Rebecca) Wang, RDN, LDN, MPH" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Yue Jin, MS, RD" })).toBeVisible();
