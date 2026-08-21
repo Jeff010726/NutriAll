@@ -17,7 +17,7 @@ function allowedOrigin(request: Request, env: Env) {
     .filter(Boolean);
 
   if (!origin) return configured[0] || defaultOrigin;
-  if (configured.includes(origin) || /^http:\/\/(localhost|127\.0\.0\.1):(3000|5173|5174)$/.test(origin)) {
+  if (configured.includes(origin) || /^http:\/\/(localhost|127\.0\.0\.1):(3000|5173|5174|5175)$/.test(origin)) {
     return origin;
   }
   return configured[0] || defaultOrigin;

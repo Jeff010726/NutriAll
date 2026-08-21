@@ -6,6 +6,7 @@ export async function apiRequest(path, options = {}) {
     credentials: "include",
     headers: options.body ? { "Content-Type": "application/json" } : undefined,
     body: options.body ? JSON.stringify(options.body) : undefined,
+    signal: options.signal,
   });
 
   const data = await response.json().catch(() => ({}));

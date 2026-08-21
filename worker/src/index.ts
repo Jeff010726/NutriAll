@@ -17,6 +17,7 @@ import {
   adminUpdateBooking,
 } from "./admin";
 import { submitContact } from "./contact";
+import { publicBookingActivity } from "./bookingActivity";
 import { responseHeaders, json, serverError } from "./http";
 import type { Env } from "./types";
 
@@ -100,6 +101,7 @@ async function route(request: Request, env: Env, ctx: ExecutionContext) {
   }
 
   if (url.pathname === "/api/analytics/collect" && request.method === "POST") return collectAnalytics(request, env);
+  if (url.pathname === "/api/booking-activity" && request.method === "GET") return publicBookingActivity(request, env);
   if (url.pathname === "/api/contact" && request.method === "POST") return submitContact(request, env, ctx);
   if (url.pathname.startsWith("/api/")) return json(request, env, { error: "Not found" }, { status: 404 });
   if (env.ASSETS) return env.ASSETS.fetch(request);

@@ -5670,7 +5670,7 @@ body { font-size: 18px; line-height: 1.72; }
   .care-journey-answer, .care-journey-steps button > svg { transition: none; }
 }
 
-/* Transparent sample activity: replace with consented, verified events before removing the demo label. */
+/* Recent activity uses server-side anonymized booking records. */
 .booking-activity-region {
   position: fixed;
   right: 22px;
@@ -5739,25 +5739,11 @@ body { font-size: 18px; line-height: 1.72; }
 }
 
 .booking-activity-copy p {
-  margin: 4px 0 7px;
+  margin: 4px 0 0;
   color: var(--clinic-ink);
   font-size: 16px;
   font-weight: 720;
   line-height: 1.42;
-}
-
-.booking-activity-demo {
-  display: inline-flex;
-  min-height: 21px;
-  align-items: center;
-  padding: 2px 7px;
-  border: 1px solid rgba(197, 79, 59, 0.28);
-  border-radius: 999px;
-  color: var(--clinic-coral-dark);
-  background: rgba(251, 235, 229, 0.86);
-  font-size: 11px;
-  font-weight: 850;
-  line-height: 1;
 }
 
 .booking-activity-close {

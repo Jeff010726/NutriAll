@@ -2,6 +2,14 @@ import { expect, test } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.route("**/api/analytics/collect", (route) => route.fulfill({ status: 200, contentType: "application/json", body: "{\"ok\":true}" }));
+  await page.route("**/api/booking-activity", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({ activities: [
+      { name: "A***", kind: "free-call", createdAt: new Date(Date.now() - 12 * 60_000).toISOString(), avatarIndex: 0 },
+      { name: "D***", kind: "nutrition-consultation", createdAt: new Date(Date.now() - 28 * 60_000).toISOString(), avatarIndex: 1 },
+    ] }),
+  }));
   await page.route("https://connect.facebook.net/en_US/fbevents.js", (route) => route.fulfill({ status: 200, contentType: "application/javascript", body: "" }));
 });
 
@@ -166,7 +174,8 @@ test("mobile home keeps the conversion path visible", async ({ page }) => {
   await expect(page.locator(".mobile-booking-bar")).toBeVisible();
   const activity = page.locator(".booking-activity-toast");
   await expect(activity).toBeVisible({ timeout: 3_000 });
-  await expect(activity.getByText("Demo")).toBeVisible();
+  await expect(activity.getByText("Booked a free 15-minute phone consultation")).toBeVisible();
+  await expect(activity.getByText("Demo")).toHaveCount(0);
   await expect(activity.locator("img")).toHaveAttribute("src", /social-proof\/demo-/);
   const [activityBox, bookingBarBox] = await Promise.all([
     activity.boundingBox(),
@@ -192,15 +201,14 @@ test("mobile home keeps the conversion path visible", async ({ page }) => {
   await page.screenshot({ path: "test-results/home-mobile.png", fullPage: true });
 });
 
-test("sample booking activity rotates, can be dismissed, and stays off booking pages", async ({ page }) => {
+test("anonymized booking activity rotates, can be dismissed, and stays off booking pages", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto("./?lng=zh-CN", { waitUntil: "networkidle" });
   const activity = page.locator(".booking-activity-toast");
   await expect(activity).toBeVisible({ timeout: 3_000 });
-  await expect(activity.getByText("演示")).toBeVisible();
   await expect(activity.getByText("预约了免费 15 分钟电话咨询")).toBeVisible();
-  await expect(activity.getByText("预约了 GLP-1 营养支持")).toBeVisible({ timeout: 7_000 });
-  await activity.getByRole("button", { name: "关闭预约动态示例" }).click();
+  await expect(activity.getByText("预约了一对一营养咨询")).toBeVisible({ timeout: 7_000 });
+  await activity.getByRole("button", { name: "关闭近期预约动态" }).click();
   await expect(activity).toHaveCount(0);
 
   await page.goto("./book?lng=zh-CN", { waitUntil: "networkidle" });
