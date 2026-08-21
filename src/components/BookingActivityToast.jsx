@@ -5,28 +5,24 @@ import { apiRequest } from "../api";
 
 const content = {
   en: {
-    demo: "Demo",
     region: "Recent booking activity",
     dismiss: "Dismiss recent booking activity",
     justNow: "Just now",
     actions: { "free-call": "Booked a free 15-minute phone consultation", "nutrition-consultation": "Booked a one-to-one nutrition consultation", "community-program": "Asked about a community nutrition program" },
   },
   "zh-CN": {
-    demo: "演示",
     region: "近期预约动态",
     dismiss: "关闭近期预约动态",
     justNow: "刚刚",
     actions: { "free-call": "预约了免费 15 分钟电话咨询", "nutrition-consultation": "预约了一对一营养咨询", "community-program": "咨询了社区营养课程" },
   },
   "zh-TW": {
-    demo: "示範",
     region: "近期預約動態",
     dismiss: "關閉近期預約動態",
     justNow: "剛剛",
     actions: { "free-call": "預約了免費 15 分鐘電話諮詢", "nutrition-consultation": "預約了一對一營養諮詢", "community-program": "諮詢了社區營養課程" },
   },
   es: {
-    demo: "Demostración",
     region: "Actividad reciente de reservas",
     dismiss: "Cerrar la actividad reciente de reservas",
     justNow: "Ahora mismo",
@@ -139,7 +135,6 @@ export function BookingActivityToast({ language = "en", pathname = "/" }) {
             <span>{relativeTime(activity.createdAt, language, copy.justNow)}</span>
           </div>
           <p>{action}</p>
-          {activity.origin === "demo" && <span className="booking-activity-demo">{copy.demo}</span>}
         </div>
         <button type="button" className="booking-activity-close" onClick={() => setDismissed(true)} aria-label={copy.dismiss}>
           <X size={18} aria-hidden="true" />

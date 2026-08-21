@@ -209,7 +209,7 @@ test("anonymized booking activity rotates, can be dismissed, and stays off booki
   await expect(activity).toHaveAttribute("data-activity-origin", "real");
   await expect(activity.getByText("演示")).toHaveCount(0);
   await expect(activity).toHaveAttribute("data-activity-origin", "demo", { timeout: 7_000 });
-  await expect(activity.getByText("演示")).toBeVisible();
+  await expect(activity.getByText("演示")).toHaveCount(0);
   await activity.getByRole("button", { name: "关闭近期预约动态" }).click();
   await expect(activity).toHaveCount(0);
 
