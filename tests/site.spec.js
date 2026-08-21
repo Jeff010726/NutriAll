@@ -35,6 +35,9 @@ test("desktop home prioritizes insurance and booking", async ({ page }) => {
   expect(headerLogoBox?.width).toBe(128);
   expect(Math.abs((headerLogoBox?.x ?? 0) - (footerLogoBox?.x ?? 0))).toBeLessThanOrEqual(1);
   await expect(page.locator(".clinic-team-preview > img")).toHaveAttribute("src", /team\/xiaofang-tan\.webp$/);
+  const teamPreviewBox = await page.locator(".clinic-team-preview").boundingBox();
+  expect(teamPreviewBox?.height).toBe(720);
+  await expect(page.locator(".clinic-team-preview > img")).toHaveCSS("object-position", "50% 54%");
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/home-desktop.png", fullPage: true });
 });
@@ -98,6 +101,9 @@ test("every condition bubble has a detailed plain-language Chinese guide", async
     await expect(page.locator(".care-guide-sources a").first()).toHaveAttribute("href", /^https:\/\//);
     await expect(page.locator(".care-guide-booking").getByRole("link", { name: "免费聊 15 分钟" })).toBeVisible();
     await expect(page.locator(".care-guide-booking")).toHaveCSS("background-color", "rgb(23, 53, 46)");
+    const bookingHeadingBox = await page.locator(".care-guide-booking h2").boundingBox();
+    expect(bookingHeadingBox?.width).toBeGreaterThan(700);
+    expect(bookingHeadingBox?.height).toBeLessThan(120);
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", `https://nutriallwellness.org/conditions/${route}`);
     await expect(page.locator('meta[name="description"]')).not.toHaveAttribute("content", /Physician-led medical weight loss/);
     await expectNoHorizontalOverflow(page);
@@ -214,11 +220,16 @@ test("community contracting page explains the offer and keeps a free-call path v
   await expect(page.locator(".community-format-grid article")).toHaveCount(3);
   await expect(page.getByText("Churches and faith communities", { exact: true })).toBeVisible();
   await expect(page.locator(".community-program-hero").getByRole("link", { name: /Book a Free Call/ })).toHaveAttribute("href", "/book?service=community");
+  const communityCtaHeading = await page.locator(".community-final-cta h2").boundingBox();
+  expect(communityCtaHeading?.width).toBeGreaterThan(800);
+  expect(communityCtaHeading?.height).toBeLessThan(100);
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/community-desktop.png", fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("./community-programs?lng=zh-CN", { waitUntil: "networkidle" });
   await expect(page.getByRole("heading", { name: "社区、教会需要营养福利课程，我们可以整套承接。" })).toBeVisible();
+  const mobileCommunityCtaHeading = await page.locator(".community-final-cta h2").boundingBox();
+  expect(mobileCommunityCtaHeading?.width).toBeGreaterThan(320);
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/community-mobile.png", fullPage: true });
 });
