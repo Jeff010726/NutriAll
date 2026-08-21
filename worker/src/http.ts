@@ -17,7 +17,7 @@ function allowedOrigin(request: Request, env: Env) {
     .filter(Boolean);
 
   if (!origin) return configured[0] || defaultOrigin;
-  if (configured.includes(origin) || /^http:\/\/(localhost|127\.0\.0\.1):(3000|5173|5174|5175)$/.test(origin)) {
+  if (configured.includes(origin) || /^http:\/\/(localhost|127\.0\.0\.1|survey\.localhost):(3000|5173|5174|5175|5176)$/.test(origin)) {
     return origin;
   }
   return configured[0] || defaultOrigin;
@@ -27,7 +27,7 @@ export function corsHeaders(request: Request, env: Env) {
   return {
     "Access-Control-Allow-Origin": allowedOrigin(request, env),
     "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type,Authorization",
+    "Access-Control-Allow-Headers": "Content-Type,Authorization,X-Survey-Token",
     "Access-Control-Allow-Credentials": "true",
     Vary: "Origin",
   };

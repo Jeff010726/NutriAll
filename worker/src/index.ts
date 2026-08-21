@@ -19,6 +19,20 @@ import {
 import { submitContact } from "./contact";
 import { publicBookingActivity } from "./bookingActivity";
 import { responseHeaders, json, serverError } from "./http";
+import {
+  manageSurveyArchive,
+  manageSurveyCreate,
+  manageSurveyDuplicate,
+  manageSurveyExport,
+  manageSurveyGet,
+  manageSurveyList,
+  manageSurveyPublish,
+  manageSurveyResults,
+  manageSurveyUpdate,
+  publicSurveyGet,
+  publicSurveySave,
+  publicSurveyStart,
+} from "./surveys";
 import type { Env } from "./types";
 
 function adminResponse(request: Request, env: Env) {
@@ -60,6 +74,62 @@ function adminResponse(request: Request, env: Env) {
   return json(request, env, { error: "Not found" }, { status: 404 });
 }
 
+async function surveyPage(request: Request, env: Env) {
+  if (!env.ASSETS) return json(request, env, { error: "Survey application is unavailable" }, { status: 503 });
+  const assetUrl = new URL(request.url);
+  assetUrl.pathname = "/survey";
+  assetUrl.search = "";
+  return env.ASSETS.fetch(new Request(assetUrl.toString(), request));
+}
+
+async function surveyResponse(request: Request, env: Env, pathname?: string) {
+  const url = new URL(request.url);
+  const path = pathname || url.pathname;
+
+  if (path === "/robots.txt") {
+    return new Response("User-agent: *\nDisallow: /manage\n", {
+      headers: { ...responseHeaders(request, env), "Content-Type": "text/plain; charset=utf-8" },
+    });
+  }
+
+  if (path === "/api/auth/login" && request.method === "POST") return adminLogin(request, env);
+  if (path === "/api/auth/logout" && request.method === "POST") return adminLogout(request, env);
+  if (path === "/api/auth/me" && request.method === "GET") return adminMe(request, env);
+  if (path === "/api/manage/surveys" && request.method === "GET") return manageSurveyList(request, env);
+  if (path === "/api/manage/surveys" && request.method === "POST") return manageSurveyCreate(request, env);
+
+  const manageMatch = path.match(/^\/api\/manage\/surveys\/([^/]+)(?:\/(publish|duplicate|results|export\.csv))?$/);
+  if (manageMatch) {
+    const id = decodeURIComponent(manageMatch[1]);
+    const action = manageMatch[2];
+    if (!action && request.method === "GET") return manageSurveyGet(request, env, id);
+    if (!action && request.method === "PUT") return manageSurveyUpdate(request, env, id);
+    if (!action && request.method === "DELETE") return manageSurveyArchive(request, env, id);
+    if (action === "publish" && request.method === "POST") return manageSurveyPublish(request, env, id);
+    if (action === "duplicate" && request.method === "POST") return manageSurveyDuplicate(request, env, id);
+    if (action === "results" && request.method === "GET") return manageSurveyResults(request, env, id);
+    if (action === "export.csv" && request.method === "GET") return manageSurveyExport(request, env, id);
+  }
+
+  const publicSurveyMatch = path.match(/^\/api\/public\/surveys\/([^/]+)(?:\/(start))?$/);
+  if (publicSurveyMatch) {
+    const slug = decodeURIComponent(publicSurveyMatch[1]);
+    if (!publicSurveyMatch[2] && request.method === "GET") return publicSurveyGet(request, env, slug);
+    if (publicSurveyMatch[2] === "start" && request.method === "POST") return publicSurveyStart(request, env, slug);
+  }
+
+  const publicResponseMatch = path.match(/^\/api\/public\/responses\/([^/]+)(?:\/(submit))?$/);
+  if (publicResponseMatch) {
+    const id = decodeURIComponent(publicResponseMatch[1]);
+    if (!publicResponseMatch[2] && request.method === "PUT") return publicSurveySave(request, env, id, false);
+    if (publicResponseMatch[2] === "submit" && request.method === "POST") return publicSurveySave(request, env, id, true);
+  }
+
+  if (path.startsWith("/api/")) return json(request, env, { error: "Not found" }, { status: 404 });
+  if (/\.[a-z0-9]+$/i.test(path) && env.ASSETS) return env.ASSETS.fetch(request);
+  return surveyPage(request, env);
+}
+
 async function route(request: Request, env: Env, ctx: ExecutionContext) {
   const url = new URL(request.url);
 
@@ -81,6 +151,12 @@ async function route(request: Request, env: Env, ctx: ExecutionContext) {
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: responseHeaders(request, env) });
   }
+
+  if (env.APP_ENV !== "production" && url.pathname.startsWith("/survey-api/")) {
+    return surveyResponse(request, env, url.pathname.slice("/survey-api".length));
+  }
+
+  if (url.hostname === "survey.nutriallwellness.org") return surveyResponse(request, env);
 
   const isAdminHostPage =
     (url.hostname === env.ADMIN_HOST || url.hostname === legacyAdminHost) && !url.pathname.startsWith("/api/");

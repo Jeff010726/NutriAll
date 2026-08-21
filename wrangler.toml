@@ -27,6 +27,10 @@ pattern = "admin.nutriallwellness.org"
 custom_domain = true
 
 [[routes]]
+pattern = "survey.nutriallwellness.org"
+custom_domain = true
+
+[[routes]]
 pattern = "nutriallwellness.org/*"
 zone_name = "nutriallwellness.org"
 
@@ -47,7 +51,7 @@ ADMIN_EMAIL = "xtdiabetescare@outlook.com"
 APP_ORIGIN = "https://nutriallwellness.org"
 ADMIN_HOST = "admin.nutriallwellness.org"
 ADMIN_URL = "https://admin.nutriallwellness.org"
-ALLOWED_ORIGINS = "https://nutriallwellness.org,https://www.nutriallwellness.org,https://nutriallwellness.com,https://www.nutriallwellness.com,https://jeff010726.github.io"
+ALLOWED_ORIGINS = "https://nutriallwellness.org,https://www.nutriallwellness.org,https://nutriallwellness.com,https://www.nutriallwellness.com,https://survey.nutriallwellness.org,https://jeff010726.github.io"
 SMTP_HOST = "smtp.qq.com"
 SMTP_PORT = "465"
 SMTP_USER = "3359746636@qq.com"
