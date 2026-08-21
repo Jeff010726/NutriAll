@@ -36,10 +36,34 @@ type SurveyQuestion = {
   logic?: SurveyLogic | null;
 };
 type SurveyPage = { id: string; title: string; description?: string; questions: SurveyQuestion[] };
+type SurveyQuestionTranslation = {
+  title: string;
+  description: string;
+  options: Record<string, string>;
+  rows: Record<string, string>;
+  columns: Record<string, string>;
+  scaleMinLabel: string;
+  scaleMaxLabel: string;
+};
+type SurveyPageTranslation = {
+  title: string;
+  description: string;
+  questions: Record<string, SurveyQuestionTranslation>;
+};
+type SurveyTranslation = {
+  title: string;
+  description: string;
+  thankYouTitle: string;
+  thankYouMessage: string;
+  pages: Record<string, SurveyPageTranslation>;
+};
 type SurveyDefinition = {
   title: string;
   description?: string;
   language: string;
+  defaultLanguage: string;
+  languages: string[];
+  translations: Record<string, SurveyTranslation>;
   pages: SurveyPage[];
   thankYouTitle: string;
   thankYouMessage: string;
@@ -77,6 +101,7 @@ const questionTypes = new Set<QuestionType>([
   "single", "multiple", "dropdown", "short_text", "long_text", "email", "date", "rating", "matrix", "consent",
 ]);
 const statuses = new Set<SurveyStatus>(["draft", "open", "closed", "archived"]);
+const surveyLanguages = ["en", "zh-CN", "es"];
 const maxDefinitionBytes = 300_000;
 
 function cleanText(value: unknown, maxLength: number) {
@@ -110,6 +135,52 @@ function normalizeOptions(value: unknown, limit = 60): SurveyOption[] {
       label: cleanText(source.label, 300) || `Option ${index + 1}`,
     };
   });
+}
+
+function objectValue(value: unknown) {
+  return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+function normalizeLabelMap(value: unknown, options: SurveyOption[]) {
+  const source = objectValue(value);
+  const result: Record<string, string> = {};
+  for (const option of options) result[option.id] = cleanText(source[option.id], 300);
+  return result;
+}
+
+function normalizeTranslation(value: unknown, pages: SurveyPage[]): SurveyTranslation {
+  const source = objectValue(value);
+  const pageSource = objectValue(source.pages);
+  const translatedPages: Record<string, SurveyPageTranslation> = {};
+  for (const page of pages) {
+    const translatedPageSource = objectValue(pageSource[page.id]);
+    const questionSource = objectValue(translatedPageSource.questions);
+    const translatedQuestions: Record<string, SurveyQuestionTranslation> = {};
+    for (const question of page.questions) {
+      const translatedQuestionSource = objectValue(questionSource[question.id]);
+      translatedQuestions[question.id] = {
+        title: cleanText(translatedQuestionSource.title, 500),
+        description: cleanText(translatedQuestionSource.description, 1_500),
+        options: normalizeLabelMap(translatedQuestionSource.options, question.options || []),
+        rows: normalizeLabelMap(translatedQuestionSource.rows, question.rows || []),
+        columns: normalizeLabelMap(translatedQuestionSource.columns, question.columns || []),
+        scaleMinLabel: cleanText(translatedQuestionSource.scaleMinLabel, 100),
+        scaleMaxLabel: cleanText(translatedQuestionSource.scaleMaxLabel, 100),
+      };
+    }
+    translatedPages[page.id] = {
+      title: cleanText(translatedPageSource.title, 220),
+      description: cleanText(translatedPageSource.description, 1_500),
+      questions: translatedQuestions,
+    };
+  }
+  return {
+    title: cleanText(source.title, 180),
+    description: cleanText(source.description, 2_000),
+    thankYouTitle: cleanText(source.thankYouTitle, 220),
+    thankYouMessage: cleanText(source.thankYouMessage, 1_500),
+    pages: translatedPages,
+  };
 }
 
 function normalizeDefinition(value: unknown): { definition?: SurveyDefinition; error?: string } {
@@ -183,11 +254,20 @@ function normalizeDefinition(value: unknown): { definition?: SurveyDefinition; e
     });
   }
 
+  const translationSource = objectValue(source.translations);
+  const translations: Record<string, SurveyTranslation> = {};
+  for (const language of surveyLanguages.filter((item) => item !== "en")) {
+    translations[language] = normalizeTranslation(translationSource[language], pages);
+  }
+
   return {
     definition: {
       title,
       description: cleanText(source.description, 2_000),
-      language: cleanText(source.language, 16) || "en",
+      language: "en",
+      defaultLanguage: "en",
+      languages: [...surveyLanguages],
+      translations,
       pages,
       thankYouTitle: cleanText(source.thankYouTitle, 220) || "Thank you",
       thankYouMessage: cleanText(source.thankYouMessage, 1_500) || "Your response has been recorded.",
@@ -200,6 +280,12 @@ function defaultDefinition(title: string): SurveyDefinition {
     title,
     description: "",
     language: "en",
+    defaultLanguage: "en",
+    languages: [...surveyLanguages],
+    translations: {
+      "zh-CN": normalizeTranslation({}, []),
+      es: normalizeTranslation({}, []),
+    },
     pages: [{ id: randomId("page_"), title: "Page 1", description: "", questions: [] }],
     thankYouTitle: "Thank you",
     thankYouMessage: "Your response has been recorded.",
@@ -283,10 +369,10 @@ export async function manageSurveyList(request: Request, env: Env) {
 export async function manageSurveyCreate(request: Request, env: Env) {
   const unauthorized = await requireAdmin(request, env);
   if (unauthorized) return unauthorized;
-  const payload = await readJson<{ title?: string; language?: string }>(request);
+  const payload = await readJson<{ title?: string }>(request);
   const title = cleanText(payload?.title, 180) || "Untitled survey";
-  const language = cleanText(payload?.language, 16) || "en";
-  const definition = { ...defaultDefinition(title), language };
+  const language = "en";
+  const definition = defaultDefinition(title);
   const survey: SurveyRow = {
     id: randomId("srv_"), title, slug: await uniqueSlug(env, title), description: "", status: "draft", language,
     draft_definition: JSON.stringify(definition), published_version_id: null,

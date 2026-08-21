@@ -4,6 +4,33 @@ const definition = {
   title: "Community nutrition class survey",
   description: "This short survey helps us plan a class that works for your group.",
   language: "en",
+  defaultLanguage: "en",
+  languages: ["en", "zh-CN", "es"],
+  translations: {
+    "zh-CN": {
+      title: "社区营养课程问卷",
+      description: "这份简短问卷会帮助我们把课程安排得更适合大家。",
+      thankYouTitle: "谢谢你的分享",
+      thankYouMessage: "你的回答会帮助我们安排课程。",
+      pages: {
+        page_1: {
+          title: "你最关心的内容",
+          description: "请选择最符合你的答案。",
+          questions: {
+            q_topic: { title: "哪个主题对你最有帮助？", description: "", options: { weight: "减重", glp1: "GLP-1 营养支持" } },
+            q_notes: { title: "你希望我们讲哪些内容？", description: "选填" },
+          },
+        },
+      },
+    },
+    es: {
+      title: "Encuesta de la clase comunitaria",
+      description: "Esta breve encuesta nos ayuda a planificar la clase.",
+      thankYouTitle: "Gracias por compartir",
+      thankYouMessage: "Su respuesta nos ayudará a planificar la clase.",
+      pages: {},
+    },
+  },
   pages: [
     {
       id: "page_1",
@@ -79,6 +106,26 @@ test("survey dashboard supports search, links, and management actions", async ({
   await page.screenshot({ path: "test-results/survey-dashboard-desktop.png", fullPage: true });
 });
 
+test("new surveys do not ask for a primary language", async ({ page }) => {
+  await mockAuth(page);
+  let createPayload;
+  await page.route("https://survey.nutriallwellness.org/api/manage/surveys", async (route) => {
+    if (route.request().method() !== "POST") return route.continue();
+    createPayload = route.request().postDataJSON();
+    return route.fulfill({ status: 201, contentType: "application/json", body: JSON.stringify({ survey: { ...survey, id: "srv_new" } }) });
+  });
+  await page.route("https://survey.nutriallwellness.org/api/manage/surveys/srv_new", (route) => route.fulfill({
+    status: 200, contentType: "application/json", body: JSON.stringify({ survey: { ...survey, id: "srv_new" } }),
+  }));
+  await page.goto("http://survey.localhost:5176/manage/new", { waitUntil: "networkidle" });
+  await expect(page.getByRole("heading", { name: "Name your survey" })).toBeVisible();
+  await expect(page.getByText("English · 简体中文 · Español")).toBeVisible();
+  await expect(page.getByLabel("Primary language")).toHaveCount(0);
+  await page.getByLabel("Survey title").fill("Care experience survey");
+  await page.getByRole("button", { name: "Create and edit" }).click();
+  await expect.poll(() => createPayload).toEqual({ title: "Care experience survey" });
+});
+
 test("editor adds questions and publishes a version", async ({ page }) => {
   await mockAuth(page);
   let savedDefinition;
@@ -98,8 +145,13 @@ test("editor adds questions and publishes a version", async ({ page }) => {
   await page.locator("#new-question-type").selectOption("rating");
   await page.getByRole("button", { name: "Add question" }).click();
   await expect(page.getByText("Q3", { exact: true })).toBeVisible();
+  await page.getByRole("tab", { name: "简体中文" }).click();
+  await page.getByLabel("Title", { exact: true }).fill("社区营养课程问卷");
+  await expect(page.getByLabel("Answer type").first()).toBeDisabled();
   await page.getByRole("button", { name: "Publish updates" }).click();
   await expect.poll(() => savedDefinition?.pages[0].questions.length).toBe(3);
+  expect(savedDefinition.translations["zh-CN"].title).toBe("社区营养课程问卷");
+  expect(savedDefinition.title).toBe(definition.title);
   await expect(page.getByText("Published version 2")).toBeVisible();
   await expectNoOverflow(page);
   await page.screenshot({ path: "test-results/survey-editor-desktop.png", fullPage: true });
@@ -125,10 +177,15 @@ test("public survey validates, saves, and submits", async ({ page }) => {
   await page.getByRole("button", { name: "Submit" }).click();
   await expect(page.getByText("Please answer this question.")).toBeVisible();
   await page.getByText("Weight loss", { exact: true }).click();
-  await page.getByLabel("What would you like us to cover?").fill("Simple meal planning");
-  await page.getByRole("button", { name: "Submit" }).click();
-  await expect(page.getByRole("heading", { name: "Thank you for sharing" })).toBeVisible();
+  await page.getByLabel("Language").selectOption("zh-CN");
+  await expect(page.getByRole("heading", { name: "社区营养课程问卷" })).toBeVisible();
+  await expect(page.getByText("减重", { exact: true })).toBeVisible();
+  await expect(page.getByText("减重", { exact: true }).locator("..").locator("input")).toBeChecked();
+  await page.getByLabel("你希望我们讲哪些内容？").fill("简单的备餐方法");
+  await page.getByRole("button", { name: "提交" }).click();
+  await expect(page.getByRole("heading", { name: "谢谢你的分享" })).toBeVisible();
   expect(submitted.answers.q_topic).toBe("weight");
+  expect(submitted.answers.q_notes).toBe("简单的备餐方法");
   await expectNoOverflow(page);
   await page.screenshot({ path: "test-results/survey-public-mobile.png", fullPage: true });
 });

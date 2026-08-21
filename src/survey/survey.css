@@ -140,6 +140,14 @@ label .optional { color: var(--muted); font-size: 13px; font-weight: 500; }
 .survey-settings-links { display: grid !important; gap: 4px; margin-top: 20px; padding: 16px 0 0 !important; border-top: 1px solid var(--line); }
 .survey-settings-links button { min-height: 42px; display: flex; align-items: center; gap: 8px; border: 0; background: transparent; color: #405a53; font-weight: 700; cursor: pointer; }
 .survey-editor-content { width: min(1050px, calc(100% - 48px)); margin: 30px auto 80px; display: grid; gap: 24px; }
+.survey-language-panel { min-height: 88px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: 16px 20px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
+.survey-language-panel strong { display: block; font-size: 18px; }
+.survey-language-tabs { display: inline-flex; align-items: center; padding: 3px; border: 1px solid #b9cac4; border-radius: 5px; background: var(--surface); }
+.survey-language-tabs button { min-height: 40px; display: inline-flex; align-items: center; gap: 7px; padding: 7px 13px; border: 0; border-radius: 3px; background: transparent; color: #506861; font-weight: 800; cursor: pointer; }
+.survey-language-tabs button span { display: none; }
+.survey-language-tabs button.active { background: var(--green); color: #fff; }
+.survey-translation-badge { color: var(--green); font-size: 13px; font-weight: 800; }
+.survey-question-editor select:disabled, .survey-question-editor input:disabled { background: #edf1ef; color: #6a7c76; cursor: not-allowed; }
 .survey-details-panel, .survey-page-editor { padding: 26px; border: 1px solid var(--line); border-radius: 6px; background: #fff; }
 .survey-section-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
 .survey-section-heading h1 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 34px; line-height: 1.15; font-weight: 500; }
@@ -225,6 +233,9 @@ label .optional { color: var(--muted); font-size: 13px; font-weight: 500; }
 .public-survey-brand { min-height: 78px; display: flex; align-items: center; justify-content: space-between; width: min(940px, calc(100% - 48px)); margin: 0 auto; }
 .public-survey-brand img { width: 104px; height: 56px; object-fit: contain; object-position: left center; }
 .public-survey-brand span { padding: 4px 9px; border-radius: 3px; background: #fff0d5; color: #75510f; font-size: 13px; font-weight: 800; }
+.public-survey-brand-actions { display: flex; align-items: center; gap: 10px; }
+.public-language-switcher { display: flex; grid: none; align-items: center; gap: 8px; color: #526a63; font-size: 14px; }
+.public-language-switcher select { width: 150px; min-height: 40px; padding-block: 6px; background: #fff; }
 .public-survey-progress { height: 6px; background: #dce5e0; }
 .public-survey-progress span { display: block; height: 100%; background: var(--green); transition: width .25s ease; }
 .public-survey-form { width: min(940px, calc(100% - 48px)); margin: 0 auto; padding: 50px 0 90px; }
@@ -311,6 +322,9 @@ label .optional { color: var(--muted); font-size: 13px; font-weight: 500; }
   .survey-page-nav > div:first-child, .survey-settings-links { display: none !important; }
   .survey-page-nav > button { min-width: 155px; }
   .survey-editor-content { width: calc(100% - 24px); margin: 16px auto 56px; }
+  .survey-language-panel { align-items: stretch; flex-direction: column; gap: 12px; }
+  .survey-language-tabs { width: 100%; }
+  .survey-language-tabs button { flex: 1; justify-content: center; }
   .survey-details-panel, .survey-page-editor { padding: 18px; }
   .survey-question-grid { grid-template-columns: 1fr; }
   .survey-question-grid .wide { grid-column: auto; }
@@ -360,6 +374,9 @@ label .optional { color: var(--muted); font-size: 13px; font-weight: 500; }
   .survey-individual-layout > section { padding: 18px; }
   .survey-response-meta { align-items: flex-start; flex-direction: column; }
   .public-survey-brand, .public-survey-form { width: calc(100% - 28px); }
+  .public-survey-brand img { width: 82px; }
+  .public-language-switcher > span { display: none; }
+  .public-language-switcher select { width: 132px; }
   .public-survey-form { padding: 32px 0 70px; }
   .public-survey-intro { margin-bottom: 34px; }
   .public-survey-intro h1 { font-size: 34px; }

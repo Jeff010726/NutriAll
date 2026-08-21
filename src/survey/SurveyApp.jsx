@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { BrowserRouter, Link, Navigate, Route, Routes, useLocation, useNavigate, useParams } from "react-router-dom";
 import {
   Archive, ArrowDown, ArrowLeft, ArrowRight, ArrowUp, BarChart3, Check, CheckCircle2,
@@ -19,6 +19,171 @@ const typeLabels = {
   matrix: "Matrix",
   consent: "Consent",
 };
+
+const surveyLanguages = [
+  { code: "en", label: "English", short: "EN" },
+  { code: "zh-CN", label: "简体中文", short: "中" },
+  { code: "es", label: "Español", short: "ES" },
+];
+
+const publicCopy = {
+  en: {
+    survey: "NUTRIALL SURVEY", page: "Page", of: "of", required: "Required", select: "Select an answer",
+    agree: "I agree", answer: "Please answer this question.", agreeError: "Please agree before continuing.",
+    matrixError: "Please answer every row.", empty: "There are no questions on this page.", back: "Back",
+    next: "Next", submit: "Submit", saving: "Saving...", preview: "Preview mode", restart: "Restart preview",
+    unavailable: "Survey unavailable", loading: "Loading survey",
+    startError: "The response could not be started. Please refresh and try again.",
+    privacy: "Your response is anonymous unless this survey asks you for identifying information. Do not include private health details unless the question specifically requests them.",
+    language: "Language",
+  },
+  "zh-CN": {
+    survey: "NUTRIALL 问卷", page: "第", of: "页，共", required: "必答", select: "请选择",
+    agree: "我同意", answer: "请回答这个问题。", agreeError: "请先同意再继续。", matrixError: "请回答每一行。",
+    empty: "这一页暂时没有问题。", back: "返回", next: "下一页", submit: "提交", saving: "正在保存...",
+    preview: "预览模式", restart: "重新预览", unavailable: "问卷暂不可用", loading: "正在加载问卷",
+    startError: "无法开始填写，请刷新页面后重试。",
+    privacy: "除非问卷主动询问身份信息，否则回答默认匿名。请不要填写题目没有要求的个人健康隐私。",
+    language: "语言",
+  },
+  es: {
+    survey: "ENCUESTA NUTRIALL", page: "Página", of: "de", required: "Obligatoria", select: "Seleccione una respuesta",
+    agree: "Acepto", answer: "Responda esta pregunta.", agreeError: "Debe aceptar antes de continuar.",
+    matrixError: "Responda cada fila.", empty: "No hay preguntas en esta página.", back: "Atrás", next: "Siguiente",
+    submit: "Enviar", saving: "Guardando...", preview: "Modo de vista previa", restart: "Reiniciar vista previa",
+    unavailable: "Encuesta no disponible", loading: "Cargando encuesta",
+    startError: "No se pudo iniciar la respuesta. Actualice la página e inténtelo de nuevo.",
+    privacy: "Su respuesta es anónima salvo que la encuesta solicite información de identificación. No incluya datos médicos privados que la pregunta no solicite.",
+    language: "Idioma",
+  },
+};
+
+function ensureMultilingualDefinition(definition) {
+  return {
+    ...definition,
+    language: "en",
+    defaultLanguage: "en",
+    languages: surveyLanguages.map((item) => item.code),
+    translations: { "zh-CN": {}, es: {}, ...(definition.translations || {}) },
+  };
+}
+
+function translatedValue(value, fallback) {
+  return typeof value === "string" && value.trim() ? value : fallback;
+}
+
+function localizeDefinition(rawDefinition, language) {
+  const definition = ensureMultilingualDefinition(rawDefinition);
+  if (language === "en") return definition;
+  const translation = definition.translations?.[language] || {};
+  return {
+    ...definition,
+    title: translatedValue(translation.title, definition.title),
+    description: translatedValue(translation.description, definition.description),
+    thankYouTitle: translatedValue(translation.thankYouTitle, definition.thankYouTitle),
+    thankYouMessage: translatedValue(translation.thankYouMessage, definition.thankYouMessage),
+    pages: definition.pages.map((page) => {
+      const translatedPage = translation.pages?.[page.id] || {};
+      return {
+        ...page,
+        title: translatedValue(translatedPage.title, page.title),
+        description: translatedValue(translatedPage.description, page.description),
+        questions: page.questions.map((question) => {
+          const translatedQuestion = translatedPage.questions?.[question.id] || {};
+          const translateOptions = (items, labels) => items?.map((item) => ({ ...item, label: translatedValue(labels?.[item.id], item.label) }));
+          return {
+            ...question,
+            title: translatedValue(translatedQuestion.title, question.title),
+            description: translatedValue(translatedQuestion.description, question.description),
+            options: translateOptions(question.options, translatedQuestion.options),
+            rows: translateOptions(question.rows, translatedQuestion.rows),
+            columns: translateOptions(question.columns, translatedQuestion.columns),
+            scaleMinLabel: translatedValue(translatedQuestion.scaleMinLabel, question.scaleMinLabel),
+            scaleMaxLabel: translatedValue(translatedQuestion.scaleMaxLabel, question.scaleMaxLabel),
+          };
+        }),
+      };
+    }),
+  };
+}
+
+function translationEditorDefinition(rawDefinition, language) {
+  const definition = ensureMultilingualDefinition(rawDefinition);
+  if (language === "en") return definition;
+  const translation = definition.translations?.[language] || {};
+  return {
+    ...definition,
+    title: translation.title || "",
+    description: translation.description || "",
+    thankYouTitle: translation.thankYouTitle || "",
+    thankYouMessage: translation.thankYouMessage || "",
+    pages: definition.pages.map((page) => {
+      const translatedPage = translation.pages?.[page.id] || {};
+      return {
+        ...page,
+        title: translatedPage.title || "",
+        description: translatedPage.description || "",
+        questions: page.questions.map((question) => {
+          const translatedQuestion = translatedPage.questions?.[question.id] || {};
+          const editOptions = (items, labels) => items?.map((item) => ({ ...item, label: labels?.[item.id] || "" }));
+          return {
+            ...question,
+            title: translatedQuestion.title || "",
+            description: translatedQuestion.description || "",
+            options: editOptions(question.options, translatedQuestion.options),
+            rows: editOptions(question.rows, translatedQuestion.rows),
+            columns: editOptions(question.columns, translatedQuestion.columns),
+            scaleMinLabel: translatedQuestion.scaleMinLabel || "",
+            scaleMaxLabel: translatedQuestion.scaleMaxLabel || "",
+          };
+        }),
+      };
+    }),
+  };
+}
+
+function translationFromEditor(currentTranslation, sourceDefinition, editedDefinition) {
+  const translation = structuredClone(currentTranslation || {});
+  translation.title = editedDefinition.title || "";
+  translation.description = editedDefinition.description || "";
+  translation.thankYouTitle = editedDefinition.thankYouTitle || "";
+  translation.thankYouMessage = editedDefinition.thankYouMessage || "";
+  translation.pages ||= {};
+  for (let pageIndex = 0; pageIndex < sourceDefinition.pages.length; pageIndex += 1) {
+    const sourcePage = sourceDefinition.pages[pageIndex];
+    const editedPage = editedDefinition.pages[pageIndex];
+    const translatedPage = translation.pages[sourcePage.id] || { questions: {} };
+    translatedPage.title = editedPage.title || "";
+    translatedPage.description = editedPage.description || "";
+    translatedPage.questions ||= {};
+    for (let questionIndex = 0; questionIndex < sourcePage.questions.length; questionIndex += 1) {
+      const sourceQuestion = sourcePage.questions[questionIndex];
+      const editedQuestion = editedPage.questions[questionIndex];
+      translatedPage.questions[sourceQuestion.id] = {
+        title: editedQuestion.title || "",
+        description: editedQuestion.description || "",
+        options: Object.fromEntries((editedQuestion.options || []).map((item) => [item.id, item.label || ""])),
+        rows: Object.fromEntries((editedQuestion.rows || []).map((item) => [item.id, item.label || ""])),
+        columns: Object.fromEntries((editedQuestion.columns || []).map((item) => [item.id, item.label || ""])),
+        scaleMinLabel: editedQuestion.scaleMinLabel || "",
+        scaleMaxLabel: editedQuestion.scaleMaxLabel || "",
+      };
+    }
+    translation.pages[sourcePage.id] = translatedPage;
+  }
+  return translation;
+}
+
+function initialPublicLanguage(definition, search) {
+  const requested = new URLSearchParams(search).get("lang") || new URLSearchParams(search).get("lng");
+  if (surveyLanguages.some((item) => item.code === requested)) return requested;
+  const stored = localStorage.getItem("nutriall-survey-language");
+  if (surveyLanguages.some((item) => item.code === stored)) return stored;
+  const browserLanguage = navigator.language.toLowerCase();
+  if (browserLanguage.startsWith("zh")) return "zh-CN";
+  if (browserLanguage.startsWith("es")) return "es";
+  return definition.defaultLanguage || "en";
+}
 
 const emptyQuestion = (type = "single") => ({
   id: crypto.randomUUID(), type, title: "New question", description: "", required: false,
@@ -221,7 +386,6 @@ function Dashboard() {
 
 function NewSurvey() {
   const [title, setTitle] = useState("");
-  const [language, setLanguage] = useState("en");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -232,7 +396,7 @@ function NewSurvey() {
     setSubmitting(true);
     setError("");
     try {
-      const data = await surveyApi("/api/manage/surveys", { method: "POST", body: { title, language } });
+      const data = await surveyApi("/api/manage/surveys", { method: "POST", body: { title } });
       navigate(`/manage/${data.survey.id}/design`);
     } catch (err) {
       setError(err.message);
@@ -242,17 +406,16 @@ function NewSurvey() {
 
   return <main className="survey-admin-page narrow">
     <Link className="survey-back-link" to="/manage"><ArrowLeft /> Back to surveys</Link>
-    <header className="survey-page-header"><div><p className="survey-eyebrow">NEW SURVEY</p><h1>Start with the basics</h1><p>You can change these details at any time.</p></div></header>
+    <header className="survey-page-header"><div><p className="survey-eyebrow">NEW SURVEY</p><h1>Name your survey</h1><p>English · 简体中文 · Español</p></div></header>
     <form className="survey-form-panel" onSubmit={submit}>
       <label>Survey title<input value={title} onChange={(event) => setTitle(event.target.value)} placeholder="For example: Pre-class survey" required autoFocus /></label>
-      <label>Primary language<select value={language} onChange={(event) => setLanguage(event.target.value)}><option value="en">English</option><option value="zh-CN">简体中文</option><option value="es">Español</option></select></label>
       <ErrorNotice message={error} />
       <div className="survey-form-actions"><Link className="survey-button tertiary" to="/manage">Cancel</Link><button className="survey-button primary" disabled={submitting}>{submitting ? "Creating..." : "Create and edit"}<ArrowRight /></button></div>
     </form>
   </main>;
 }
 
-function QuestionEditor({ question, index, priorQuestions, onChange, onMove, onDuplicate, onDelete }) {
+function QuestionEditor({ question, fallbackQuestion = question, index, priorQuestions, onChange, onMove, onDuplicate, onDelete, isTranslation = false }) {
   const choiceType = ["single", "multiple", "dropdown"].includes(question.type);
   const logicSource = priorQuestions.find((item) => item.id === question.logic?.questionId);
   function patch(updates) { onChange({ ...question, ...updates }); }
@@ -265,25 +428,25 @@ function QuestionEditor({ question, index, priorQuestions, onChange, onMove, onD
   return <article className="survey-question-editor">
     <div className="survey-question-head">
       <span className="survey-drag-label"><GripVertical /> Q{index + 1}</span>
-      <div className="survey-question-actions">
+      {!isTranslation ? <div className="survey-question-actions">
         <button type="button" onClick={() => onMove(-1)} aria-label="Move question up"><ArrowUp /></button>
         <button type="button" onClick={() => onMove(1)} aria-label="Move question down"><ArrowDown /></button>
         <button type="button" onClick={onDuplicate} aria-label="Duplicate question"><Copy /></button>
         <button type="button" className="danger" onClick={onDelete} aria-label="Delete question"><Trash2 /></button>
-      </div>
+      </div> : <span className="survey-translation-badge">Translation</span>}
     </div>
     <div className="survey-question-grid">
-      <label className="wide">Question<input value={question.title} onChange={(event) => patch({ title: event.target.value })} /></label>
-      <label>Answer type<select value={question.type} onChange={(event) => patch({ type: event.target.value })}>{Object.entries(typeLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
-      <label className="wide">Help text <span className="optional">optional</span><input value={question.description || ""} onChange={(event) => patch({ description: event.target.value })} placeholder="Add context without making the question longer" /></label>
+      <label className="wide">Question<input value={question.title} placeholder={isTranslation ? fallbackQuestion.title : ""} onChange={(event) => patch({ title: event.target.value })} /></label>
+      <label>Answer type<select value={question.type} disabled={isTranslation} onChange={(event) => patch({ type: event.target.value })}>{Object.entries(typeLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
+      <label className="wide">Help text <span className="optional">optional</span><input value={question.description || ""} onChange={(event) => patch({ description: event.target.value })} placeholder={isTranslation ? fallbackQuestion.description || "English help text" : "Add context without making the question longer"} /></label>
     </div>
-    {choiceType && <div className="survey-option-editor"><span>Answer choices</span>{(question.options || []).map((option, optionIndex) => <div key={option.id}><input aria-label={`Option ${optionIndex + 1}`} value={option.label} onChange={(event) => updateList("options", optionIndex, event.target.value)} /><button type="button" onClick={() => removeList("options", optionIndex)} aria-label={`Remove option ${optionIndex + 1}`}><X /></button></div>)}<button type="button" className="survey-text-button" onClick={() => addList("options", `Option ${(question.options?.length || 0) + 1}`)}><Plus /> Add choice</button></div>}
-    {question.type === "rating" && <div className="survey-rating-editor"><label>From<input type="number" min="0" max="9" value={question.scaleMin} onChange={(event) => patch({ scaleMin: Number(event.target.value) })} /></label><label>To<input type="number" min="2" max="10" value={question.scaleMax} onChange={(event) => patch({ scaleMax: Number(event.target.value) })} /></label><label>Low label<input value={question.scaleMinLabel || ""} onChange={(event) => patch({ scaleMinLabel: event.target.value })} /></label><label>High label<input value={question.scaleMaxLabel || ""} onChange={(event) => patch({ scaleMaxLabel: event.target.value })} /></label></div>}
+    {choiceType && <div className="survey-option-editor"><span>Answer choices</span>{(question.options || []).map((option, optionIndex) => <div key={option.id}><input aria-label={`Option ${optionIndex + 1}`} value={option.label} placeholder={isTranslation ? fallbackQuestion.options?.[optionIndex]?.label : ""} onChange={(event) => updateList("options", optionIndex, event.target.value)} />{!isTranslation && <button type="button" onClick={() => removeList("options", optionIndex)} aria-label={`Remove option ${optionIndex + 1}`}><X /></button>}</div>)}{!isTranslation && <button type="button" className="survey-text-button" onClick={() => addList("options", `Option ${(question.options?.length || 0) + 1}`)}><Plus /> Add choice</button>}</div>}
+    {question.type === "rating" && <div className="survey-rating-editor"><label>From<input type="number" min="0" max="9" disabled={isTranslation} value={question.scaleMin} onChange={(event) => patch({ scaleMin: Number(event.target.value) })} /></label><label>To<input type="number" min="2" max="10" disabled={isTranslation} value={question.scaleMax} onChange={(event) => patch({ scaleMax: Number(event.target.value) })} /></label><label>Low label<input value={question.scaleMinLabel || ""} placeholder={isTranslation ? fallbackQuestion.scaleMinLabel : ""} onChange={(event) => patch({ scaleMinLabel: event.target.value })} /></label><label>High label<input value={question.scaleMaxLabel || ""} placeholder={isTranslation ? fallbackQuestion.scaleMaxLabel : ""} onChange={(event) => patch({ scaleMaxLabel: event.target.value })} /></label></div>}
     {question.type === "matrix" && <div className="survey-matrix-editor">
-      <div><span>Rows</span>{(question.rows || []).map((row, rowIndex) => <div key={row.id}><input value={row.label} onChange={(event) => updateList("rows", rowIndex, event.target.value)} /><button type="button" onClick={() => removeList("rows", rowIndex)} aria-label="Remove row"><X /></button></div>)}<button type="button" className="survey-text-button" onClick={() => addList("rows", `Row ${(question.rows?.length || 0) + 1}`)}><Plus /> Add row</button></div>
-      <div><span>Columns</span>{(question.columns || []).map((column, columnIndex) => <div key={column.id}><input value={column.label} onChange={(event) => updateList("columns", columnIndex, event.target.value)} /><button type="button" onClick={() => removeList("columns", columnIndex)} aria-label="Remove column"><X /></button></div>)}<button type="button" className="survey-text-button" onClick={() => addList("columns", `Column ${(question.columns?.length || 0) + 1}`)}><Plus /> Add column</button></div>
+      <div><span>Rows</span>{(question.rows || []).map((row, rowIndex) => <div key={row.id}><input value={row.label} placeholder={isTranslation ? fallbackQuestion.rows?.[rowIndex]?.label : ""} onChange={(event) => updateList("rows", rowIndex, event.target.value)} />{!isTranslation && <button type="button" onClick={() => removeList("rows", rowIndex)} aria-label="Remove row"><X /></button>}</div>)}{!isTranslation && <button type="button" className="survey-text-button" onClick={() => addList("rows", `Row ${(question.rows?.length || 0) + 1}`)}><Plus /> Add row</button>}</div>
+      <div><span>Columns</span>{(question.columns || []).map((column, columnIndex) => <div key={column.id}><input value={column.label} placeholder={isTranslation ? fallbackQuestion.columns?.[columnIndex]?.label : ""} onChange={(event) => updateList("columns", columnIndex, event.target.value)} />{!isTranslation && <button type="button" onClick={() => removeList("columns", columnIndex)} aria-label="Remove column"><X /></button>}</div>)}{!isTranslation && <button type="button" className="survey-text-button" onClick={() => addList("columns", `Column ${(question.columns?.length || 0) + 1}`)}><Plus /> Add column</button>}</div>
     </div>}
-    <div className="survey-question-footer">
+    {!isTranslation && <div className="survey-question-footer">
       <label className="survey-check"><input type="checkbox" checked={Boolean(question.required)} onChange={(event) => patch({ required: event.target.checked })} /> Required</label>
       <details className="survey-logic" open={Boolean(question.logic)}>
         <summary><Settings2 /> Display logic</summary>
@@ -294,7 +457,7 @@ function QuestionEditor({ question, index, priorQuestions, onChange, onMove, onD
           </>}
         </div>
       </details>
-    </div>
+    </div>}
   </article>;
 }
 
@@ -303,6 +466,7 @@ function EditorPage() {
   const [survey, setSurvey] = useState(null);
   const [definition, setDefinition] = useState(null);
   const [activePage, setActivePage] = useState(0);
+  const [contentLanguage, setContentLanguage] = useState("en");
   const [slug, setSlug] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -314,7 +478,7 @@ function EditorPage() {
 
   useEffect(() => {
     surveyApi(`/api/manage/surveys/${id}`).then((data) => {
-      setSurvey(data.survey); setDefinition(data.survey.definition); setSlug(data.survey.slug);
+      setSurvey(data.survey); setDefinition(ensureMultilingualDefinition(data.survey.definition)); setSlug(data.survey.slug);
     }).catch((err) => setError(err.message)).finally(() => setLoading(false));
   }, [id]);
 
@@ -338,7 +502,7 @@ function EditorPage() {
     setSaving(true); setError("");
     try {
       const data = await surveyApi(`/api/manage/surveys/${id}`, { method: "PUT", body: { definition, slug, status: statusOverride || survey.status } });
-      setSurvey(data.survey); setDefinition(data.survey.definition); setSlug(data.survey.slug); setDirty(false); setNotice("Draft saved");
+      setSurvey(data.survey); setDefinition(ensureMultilingualDefinition(data.survey.definition)); setSlug(data.survey.slug); setDirty(false); setNotice("Draft saved");
       return data.survey;
     } catch (err) {
       setError(err.message);
@@ -362,12 +526,31 @@ function EditorPage() {
     try { await save(nextStatus); } catch { /* Error is already displayed. */ }
   }
 
+  function changeEditingDefinition(updater) {
+    if (contentLanguage === "en") {
+      changeDefinition(updater);
+      return;
+    }
+    changeDefinition((current) => {
+      const source = ensureMultilingualDefinition(current);
+      const editorDefinition = translationEditorDefinition(source, contentLanguage);
+      const edited = typeof updater === "function" ? updater(editorDefinition) : updater;
+      return {
+        ...source,
+        translations: {
+          ...source.translations,
+          [contentLanguage]: translationFromEditor(source.translations?.[contentLanguage], source, edited),
+        },
+      };
+    });
+  }
+
   function updatePage(updates) {
-    changeDefinition((current) => ({ ...current, pages: current.pages.map((page, index) => index === activePage ? { ...page, ...updates } : page) }));
+    changeEditingDefinition((current) => ({ ...current, pages: current.pages.map((page, index) => index === activePage ? { ...page, ...updates } : page) }));
   }
 
   function updateQuestion(questionIndex, question) {
-    const page = definition.pages[activePage];
+    const page = translationEditorDefinition(definition, contentLanguage).pages[activePage];
     updatePage({ questions: page.questions.map((item, index) => index === questionIndex ? question : item) });
   }
 
@@ -407,6 +590,9 @@ function EditorPage() {
   if (loading) return <main className="survey-admin-page"><Spinner label="Loading editor" /></main>;
   if (!definition || !survey) return <main className="survey-admin-page"><ErrorNotice message={error || "Survey not found"} /></main>;
   const page = definition.pages[activePage];
+  const editingDefinition = translationEditorDefinition(definition, contentLanguage);
+  const editingPage = editingDefinition.pages[activePage];
+  const isTranslation = contentLanguage !== "en";
   const priorPagesQuestions = definition.pages.slice(0, activePage).flatMap((item) => item.questions);
 
   return <main className="survey-editor-page">
@@ -422,7 +608,7 @@ function EditorPage() {
     <ErrorNotice message={error} />
     <div className="survey-editor-layout">
       <aside className="survey-page-nav">
-        <div><span>Pages</span><button onClick={addPage} aria-label="Add page"><Plus /></button></div>
+        <div><span>Pages</span>{!isTranslation && <button onClick={addPage} aria-label="Add page"><Plus /></button>}</div>
         {definition.pages.map((item, index) => <button className={activePage === index ? "active" : ""} onClick={() => setActivePage(index)} key={item.id}><span>{index + 1}</span><span>{item.title}</span><small>{item.questions.length}</small></button>)}
         <div className="survey-settings-links">
           <button onClick={() => document.getElementById("survey-details")?.scrollIntoView()}><Settings2 /> Survey details</button>
@@ -430,25 +616,28 @@ function EditorPage() {
         </div>
       </aside>
       <div className="survey-editor-content">
+        <section className="survey-language-panel" aria-label="Survey content language">
+          <div><p className="survey-eyebrow">CONTENT LANGUAGE</p><strong>Survey wording</strong></div>
+          <div className="survey-language-tabs" role="tablist">{surveyLanguages.map((language) => <button type="button" role="tab" aria-selected={contentLanguage === language.code} className={contentLanguage === language.code ? "active" : ""} onClick={() => setContentLanguage(language.code)} key={language.code}><span>{language.short}</span>{language.label}</button>)}</div>
+        </section>
         <section id="survey-details" className="survey-details-panel">
           <div className="survey-section-heading"><div><p className="survey-eyebrow">SURVEY DETAILS</p><h1>Edit survey</h1></div>{survey.publishedVersionId && <label className="survey-inline-status">Collection<select value={survey.status} onChange={(event) => changeStatus(event.target.value)}><option value="open">Open</option><option value="closed">Closed</option></select></label>}</div>
           <div className="survey-question-grid">
-            <label className="wide">Title<input value={definition.title} onChange={(event) => changeDefinition({ ...definition, title: event.target.value })} /></label>
-            <label className="wide">Introduction<textarea rows="3" value={definition.description || ""} onChange={(event) => changeDefinition({ ...definition, description: event.target.value })} /></label>
-            <label>Link name<div className="survey-slug-input"><span>/s/</span><input value={slug} onChange={(event) => { setSlug(event.target.value); setDirty(true); }} /></div></label>
-            <label>Language<select value={definition.language} onChange={(event) => changeDefinition({ ...definition, language: event.target.value })}><option value="en">English</option><option value="zh-CN">简体中文</option><option value="es">Español</option></select></label>
+            <label className="wide">Title<input value={editingDefinition.title} placeholder={isTranslation ? definition.title : ""} onChange={(event) => changeEditingDefinition({ ...editingDefinition, title: event.target.value })} /></label>
+            <label className="wide">Introduction<textarea rows="3" value={editingDefinition.description || ""} placeholder={isTranslation ? definition.description : ""} onChange={(event) => changeEditingDefinition({ ...editingDefinition, description: event.target.value })} /></label>
+            {!isTranslation && <label>Share link<div className="survey-slug-input"><span>/s/</span><input value={slug} onChange={(event) => { setSlug(event.target.value); setDirty(true); }} /></div></label>}
           </div>
         </section>
         <section className="survey-page-editor">
-          <div className="survey-page-editor-head"><div><p className="survey-eyebrow">PAGE {activePage + 1}</p><input className="survey-page-title-input" value={page.title} onChange={(event) => updatePage({ title: event.target.value })} aria-label="Page title" /><input className="survey-page-description-input" value={page.description || ""} onChange={(event) => updatePage({ description: event.target.value })} placeholder="Optional page introduction" aria-label="Page introduction" /></div>{definition.pages.length > 1 && <button className="survey-text-button danger" onClick={deletePage}><Trash2 /> Delete page</button>}</div>
+          <div className="survey-page-editor-head"><div><p className="survey-eyebrow">PAGE {activePage + 1}</p><input className="survey-page-title-input" value={editingPage.title} placeholder={isTranslation ? page.title : ""} onChange={(event) => updatePage({ title: event.target.value })} aria-label="Page title" /><input className="survey-page-description-input" value={editingPage.description || ""} onChange={(event) => updatePage({ description: event.target.value })} placeholder={isTranslation ? page.description || "English page introduction" : "Optional page introduction"} aria-label="Page introduction" /></div>{!isTranslation && definition.pages.length > 1 && <button className="survey-text-button danger" onClick={deletePage}><Trash2 /> Delete page</button>}</div>
           <div className="survey-question-stack">
-            {page.questions.map((question, questionIndex) => <QuestionEditor key={question.id} question={question} index={questionIndex} priorQuestions={[...priorPagesQuestions, ...page.questions.slice(0, questionIndex)]} onChange={(value) => updateQuestion(questionIndex, value)} onMove={(direction) => moveQuestion(questionIndex, direction)} onDuplicate={() => duplicateQuestion(questionIndex)} onDelete={() => deleteQuestion(questionIndex)} />)}
+            {editingPage.questions.map((question, questionIndex) => <QuestionEditor key={question.id} question={question} fallbackQuestion={page.questions[questionIndex]} isTranslation={isTranslation} index={questionIndex} priorQuestions={[...priorPagesQuestions, ...page.questions.slice(0, questionIndex)]} onChange={(value) => updateQuestion(questionIndex, value)} onMove={(direction) => moveQuestion(questionIndex, direction)} onDuplicate={() => duplicateQuestion(questionIndex)} onDelete={() => deleteQuestion(questionIndex)} />)}
           </div>
-          <div className="survey-add-question"><select defaultValue="single" id="new-question-type"><option value="single">Single choice</option><option value="multiple">Multiple choice</option><option value="dropdown">Dropdown</option><option value="short_text">Short answer</option><option value="long_text">Long answer</option><option value="email">Email</option><option value="date">Date</option><option value="rating">Rating scale</option><option value="matrix">Matrix</option><option value="consent">Consent</option></select><button className="survey-button secondary" onClick={() => { const type = document.getElementById("new-question-type").value; updatePage({ questions: [...page.questions, emptyQuestion(type)] }); }}><Plus /> Add question</button></div>
+          {!isTranslation && <div className="survey-add-question"><select defaultValue="single" id="new-question-type"><option value="single">Single choice</option><option value="multiple">Multiple choice</option><option value="dropdown">Dropdown</option><option value="short_text">Short answer</option><option value="long_text">Long answer</option><option value="email">Email</option><option value="date">Date</option><option value="rating">Rating scale</option><option value="matrix">Matrix</option><option value="consent">Consent</option></select><button className="survey-button secondary" onClick={() => { const type = document.getElementById("new-question-type").value; updatePage({ questions: [...page.questions, emptyQuestion(type)] }); }}><Plus /> Add question</button></div>}
         </section>
         <section className="survey-details-panel">
           <p className="survey-eyebrow">COMPLETION PAGE</p>
-          <div className="survey-question-grid"><label className="wide">Heading<input value={definition.thankYouTitle} onChange={(event) => changeDefinition({ ...definition, thankYouTitle: event.target.value })} /></label><label className="wide">Message<textarea rows="3" value={definition.thankYouMessage} onChange={(event) => changeDefinition({ ...definition, thankYouMessage: event.target.value })} /></label></div>
+          <div className="survey-question-grid"><label className="wide">Heading<input value={editingDefinition.thankYouTitle} placeholder={isTranslation ? definition.thankYouTitle : ""} onChange={(event) => changeEditingDefinition({ ...editingDefinition, thankYouTitle: event.target.value })} /></label><label className="wide">Message<textarea rows="3" value={editingDefinition.thankYouMessage} placeholder={isTranslation ? definition.thankYouMessage : ""} onChange={(event) => changeEditingDefinition({ ...editingDefinition, thankYouMessage: event.target.value })} /></label></div>
         </section>
       </div>
     </div>
@@ -522,36 +711,44 @@ function shouldShow(question, answers) {
   return String(answer ?? "") === question.logic.value;
 }
 
-function PublicQuestion({ question, index, value, onChange, error }) {
+function PublicQuestion({ question, index, value, onChange, error, copy }) {
   const id = `question-${question.id}`;
   return <fieldset className={`public-question ${error ? "has-error" : ""}`} aria-describedby={error ? `${id}-error` : undefined}>
-    <legend><span>{index + 1}.</span> {question.title} {question.required && <em>Required</em>}</legend>
+    <legend><span>{index + 1}.</span> {question.title} {question.required && <em>{copy.required}</em>}</legend>
     {question.description && <p className="public-question-help">{question.description}</p>}
     {["single", "multiple"].includes(question.type) && <div className="public-choice-list">{(question.options || []).map((option) => <label key={option.id}><input type={question.type === "multiple" ? "checkbox" : "radio"} name={id} checked={question.type === "multiple" ? (value || []).includes(option.id) : value === option.id} onChange={(event) => { if (question.type === "multiple") onChange(event.target.checked ? [...(value || []), option.id] : (value || []).filter((item) => item !== option.id)); else onChange(option.id); }} /><span>{option.label}</span></label>)}</div>}
-    {question.type === "dropdown" && <select id={id} aria-label={question.title} value={value || ""} onChange={(event) => onChange(event.target.value)}><option value="">Select an answer</option>{(question.options || []).map((option) => <option value={option.id} key={option.id}>{option.label}</option>)}</select>}
+    {question.type === "dropdown" && <select id={id} aria-label={question.title} value={value || ""} onChange={(event) => onChange(event.target.value)}><option value="">{copy.select}</option>{(question.options || []).map((option) => <option value={option.id} key={option.id}>{option.label}</option>)}</select>}
     {["short_text", "email", "date"].includes(question.type) && <input id={id} aria-label={question.title} type={question.type === "email" ? "email" : question.type === "date" ? "date" : "text"} value={value || ""} onChange={(event) => onChange(event.target.value)} />}
     {question.type === "long_text" && <textarea id={id} aria-label={question.title} rows="5" value={value || ""} onChange={(event) => onChange(event.target.value)} />}
     {question.type === "rating" && <div className="public-rating"><div className="public-rating-labels"><span>{question.scaleMinLabel}</span><span>{question.scaleMaxLabel}</span></div><div>{Array.from({ length: question.scaleMax - question.scaleMin + 1 }, (_, offset) => question.scaleMin + offset).map((rating) => <label key={rating}><input type="radio" name={id} checked={String(value) === String(rating)} onChange={() => onChange(String(rating))} /><span>{rating}</span></label>)}</div></div>}
     {question.type === "matrix" && <div className="public-matrix"><table><thead><tr><th></th>{question.columns.map((column) => <th key={column.id}>{column.label}</th>)}</tr></thead><tbody>{question.rows.map((row) => <tr key={row.id}><th>{row.label}</th>{question.columns.map((column) => <td key={column.id}><input type="radio" name={`${id}-${row.id}`} aria-label={`${row.label}: ${column.label}`} checked={value?.[row.id] === column.id} onChange={() => onChange({ ...(value || {}), [row.id]: column.id })} /></td>)}</tr>)}</tbody></table></div>}
-    {question.type === "consent" && <label className="public-consent"><input type="checkbox" checked={value === true} onChange={(event) => onChange(event.target.checked)} /><span>I agree</span></label>}
+    {question.type === "consent" && <label className="public-consent"><input type="checkbox" checked={value === true} onChange={(event) => onChange(event.target.checked)} /><span>{copy.agree}</span></label>}
     {error && <p className="public-question-error" id={`${id}-error`}>{error}</p>}
   </fieldset>;
 }
 
-function validatePage(page, answers) {
+function validatePage(page, answers, copy) {
   const errors = {};
   for (const question of page.questions) {
     if (!question.required || !shouldShow(question, answers)) continue;
     const value = answers[question.id];
-    if (value === undefined || value === null || value === "" || (Array.isArray(value) && !value.length)) errors[question.id] = "Please answer this question.";
-    if (question.type === "consent" && value !== true) errors[question.id] = "Please agree before continuing.";
-    if (question.type === "matrix" && question.rows.some((row) => !value?.[row.id])) errors[question.id] = "Please answer every row.";
+    if (value === undefined || value === null || value === "" || (Array.isArray(value) && !value.length)) errors[question.id] = copy.answer;
+    if (question.type === "consent" && value !== true) errors[question.id] = copy.agreeError;
+    if (question.type === "matrix" && question.rows.some((row) => !value?.[row.id])) errors[question.id] = copy.matrixError;
   }
   return errors;
 }
 
+function PublicLanguageSwitcher({ language, onChange }) {
+  const copy = publicCopy[language] || publicCopy.en;
+  return <label className="public-language-switcher"><span>{copy.language}</span><select aria-label={copy.language} value={language} onChange={(event) => onChange(event.target.value)}>{surveyLanguages.map((item) => <option key={item.code} value={item.code}>{item.label}</option>)}</select></label>;
+}
+
 function SurveyRunner({ survey, preview = false }) {
-  const definition = survey.definition;
+  const location = useLocation();
+  const [language, setLanguage] = useState(() => initialPublicLanguage(survey.definition, location.search));
+  const definition = useMemo(() => localizeDefinition(survey.definition, language), [language, survey.definition]);
+  const copy = publicCopy[language] || publicCopy.en;
   const [pageIndex, setPageIndex] = useState(0);
   const [answers, setAnswers] = useState({});
   const [errors, setErrors] = useState({});
@@ -559,7 +756,6 @@ function SurveyRunner({ survey, preview = false }) {
   const [submitting, setSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
   const [complete, setComplete] = useState(false);
-  const location = useLocation();
   useDocumentTitle(`${definition.title} | NutriAll`);
   const page = definition.pages[pageIndex];
   const visibleQuestions = page.questions.filter((question) => shouldShow(question, answers));
@@ -572,8 +768,20 @@ function SurveyRunner({ survey, preview = false }) {
       .then(setResponse).catch((err) => setServerError(err.message));
   }, [location.search, preview, survey.slug]);
 
+  useEffect(() => {
+    document.documentElement.lang = language;
+    localStorage.setItem("nutriall-survey-language", language);
+  }, [language]);
+
+  function changeLanguage(nextLanguage) {
+    setLanguage(nextLanguage);
+    const url = new URL(window.location.href);
+    url.searchParams.set("lang", nextLanguage);
+    window.history.replaceState(null, "", url);
+  }
+
   async function next() {
-    const currentErrors = validatePage(page, answers);
+    const currentErrors = validatePage(page, answers, copy);
     setErrors(currentErrors);
     if (Object.keys(currentErrors).length) {
       document.querySelector(".public-question.has-error")?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -588,23 +796,23 @@ function SurveyRunner({ survey, preview = false }) {
       else if (response) {
         await surveyApi(`/api/public/responses/${response.responseId}/submit`, { method: "POST", token: response.token, body: { answers } });
         setComplete(true); window.scrollTo({ top: 0, behavior: "smooth" });
-      } else throw new Error("The response could not be started. Please refresh and try again.");
+      } else throw new Error(copy.startError);
     } catch (err) { setServerError(err.message); } finally { setSubmitting(false); }
   }
 
-  if (complete) return <main className="public-survey-page"><div className="public-survey-brand"><img src="/nutriall-logo.png" alt="NutriAll" /></div><section className="public-complete"><CheckCircle2 /><h1>{definition.thankYouTitle}</h1><p>{definition.thankYouMessage}</p>{preview && <button className="survey-button secondary" onClick={() => { setPageIndex(0); setAnswers({}); setComplete(false); }}>Restart preview</button>}</section></main>;
+  if (complete) return <main className="public-survey-page"><div className="public-survey-brand"><img src="/nutriall-logo.png" alt="NutriAll" /><PublicLanguageSwitcher language={language} onChange={changeLanguage} /></div><section className="public-complete"><CheckCircle2 /><h1>{definition.thankYouTitle}</h1><p>{definition.thankYouMessage}</p>{preview && <button className="survey-button secondary" onClick={() => { setPageIndex(0); setAnswers({}); setComplete(false); }}>{copy.restart}</button>}</section></main>;
 
   return <main className="public-survey-page">
-    <header className="public-survey-brand"><img src="/nutriall-logo.png" alt="NutriAll" />{preview && <span>Preview mode</span>}</header>
+    <header className="public-survey-brand"><img src="/nutriall-logo.png" alt="NutriAll" /><div className="public-survey-brand-actions">{preview && <span>{copy.preview}</span>}<PublicLanguageSwitcher language={language} onChange={changeLanguage} /></div></header>
     <div className="public-survey-progress"><span style={{ width: `${((pageIndex + 1) / definition.pages.length) * 100}%` }} /></div>
     <section className="public-survey-form">
-      {pageIndex === 0 && <div className="public-survey-intro"><p className="survey-eyebrow">NUTRIALL SURVEY</p><h1>{definition.title}</h1>{definition.description && <p>{definition.description}</p>}</div>}
-      <div className="public-page-heading"><span>Page {pageIndex + 1} of {definition.pages.length}</span><h2>{page.title}</h2>{page.description && <p>{page.description}</p>}</div>
-      {visibleQuestions.map((question, index) => <PublicQuestion key={question.id} question={question} index={totalQuestionsBefore + index} value={answers[question.id]} onChange={(value) => { setAnswers((current) => ({ ...current, [question.id]: value })); setErrors((current) => ({ ...current, [question.id]: "" })); }} error={errors[question.id]} />)}
-      {!visibleQuestions.length && <p className="public-empty-page">There are no questions on this page.</p>}
+      {pageIndex === 0 && <div className="public-survey-intro"><p className="survey-eyebrow">{copy.survey}</p><h1>{definition.title}</h1>{definition.description && <p>{definition.description}</p>}</div>}
+      <div className="public-page-heading"><span>{copy.page} {pageIndex + 1} {copy.of} {definition.pages.length}</span><h2>{page.title}</h2>{page.description && <p>{page.description}</p>}</div>
+      {visibleQuestions.map((question, index) => <PublicQuestion key={question.id} question={question} copy={copy} index={totalQuestionsBefore + index} value={answers[question.id]} onChange={(value) => { setAnswers((current) => ({ ...current, [question.id]: value })); setErrors((current) => ({ ...current, [question.id]: "" })); }} error={errors[question.id]} />)}
+      {!visibleQuestions.length && <p className="public-empty-page">{copy.empty}</p>}
       <ErrorNotice message={serverError} />
-      <div className="public-survey-actions">{pageIndex > 0 && <button className="survey-button tertiary" onClick={() => { setPageIndex((value) => value - 1); window.scrollTo(0, 0); }}><ArrowLeft /> Back</button>}<button className="survey-button primary" onClick={next} disabled={submitting || (!preview && !response)}>{submitting ? "Saving..." : pageIndex === definition.pages.length - 1 ? "Submit" : "Next"}<ArrowRight /></button></div>
-      <p className="public-survey-privacy">Your response is anonymous unless this survey asks you for identifying information. Do not include private health details unless the question specifically requests them.</p>
+      <div className="public-survey-actions">{pageIndex > 0 && <button className="survey-button tertiary" onClick={() => { setPageIndex((value) => value - 1); window.scrollTo(0, 0); }}><ArrowLeft /> {copy.back}</button>}<button className="survey-button primary" onClick={next} disabled={submitting || (!preview && !response)}>{submitting ? copy.saving : pageIndex === definition.pages.length - 1 ? copy.submit : copy.next}<ArrowRight /></button></div>
+      <p className="public-survey-privacy">{copy.privacy}</p>
     </section>
   </main>;
 }
