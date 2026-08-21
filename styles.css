@@ -5670,6 +5670,149 @@ body { font-size: 18px; line-height: 1.72; }
   .care-journey-answer, .care-journey-steps button > svg { transition: none; }
 }
 
+/* Transparent sample activity: replace with consented, verified events before removing the demo label. */
+.booking-activity-region {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 70;
+  width: min(370px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.booking-activity-toast {
+  position: relative;
+  min-height: 100px;
+  padding: 15px 46px 15px 15px;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr);
+  align-items: center;
+  gap: 13px;
+  overflow: hidden;
+  border: 1px solid rgba(19, 91, 73, 0.24);
+  border-radius: 8px;
+  color: var(--clinic-ink);
+  background: rgba(255, 252, 247, 0.94);
+  box-shadow: none;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  animation: booking-activity-in 360ms ease both;
+  pointer-events: auto;
+}
+
+.booking-activity-toast::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  content: "";
+  background: var(--clinic-coral);
+}
+
+.booking-activity-avatar {
+  width: 58px;
+  height: 58px;
+  display: block;
+  border: 1px solid rgba(19, 91, 73, 0.18);
+  border-radius: 50%;
+  object-fit: cover;
+  background: #edf3ef;
+}
+
+.booking-activity-copy {
+  min-width: 0;
+}
+
+.booking-activity-meta {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 5px;
+  color: var(--clinic-muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.booking-activity-meta strong {
+  color: var(--clinic-green);
+  font-size: 15px;
+  font-weight: 850;
+}
+
+.booking-activity-copy p {
+  margin: 4px 0 7px;
+  color: var(--clinic-ink);
+  font-size: 16px;
+  font-weight: 720;
+  line-height: 1.42;
+}
+
+.booking-activity-demo {
+  display: inline-flex;
+  min-height: 21px;
+  align-items: center;
+  padding: 2px 7px;
+  border: 1px solid rgba(197, 79, 59, 0.28);
+  border-radius: 999px;
+  color: var(--clinic-coral-dark);
+  background: rgba(251, 235, 229, 0.86);
+  font-size: 11px;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.booking-activity-close {
+  position: absolute;
+  top: 9px;
+  right: 9px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: var(--clinic-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.booking-activity-close:hover,
+.booking-activity-close:focus-visible {
+  color: var(--clinic-ink);
+  background: rgba(19, 91, 73, 0.08);
+}
+
+@keyframes booking-activity-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 760px) {
+  .booking-activity-region {
+    right: 12px;
+    bottom: 76px;
+    width: calc(100vw - 24px);
+  }
+
+  .booking-activity-toast {
+    min-height: 92px;
+    padding: 12px 42px 12px 12px;
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 11px;
+  }
+
+  .booking-activity-avatar {
+    width: 52px;
+    height: 52px;
+  }
+
+  .booking-activity-copy p { font-size: 15px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .booking-activity-toast { animation: none; }
+}
+
 /* Plain-language condition and nutrition guides */
 .care-guide-page, .care-guide-sections { background: #fff; }
 .care-guide-hero, .care-guide-overview, .care-guide-visit, .care-guide-faq, .care-guide-sources, .care-guide-related { width: min(1240px, calc(100% - 56px)); margin-left: auto; margin-right: auto; }

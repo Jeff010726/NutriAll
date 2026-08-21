@@ -164,6 +164,15 @@ test("mobile home keeps the conversion path visible", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("./?lng=en", { waitUntil: "networkidle" });
   await expect(page.locator(".mobile-booking-bar")).toBeVisible();
+  const activity = page.locator(".booking-activity-toast");
+  await expect(activity).toBeVisible({ timeout: 3_000 });
+  await expect(activity.getByText("Demo")).toBeVisible();
+  await expect(activity.locator("img")).toHaveAttribute("src", /social-proof\/demo-/);
+  const [activityBox, bookingBarBox] = await Promise.all([
+    activity.boundingBox(),
+    page.locator(".mobile-booking-bar").boundingBox(),
+  ]);
+  expect((activityBox?.y ?? 0) + (activityBox?.height ?? 0)).toBeLessThan((bookingBarBox?.y ?? 0) - 4);
   await expect(page.locator("body")).toHaveCSS("font-size", "17px");
   await expect(page.locator(".insurance-logo-item")).toHaveCount(5);
   const [mobileHeaderLogoBox, mobileFooterLogoBox] = await Promise.all([
@@ -181,6 +190,22 @@ test("mobile home keeps the conversion path visible", async ({ page }) => {
   await expect(journey.getByRole("heading", { name: "A few useful next steps" })).toBeVisible();
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/home-mobile.png", fullPage: true });
+});
+
+test("sample booking activity rotates, can be dismissed, and stays off booking pages", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("./?lng=zh-CN", { waitUntil: "networkidle" });
+  const activity = page.locator(".booking-activity-toast");
+  await expect(activity).toBeVisible({ timeout: 3_000 });
+  await expect(activity.getByText("演示")).toBeVisible();
+  await expect(activity.getByText("预约了免费 15 分钟电话咨询")).toBeVisible();
+  await expect(activity.getByText("预约了 GLP-1 营养支持")).toBeVisible({ timeout: 7_000 });
+  await activity.getByRole("button", { name: "关闭预约动态示例" }).click();
+  await expect(activity).toHaveCount(0);
+
+  await page.goto("./book?lng=zh-CN", { waitUntil: "networkidle" });
+  await page.waitForTimeout(1_600);
+  await expect(page.locator(".booking-activity-toast")).toHaveCount(0);
 });
 
 test("desktop weight-loss menu stays open and its service links are clickable", async ({ page }) => {
