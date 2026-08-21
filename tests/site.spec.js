@@ -174,7 +174,7 @@ test("mobile home keeps the conversion path visible", async ({ page }) => {
   await expect(page.locator(".mobile-booking-bar")).toBeVisible();
   const activity = page.locator(".booking-activity-toast");
   await expect(activity).toBeVisible({ timeout: 3_000 });
-  await expect(activity.getByText("Booked a free 15-minute phone consultation")).toBeVisible();
+  await expect(activity).toHaveAttribute("data-activity-origin", "real");
   await expect(activity.getByText("Demo")).toHaveCount(0);
   await expect(activity.locator("img")).toHaveAttribute("src", /social-proof\/demo-/);
   const [activityBox, bookingBarBox] = await Promise.all([
@@ -206,8 +206,10 @@ test("anonymized booking activity rotates, can be dismissed, and stays off booki
   await page.goto("./?lng=zh-CN", { waitUntil: "networkidle" });
   const activity = page.locator(".booking-activity-toast");
   await expect(activity).toBeVisible({ timeout: 3_000 });
-  await expect(activity.getByText("预约了免费 15 分钟电话咨询")).toBeVisible();
-  await expect(activity.getByText("预约了一对一营养咨询")).toBeVisible({ timeout: 7_000 });
+  await expect(activity).toHaveAttribute("data-activity-origin", "real");
+  await expect(activity.getByText("演示")).toHaveCount(0);
+  await expect(activity).toHaveAttribute("data-activity-origin", "demo", { timeout: 7_000 });
+  await expect(activity.getByText("演示")).toBeVisible();
   await activity.getByRole("button", { name: "关闭近期预约动态" }).click();
   await expect(activity).toHaveCount(0);
 
