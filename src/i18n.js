@@ -140,6 +140,15 @@ resources.es = { translation: {
   footer: { note: "Pérdida de peso 1:1, apoyo con GLP-1 y atención médica coordinada cuando se necesita.", copyright: "NutriAll Wellness. Todos los derechos reservados." }, mobileCta: "Consulta gratuita"
 } };
 
+resources.en.translation.nav.weight = "Service";
+resources.en.translation.weightServices.bookNow = "Book Now";
+resources["zh-CN"].translation.nav.weight = "服务";
+resources["zh-CN"].translation.weightServices.bookNow = "立即预约";
+resources["zh-TW"].translation.nav.weight = "服務";
+resources["zh-TW"].translation.weightServices.bookNow = "立即預約";
+resources.es.translation.nav.weight = "Servicios";
+resources.es.translation.weightServices.bookNow = "Reservar ahora";
+
 resources.en.translation.nav.community = "Community Programs";
 resources.en.translation.community = {
   eyebrow: "For communities and organizations",

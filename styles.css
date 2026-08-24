@@ -5123,6 +5123,7 @@ body.nav-open { overflow: hidden; }
 .clinical-service-hero > div > p:not(.eyebrow) { max-width: 650px; margin: 22px 0 28px; font-size: 18px; line-height: 1.7; }
 .clinical-service-hero img { width: 100%; height: 410px; border-radius: 8px; object-fit: cover; }
 .clinical-service-hero .button { display: inline-flex; align-items: center; gap: 7px; }
+.clinical-service-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .clinical-service-details { padding: 78px 0; display: grid; grid-template-columns: .9fr 1.1fr; gap: 80px; border-top: 1px solid var(--clinic-line); }
 .clinical-service-details h2 { font-size: 30px; }
 .clinical-service-details ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 12px; }
@@ -5337,7 +5338,7 @@ body.nav-open { overflow: hidden; }
 .clinic-dietitian-heading > p { margin: 0; font-size: 15px; line-height: 1.65; }
 .clinic-about .dietitian-profile-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; }
 .clinic-about .dietitian-profile { margin: 0; display: block; background: #fff; border: 1px solid var(--clinic-line); box-shadow: none; }
-.clinic-about .dietitian-profile > img { width: 100%; aspect-ratio: 4/3; object-fit: contain; object-position: center bottom !important; background: var(--clinic-sage); }
+.clinic-about .dietitian-profile > img { width: 100%; aspect-ratio: 4/3; object-fit: contain; object-position: center bottom !important; background: #403d37; }
 .clinic-about .dietitian-profile-copy { padding: 20px; }
 .clinic-about .dietitian-role { margin: 0 0 8px; min-height: 34px; color: var(--clinic-green); font-size: 11px; line-height: 1.4; text-transform: uppercase; }
 .clinic-about .dietitian-profile-copy h3 { font-family: Georgia, serif; font-size: 18px; }
@@ -5487,6 +5488,8 @@ body.nav-open { overflow: hidden; }
   .home-faq-answer p { padding: 0 16px 8px; font-size: 14px; }
   .home-faq-cta { margin: 0 16px 16px; }
   .clinical-service-hero { padding: 46px 0; }
+  .clinical-service-actions { align-items: stretch; flex-direction: column; }
+  .clinical-service-actions .button { width: 100%; justify-content: center; }
   .clinical-service-hero img { height: 270px; }
   .clinical-service-details { padding: 58px 0; }
   .clinical-service-process > div { grid-template-columns: 1fr; }

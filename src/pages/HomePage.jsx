@@ -43,7 +43,7 @@ export function HomePage() {
     </section>
 
     <section className="clinic-team-preview">
-      <img className="is-tan-photo" src={asset("team/xiaofang-tan.webp")} alt="Xiaofang Tan, registered dietitian" />
+      <img className="is-tan-photo" src={asset("team/xiaofang-tan-dark-studio.jpg")} alt="Xiaofang Tan, registered dietitian" />
       <div>
         <p className="eyebrow">{t("home.teamEyebrow")}</p>
         <h2>{t("home.teamTitle")}</h2>

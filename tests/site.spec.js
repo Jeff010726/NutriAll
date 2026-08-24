@@ -42,7 +42,7 @@ test("desktop home prioritizes insurance and booking", async ({ page }) => {
   const [headerLogoBox, footerLogoBox] = await Promise.all([headerLogo.boundingBox(), footerLogo.boundingBox()]);
   expect(headerLogoBox?.width).toBe(128);
   expect(Math.abs((headerLogoBox?.x ?? 0) - (footerLogoBox?.x ?? 0))).toBeLessThanOrEqual(1);
-  await expect(page.locator(".clinic-team-preview > img")).toHaveAttribute("src", /team\/xiaofang-tan\.webp$/);
+  await expect(page.locator(".clinic-team-preview > img")).toHaveAttribute("src", /team\/xiaofang-tan-dark-studio\.jpg$/);
   const teamPreviewBox = await page.locator(".clinic-team-preview").boundingBox();
   expect(teamPreviewBox?.height).toBe(720);
   await expect(page.locator(".clinic-team-preview > img")).toHaveCSS("object-position", "50% 54%");
@@ -122,6 +122,7 @@ test("weight, GLP-1, and medical weight pages include the full guide", async ({ 
   await page.setViewportSize({ width: 390, height: 844 });
   for (const route of ["one-to-one-weight-loss", "glp1-care", "medical-weight-loss"]) {
     await page.goto(`./${route}?lng=en`, { waitUntil: "networkidle" });
+    await expect(page.locator(".clinical-service-hero").getByRole("link", { name: "Book Now" })).toHaveAttribute("href", "https://app.kalixhealth.com/calendar?calendar_token=06d2246dd9ed72a6228706d8c2dcac8f");
     await expect(page.locator(".care-guide-overview-copy p")).toHaveCount(2);
     await expect(page.locator(".care-guide-focus-grid article")).toHaveCount(4);
     await expect(page.locator(".care-guide-faq details").first()).toBeVisible();
@@ -218,10 +219,10 @@ test("anonymized booking activity rotates, can be dismissed, and stays off booki
   await expect(page.locator(".booking-activity-toast")).toHaveCount(0);
 });
 
-test("desktop weight-loss menu stays open and its service links are clickable", async ({ page }) => {
+test("desktop service menu stays open and its links are clickable", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto("./?lng=en", { waitUntil: "networkidle" });
-  const menuButton = page.getByRole("button", { name: "Weight Loss" });
+  const menuButton = page.getByRole("button", { name: "Service" });
   await menuButton.click();
   await expect(menuButton).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator(".nav-dropdown-weight")).toBeVisible();
@@ -364,6 +365,12 @@ test("about page presents one unified dietitian team", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Siqian (Cici) Chen, MS, RD, LDN" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Yirao (Rebecca) Wang, RDN, LDN, MPH" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Yue Jin, MS, RD" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Ziying Zhang, MS, RDN" })).toBeVisible();
+  const ziyingCard = page.locator(".dietitian-profile").filter({ has: page.getByRole("heading", { name: "Ziying Zhang, MS, RDN" }) });
+  await expect(ziyingCard.getByText("Registered Dietitian / Diabetes Educator", { exact: true })).toBeVisible();
+  await expect(ziyingCard.getByText(/Teachers College, Columbia University/)).toHaveCount(1);
+  await expect(ziyingCard.getByText(/leads a diabetes education program/)).toHaveCount(1);
+  await expect(page.locator(".dietitian-profile > img[src$='-dark-studio.jpg']")).toHaveCount(6);
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/about-desktop.png", fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });

@@ -2,7 +2,7 @@ export const dietitians = [
   {
     name: "Siqian (Cici) Chen, MS, RD, LDN",
     role: "Registered Dietitian / Certified Intuitive Eating Counselor",
-    image: "team/siqian-chen-studio.jpg",
+    image: "team/siqian-chen-dark-studio.jpg",
     imageAlt: "Siqian Cici Chen, registered dietitian",
     imagePosition: "center",
     bio: [
@@ -14,7 +14,7 @@ export const dietitians = [
   {
     name: "Xiaofang Tan, MS, RD, CDN, CDCES",
     role: "Registered Dietitian / Diabetes Care and Education Specialist",
-    image: "team/xiaofang-tan-studio.jpg",
+    image: "team/xiaofang-tan-dark-studio.jpg",
     imageAlt: "Xiaofang Tan, registered dietitian",
     imagePosition: "center",
     bio: [
@@ -26,7 +26,7 @@ export const dietitians = [
   {
     name: "Yue Jin, MS, RD",
     role: "Registered Dietitian / Weight-inclusive Nutrition",
-    image: "team/yue-jin-studio.jpg",
+    image: "team/yue-jin-dark-studio.jpg",
     imageAlt: "Yue Jin, registered dietitian",
     imagePosition: "center",
     bio: [
@@ -36,21 +36,21 @@ export const dietitians = [
     details: ["English, Mandarin", "Intuitive eating / Digestive health / Eating disorders / Diabetes"],
   },
   {
-    name: "Ziying Zhang, MS",
-    role: "RD-eligible Nutrition Professional",
-    image: "team/ziying-studio.jpg",
-    imageAlt: "Ziying Zhang, nutrition professional",
+    name: "Ziying Zhang, MS, RDN",
+    role: "Registered Dietitian / Diabetes Educator",
+    image: "team/ziying-dark-studio.jpg",
+    imageAlt: "Ziying Zhang, registered dietitian and diabetes educator",
     imagePosition: "center",
     bio: [
-      "Ziying earned her Master of Science in Nutrition and completed her dietetic internship at Teachers College, Columbia University. She supports culturally diverse populations through evidence-based, client-centered care.",
-      "Her professional interests include maternal and child nutrition, gastrointestinal health, and weight management. Her approach emphasizes trust, sustainable change, and preserving the joy of food.",
+      "Ziying's academic training includes a Master of Science in Nutrition Science and a dietetic internship at Teachers College, Columbia University, as well as a Bachelor of Science in Clinical Nutrition from the University of California, Davis.",
+      "She currently works as a clinical dietitian and leads a diabetes education program. Her professional interests include diabetes education, gastrointestinal health, and weight management. Her approach to nutrition care centers on building trust, supporting sustainable change, and preserving the joy of food.",
     ],
-    details: ["English, Mandarin", "Maternal and child nutrition / Digestive health / Weight management"],
+    details: ["English, Mandarin", "Diabetes education / Digestive health / Weight management"],
   },
   {
     name: "Yirao (Rebecca) Wang, RDN, LDN, MPH",
     role: "Registered Dietitian / Diabetes Educator",
-    image: "team/yirao-wang-studio.jpg",
+    image: "team/yirao-wang-dark-studio.jpg",
     imageAlt: "Yirao Rebecca Wang, registered dietitian and diabetes educator",
     imagePosition: "center",
     bio: [
@@ -63,7 +63,7 @@ export const dietitians = [
   {
     name: "Jinhui Zhou, MS, RD, CDN, CDCES",
     role: "Registered Dietitian / Certified Diabetes Care and Education Specialist",
-    image: "team/jinhui-zhou-studio.jpg",
+    image: "team/jinhui-zhou-dark-studio.jpg",
     imageAlt: "Jinhui Zhou, registered dietitian and certified diabetes care and education specialist",
     imagePosition: "center",
     bio: [

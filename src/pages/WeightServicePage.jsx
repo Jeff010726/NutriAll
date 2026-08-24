@@ -1,4 +1,4 @@
-import { ArrowRight, Check, ShieldCheck, Users } from "lucide-react";
+import { ArrowRight, Check, ExternalLink, ShieldCheck, Users } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { InsuranceLogos } from "../components/InsuranceLogos";
 import { Layout } from "../components/Layout";
@@ -6,6 +6,7 @@ import { SiteLink } from "../components/SiteLink";
 import { CareGuideSections } from "../components/CareGuideSections";
 import { getCareGuide } from "../careGuides";
 import { asset } from "../lib";
+import { trackEvent } from "../analytics";
 
 const serviceConfig = {
   oneToOne: { image: "generated/weight-habits-lifestyle.png", booking: "one-to-one" },
@@ -15,6 +16,7 @@ const serviceConfig = {
 };
 
 const guideKeys = { oneToOne: "weight-loss", glpCare: "glp1", medical: "medical-weight-loss" };
+const kalixBookingUrl = "https://app.kalixhealth.com/calendar?calendar_token=06d2246dd9ed72a6228706d8c2dcac8f";
 
 export function WeightServicePage({ service }) {
   const { t, i18n } = useTranslation();
@@ -24,7 +26,7 @@ export function WeightServicePage({ service }) {
 
   return <Layout description={guide?.intro || content.summary} title={`${content.title} | NutriAll`}><main className="clinical-service-page weight-service-page">
     <section className="clinical-service-hero">
-      <div><p className="eyebrow">{t("weightServices.eyebrow")}</p><h1>{content.title}</h1><p>{content.summary}</p><SiteLink className="button button-primary" to={`/book?service=${config.booking}`}>{t("home.primary")} <ArrowRight size={18} aria-hidden="true" /></SiteLink></div>
+      <div><p className="eyebrow">{t("weightServices.eyebrow")}</p><h1>{content.title}</h1><p>{content.summary}</p><div className="clinical-service-actions"><a className="button button-primary" href={kalixBookingUrl} target="_blank" rel="noreferrer" onClick={() => trackEvent("kalix_booking_click", service, { service })}>{t("weightServices.bookNow")} <ExternalLink size={17} aria-hidden="true" /></a><SiteLink className="button button-secondary" to={`/book?service=${config.booking}`}>{t("home.primary")} <ArrowRight size={18} aria-hidden="true" /></SiteLink></div></div>
       <img src={asset(config.image)} alt="" />
     </section>
 
