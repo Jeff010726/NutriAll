@@ -358,6 +358,9 @@ test("about page presents one unified dietitian team", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto("./about?lng=en", { waitUntil: "networkidle" });
   await expect(page.getByRole("heading", { name: "Meet the team behind your care." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Bringing culturally rooted, multilingual nutrition to life." })).toBeVisible();
+  await expect(page.locator(".clinic-founder-story-copy > p")).toHaveCount(5);
+  await expect(page.locator(".clinic-founder-story blockquote")).toContainText("mother tongue");
   await expect(page.locator(".all-dietitians .dietitian-profile")).toHaveCount(6);
   await expect(page.getByRole("heading", { name: /Lisa Van Leeuwen/ })).toHaveCount(0);
   await expect(page.getByRole("heading", { name: /Alexandra Rodiles/ })).toHaveCount(0);
@@ -377,4 +380,8 @@ test("about page presents one unified dietitian team", async ({ page }) => {
   await page.reload({ waitUntil: "networkidle" });
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/about-mobile.png", fullPage: true });
+  await page.goto("./about?lng=zh-CN", { waitUntil: "networkidle" });
+  await expect(page.getByRole("heading", { name: "让多语言、尊重文化的营养照护真正落地。" })).toBeVisible();
+  await expect(page.locator(".clinic-founder-story blockquote")).toContainText("不应该让任何人放弃自己的母语");
+  await expectNoHorizontalOverflow(page);
 });

@@ -8,6 +8,7 @@ import { dietitians } from "../teamData";
 
 export function AboutPage() {
   const { t } = useTranslation();
+  const storyParagraphs = t("about.storyParagraphs", { returnObjects: true });
   const values = [
     [Stethoscope, "value1", "value1Text"],
     [Scale, "value2", "value2Text"],
@@ -18,6 +19,21 @@ export function AboutPage() {
     <section className="clinic-about-hero">
       <div><p className="eyebrow">{t("about.eyebrow")}</p><h1>{t("about.title")}</h1><p>{t("about.intro")}</p></div>
       <img src={asset("nutriall-team.jpg")} alt="Three NutriAll dietitians together" />
+    </section>
+
+    <section className="clinic-founder-story" aria-labelledby="founder-story-title">
+      <div className="clinic-founder-story-inner">
+        <header>
+          <p className="eyebrow">{t("about.storyEyebrow")}</p>
+          <h2 id="founder-story-title">{t("about.storyTitle")}</h2>
+          <p className="clinic-founder-story-lead">{t("about.storyLead")}</p>
+        </header>
+        <div className="clinic-founder-story-copy">
+          <p>{storyParagraphs[0]}</p>
+          <blockquote>{t("about.storyBelief")}</blockquote>
+          {storyParagraphs.slice(1).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+        </div>
+      </div>
     </section>
 
     <section className="clinic-about-values" aria-labelledby="about-values-title">

@@ -269,6 +269,62 @@ resources.es.translation.community = {
   finalText: "Reserve una llamada gratuita y díganos qué necesita. Hablaremos del número de asistentes, formato, idioma, horario y próximos pasos.",
 };
 
+Object.assign(resources.en.translation.about, {
+  storyEyebrow: "Founders' story",
+  storyTitle: "Bringing culturally rooted, multilingual nutrition to life.",
+  storyLead: "NutriAll grew from a barrier we kept seeing: families were being asked to improve their health without care that spoke their language, understood their food, or fit their budget.",
+  storyBelief: "Nutrition guidance should never ask someone to give up their mother tongue, their culture, or their peace of mind.",
+  storyParagraphs: [
+    "We watched a grandmother nod politely through a clinic visit while understanding very little of the medical language because no one spoke Cantonese or Fuzhounese. The problem was not her willingness to learn. The care had not been built for her.",
+    "We met mothers handed rigid diet sheets filled with foods they had never cooked, as if the dishes they grew up with were automatically unhealthy. We also saw working families walk away from preventive Medical Nutrition Therapy because the out-of-pocket cost felt impossible.",
+    "NutriAll began when three dietitian co-founders came together around one urgent goal: remove those barriers and build a multilingual group practice that families could actually use.",
+    "In the early days, we spent late nights learning insurance networks so eligible clients could use their benefits and understand costs before starting. We turned evidence-based nutrition science into everyday meals that respect traditional ingredients. We also welcomed and trained emerging clinicians from NYU, Columbia University, CUNY, and other institutions, helping prepare a more diverse and culturally responsive profession.",
+    "Today, our team provides personalized one-to-one care in English, Mandarin, Cantonese, Fuzhounese, and Hakka. Speaking our clients' language, both literally and culturally, is still the heart of NutriAll. We are here to listen, celebrate your heritage, and walk beside you toward health that lasts.",
+  ],
+});
+
+Object.assign(resources["zh-CN"].translation.about, {
+  storyEyebrow: "创办人的故事",
+  storyTitle: "让多语言、尊重文化的营养照护真正落地。",
+  storyLead: "NutriAll 的起点，是我们一次又一次看到同一个问题：很多家庭想照顾好身体，却找不到听得懂、吃得惯、也负担得起的营养服务。",
+  storyBelief: "营养建议不应该让任何人放弃自己的母语、饮食文化，或对生活的安心感。",
+  storyParagraphs: [
+    "我们见过一位奶奶在诊室里礼貌地点头，却因为没有人会说粤语或福州话，几乎听不懂那些医学术语。问题不是她不愿意学，而是这套服务从一开始就没有真正考虑她。",
+    "我们也见过妈妈拿到一张严格的饮食单，上面全是她从来不会做的食物，仿佛从小吃到大的家乡菜都不健康。还有不少认真生活、努力工作的家庭，因为自费金额太高，只能放弃原本可以帮助预防和管理疾病的医学营养治疗（MNT）。",
+    "NutriAll 就是在这样的背景下开始的。三位营养师共同创办了这家机构，希望把语言、文化和费用上的障碍一项项拆掉，让更多家庭真正用得上专业营养服务。",
+    "刚开始时，我们常常花很多个晚上研究保险网络，帮助符合条件的客户使用保险，并在服务开始前把可能的费用讲清楚。我们把循证营养知识变成日常饭桌上做得到的方法，也尊重大家熟悉的传统食材。我们还接收并培养来自 NYU、Columbia University、CUNY 等院校的年轻临床人员，希望让未来的营养专业更加多元，也更懂不同文化。",
+    "今天，我们的团队可以用英语、普通话、粤语、福州话和客家话提供一对一服务。真正听懂客户的语言，也理解语言背后的饮食和生活，依然是 NutriAll 最重要的事。我们会认真听你说，尊重你的传统，陪你一步步找到能够长期坚持的健康方式。",
+  ],
+});
+
+Object.assign(resources["zh-TW"].translation.about, {
+  storyEyebrow: "創辦人的故事",
+  storyTitle: "讓多語言、尊重文化的營養照護真正落地。",
+  storyLead: "NutriAll 的起點，是我們一次又一次看到同一個問題：很多家庭想照顧好身體，卻找不到聽得懂、吃得慣、也負擔得起的營養服務。",
+  storyBelief: "營養建議不應該讓任何人放棄自己的母語、飲食文化，或對生活的安心感。",
+  storyParagraphs: [
+    "我們見過一位奶奶在診間裡禮貌地點頭，卻因為沒有人會說粵語或福州話，幾乎聽不懂那些醫學術語。問題不是她不願意學，而是這套服務從一開始就沒有真正考慮她。",
+    "我們也見過媽媽拿到一張嚴格的飲食單，上面全是她從來不會做的食物，彷彿從小吃到大的家鄉菜都不健康。還有不少認真生活、努力工作的家庭，因為自費金額太高，只能放棄原本可以幫助預防和管理疾病的醫學營養治療（MNT）。",
+    "NutriAll 就是在這樣的背景下開始的。三位營養師共同創辦了這家機構，希望把語言、文化和費用上的障礙一項項拆掉，讓更多家庭真正用得上專業營養服務。",
+    "剛開始時，我們常常花很多個晚上研究保險網絡，幫助符合條件的客戶使用保險，並在服務開始前把可能的費用講清楚。我們把循證營養知識變成日常飯桌上做得到的方法，也尊重大家熟悉的傳統食材。我們還接收並培養來自 NYU、Columbia University、CUNY 等院校的年輕臨床人員，希望讓未來的營養專業更加多元，也更懂不同文化。",
+    "今天，我們的團隊可以用英語、普通話、粵語、福州話和客家話提供一對一服務。真正聽懂客戶的語言，也理解語言背後的飲食和生活，依然是 NutriAll 最重要的事。我們會認真聽你說，尊重你的傳統，陪你一步步找到能夠長期堅持的健康方式。",
+  ],
+});
+
+Object.assign(resources.es.translation.about, {
+  storyEyebrow: "La historia de las fundadoras",
+  storyTitle: "Nutrición multilingüe, conectada con la cultura y la vida real.",
+  storyLead: "NutriAll nació de una barrera que veíamos una y otra vez: muchas familias querían cuidar su salud, pero no encontraban atención en su idioma, respetuosa de su comida y accesible para su presupuesto.",
+  storyBelief: "La orientación nutricional nunca debería pedirle a alguien que renuncie a su lengua materna, su cultura o su tranquilidad.",
+  storyParagraphs: [
+    "Vimos a una abuela asentir con cortesía durante una consulta mientras entendía muy poco del lenguaje médico, porque nadie hablaba cantonés o fuzhounés. El problema no era su voluntad de aprender. La atención no había sido diseñada para ella.",
+    "También conocimos a madres que recibían dietas rígidas llenas de alimentos que nunca habían cocinado, como si sus platos tradicionales fueran automáticamente poco saludables. Y vimos a familias trabajadoras renunciar a la terapia nutricional médica preventiva porque el costo de bolsillo era demasiado alto.",
+    "NutriAll comenzó cuando tres dietistas cofundadoras se unieron con un objetivo urgente: derribar esas barreras y crear una práctica multilingüe que las familias realmente pudieran utilizar.",
+    "Al principio pasamos muchas noches aprendiendo las redes de seguros para que los clientes elegibles pudieran usar sus beneficios y conocer los costos antes de empezar. Convertimos la ciencia nutricional en comidas cotidianas que respetan los ingredientes tradicionales. También recibimos y formamos a futuros profesionales de NYU, Columbia University, CUNY y otras instituciones.",
+    "Hoy ofrecemos atención individual en inglés, mandarín, cantonés, fuzhounés y hakka. Hablar el idioma de nuestros clientes, de forma literal y cultural, sigue siendo el corazón de NutriAll. Estamos aquí para escuchar, celebrar su herencia y acompañarle hacia una salud duradera.",
+  ],
+});
+
 i18n.use(LanguageDetector).use(initReactI18next).init({
   resources,
   fallbackLng: "en",

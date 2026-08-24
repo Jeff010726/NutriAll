@@ -5322,10 +5322,17 @@ body.nav-open { overflow: hidden; }
 .clinic-about h1 { font-size: 48px; line-height: 1.1; }
 .clinic-about h2 { font-size: 34px; line-height: 1.2; }
 .clinic-about h3 { margin: 0; color: var(--clinic-ink); font-size: 20px; line-height: 1.3; }
-.clinic-about-hero, .clinic-about-values, .clinic-dietitians, .clinic-director-note { width: min(1240px, calc(100% - 56px)); margin-left: auto; margin-right: auto; }
+.clinic-about-hero, .clinic-founder-story-inner, .clinic-about-values, .clinic-dietitians, .clinic-director-note { width: min(1240px, calc(100% - 56px)); margin-left: auto; margin-right: auto; }
 .clinic-about-hero { min-height: 540px; padding: 60px 0; display: grid; grid-template-columns: .85fr 1.15fr; align-items: center; gap: 70px; }
 .clinic-about-hero > div > p:not(.eyebrow) { margin: 20px 0 0; font-size: 17px; line-height: 1.7; }
 .clinic-about-hero img { width: 100%; height: 410px; border-radius: 8px; object-fit: cover; object-position: center; }
+.clinic-founder-story { background: #f2f5f1; border-top: 1px solid var(--clinic-line); border-bottom: 1px solid var(--clinic-line); }
+.clinic-founder-story-inner { padding: 80px 0; display: grid; grid-template-columns: .82fr 1.18fr; gap: 88px; align-items: start; }
+.clinic-founder-story header h2 { max-width: 520px; font-size: 42px; }
+.clinic-founder-story-lead { max-width: 520px; margin: 24px 0 0; color: var(--clinic-body); font-size: 19px; line-height: 1.7; }
+.clinic-founder-story-copy { display: grid; gap: 24px; }
+.clinic-founder-story-copy p { margin: 0; color: var(--clinic-body); font-size: 18px; line-height: 1.75; }
+.clinic-founder-story-copy blockquote { margin: 8px 0; padding: 4px 0 4px 24px; border-left: 3px solid var(--clinic-coral); color: var(--clinic-ink); font-family: Georgia, "Times New Roman", serif; font-size: 25px; line-height: 1.45; }
 .clinic-about-values { padding: 68px 0; border-top: 1px solid var(--clinic-line); }
 .clinic-about-values > h2 { max-width: 620px; }
 .clinic-about-values > div { margin-top: 36px; display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); border: 1px solid var(--clinic-line); border-radius: 8px; overflow: hidden; }
@@ -5415,6 +5422,7 @@ body.nav-open { overflow: hidden; }
   .dietitian-profile-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .clinic-about-hero { grid-template-columns: 1fr; gap: 30px; }
   .clinic-about-hero img { height: auto; aspect-ratio: 16/10; }
+  .clinic-founder-story-inner { grid-template-columns: 1fr; gap: 38px; }
   .clinic-about-values > div { grid-template-columns: 1fr; }
   .clinic-about-values article { border-right: 0; border-bottom: 1px solid var(--clinic-line); }
   .clinic-about-values article:last-child { border-bottom: 0; }
@@ -5498,8 +5506,13 @@ body.nav-open { overflow: hidden; }
   .dietitian-profile-grid { grid-template-columns: 1fr; }
   .clinic-about h1 { font-size: 34px; }
   .clinic-about h2 { font-size: 28px; }
-  .clinic-about-hero, .clinic-about-values, .clinic-dietitians, .clinic-director-note { width: calc(100% - 32px); }
+  .clinic-about-hero, .clinic-founder-story-inner, .clinic-about-values, .clinic-dietitians, .clinic-director-note { width: calc(100% - 32px); }
   .clinic-about-hero { min-height: 0; padding: 46px 0; }
+  .clinic-founder-story-inner { padding: 56px 0; gap: 30px; }
+  .clinic-founder-story header h2 { font-size: 30px; }
+  .clinic-founder-story-lead, .clinic-founder-story-copy p { font-size: 17px; }
+  .clinic-founder-story-copy { gap: 20px; }
+  .clinic-founder-story-copy blockquote { padding-left: 18px; font-size: 22px; }
   .clinic-about-values { padding: 56px 0; }
   .clinic-dietitians { padding: 64px 0; }
   .clinic-about .dietitian-profile-grid { grid-template-columns: 1fr; }
