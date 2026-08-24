@@ -38,7 +38,14 @@ def place_complete_photo(source: Path, destination: Path) -> None:
     canvas.save(destination, quality=94, optimize=True, progressive=True)
 
 
-def replace_flat_background(source: Path, destination: Path) -> None:
+def replace_flat_background(
+    source: Path,
+    destination: Path,
+    *,
+    halo_band: int = 21,
+    halo_brightness: float = 150,
+    halo_regions: tuple[tuple[int, int, int, int], ...] = (),
+) -> None:
     photo = Image.open(source).convert("RGB")
     pixels = np.asarray(photo, dtype=np.float32)
     patch = 40
@@ -54,7 +61,39 @@ def replace_flat_background(source: Path, destination: Path) -> None:
     color_distance = np.linalg.norm(pixels - background_color, axis=2)
     background_strength *= np.clip((54 - color_distance) / 30, 0, 1)
     alpha = 1 - background_strength
-    alpha = np.asarray(Image.fromarray(np.uint8(alpha * 255)).filter(ImageFilter.GaussianBlur(1.2)), dtype=np.float32) / 255
+
+    # The source portraits already contain a pale matte around hair and
+    # shoulders. Contract only the outer silhouette so skin, clothing, and
+    # facial detail are never classified by color.
+    mask = Image.fromarray(np.uint8(alpha * 255), "L")
+    mask = mask.filter(ImageFilter.MinFilter(7)).filter(ImageFilter.GaussianBlur(0.45))
+    alpha = np.asarray(mask, dtype=np.float32) / 255
+
+    # Some originals have a wider near-white fringe baked into the hair edge.
+    # Remove only pale neutral/green pixels in the outer contour, explicitly
+    # excluding warm skin and red-brown hair as well as the blue shirt.
+    inner = np.asarray(mask.filter(ImageFilter.MinFilter(halo_band)), dtype=np.float32) / 255
+    outer_band = np.clip(alpha - inner, 0, 1)
+    chroma = pixels.max(axis=2) - pixels.min(axis=2)
+    pale_neutral = (
+        (brightness > halo_brightness)
+        & (green >= red - 5)
+        & ((blue - red) < 12)
+        & (chroma < 42)
+    )
+    halo_strength = np.clip((brightness - halo_brightness) / 20, 0, 1) * outer_band * pale_neutral
+
+    # A few supplied cutouts contain a broad matte patch rather than a thin
+    # outline. Limit that cleanup to its known source-image area so internal
+    # highlights and clothing stay untouched.
+    for left, top, right, bottom in halo_regions:
+        region = np.zeros_like(alpha)
+        region[top:bottom, left:right] = 1
+        regional_pale = (brightness > halo_brightness) & (chroma < 55)
+        regional_halo = np.clip((brightness - halo_brightness) / 20, 0, 1) * regional_pale * region
+        halo_strength = np.maximum(halo_strength, regional_halo)
+
+    alpha *= 1 - halo_strength
 
     foreground = Image.fromarray(np.uint8(pixels), "RGB")
     mask = Image.fromarray(np.uint8(alpha * 255), "L")
@@ -69,8 +108,24 @@ def replace_flat_background(source: Path, destination: Path) -> None:
     canvas.save(destination, quality=94, optimize=True, progressive=True)
 
 
-for name in ["siqian-chen", "yue-jin", "yirao-wang", "jinhui-zhou"]:
-    replace_flat_background(TEAM / f"{name}-studio.jpg", TEAM / f"{name}-dark-studio.jpg")
+portrait_mattes = {
+    # This source has a broad pale matte baked into the flyaway hair.
+    "siqian-chen": {
+        "halo_band": 31,
+        "halo_brightness": 140,
+        "halo_regions": ((220, 170, 450, 540),),
+    },
+    "yue-jin": {},
+    "yirao-wang": {},
+    "jinhui-zhou": {"halo_band": 31, "halo_brightness": 145},
+}
+
+for name, matte_options in portrait_mattes.items():
+    replace_flat_background(
+        TEAM / f"{name}-studio.jpg",
+        TEAM / f"{name}-dark-studio.jpg",
+        **matte_options,
+    )
 
 place_complete_photo(TEAM / "ziying-portrait-original.jpg", TEAM / "ziying-dark-studio.jpg")
 place_complete_photo(TEAM / "xiaofang-tan-portrait-original.jpg", TEAM / "xiaofang-tan-dark-studio.jpg")
