@@ -32,7 +32,7 @@ test("desktop home prioritizes insurance and booking", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Need nutrition classes for your members? We can run the whole program." })).toBeVisible();
   const communityGallery = page.locator(".community-gallery");
   await expect(communityGallery.getByRole("heading", { name: "Learning happens wherever people gather." })).toBeVisible();
-  await expect(communityGallery.locator(".community-gallery-item")).toHaveCount(24);
+  await expect(communityGallery.locator(".community-gallery-item")).toHaveCount(72);
   await expect(communityGallery.locator("video")).toHaveCount(1);
   await expect(communityGallery.locator("video")).toHaveAttribute("autoplay", "");
   await expect(communityGallery.locator(".community-gallery-track").first()).toHaveCSS("animation-name", "community-gallery-scroll");
@@ -110,6 +110,10 @@ test("community gallery loads real event media and loops without an empty rail",
     groupWidth: rail.querySelector(".community-gallery-group")?.getBoundingClientRect().width ?? 0,
   })));
   expect(coverage.every(({ viewportWidth, groupWidth }) => groupWidth >= viewportWidth)).toBe(true);
+  const portraitWidth = await gallery.locator(".community-gallery-rail-1 .community-gallery-group").first().locator(".is-video").first().evaluate((item) => item.getBoundingClientRect().width);
+  const landscapeWidth = await gallery.locator(".community-gallery-rail-1 .community-gallery-group").first().locator(".is-landscape").first().evaluate((item) => item.getBoundingClientRect().width);
+  expect(portraitWidth).toBeCloseTo(240, 1);
+  expect(landscapeWidth).toBeCloseTo(390, 1);
   await expect(gallery.locator("video")).toHaveJSProperty("muted", true);
   await gallery.hover();
   await expect(gallery.locator(".community-gallery-track").first()).toHaveCSS("animation-play-state", "running");

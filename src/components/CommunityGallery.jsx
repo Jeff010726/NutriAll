@@ -20,15 +20,21 @@ const galleryRows = [
   ],
 ];
 
+const galleryContentRepeats = 3;
+
 function GalleryGroup({ items, duplicate = false }) {
   const { t } = useTranslation();
 
   return <div className="community-gallery-group" aria-hidden={duplicate || undefined}>
-    {items.map((item) => <figure className={`community-gallery-item is-${item.shape}`} key={`${duplicate ? "copy" : "original"}-${item.src}`}>
-      {item.video && !duplicate
-        ? <video autoPlay loop muted playsInline preload="metadata" poster={asset(item.poster)} aria-label={t("community.galleryVideoLabel")}><source src={asset(item.src)} type="video/mp4" /></video>
-        : <img src={asset(item.video ? item.poster : item.src)} alt={duplicate ? "" : t("community.galleryImageAlt")} loading="eager" />}
-    </figure>)}
+    {Array.from({ length: galleryContentRepeats }, (_, repeatIndex) => items.map((item) => {
+      const decorative = duplicate || repeatIndex > 0;
+
+      return <figure className={`community-gallery-item is-${item.shape}`} aria-hidden={decorative || undefined} key={`${duplicate ? "copy" : "original"}-${repeatIndex}-${item.src}`}>
+        {item.video && !decorative
+          ? <video autoPlay loop muted playsInline preload="metadata" poster={asset(item.poster)} aria-label={t("community.galleryVideoLabel")}><source src={asset(item.src)} type="video/mp4" /></video>
+          : <img src={asset(item.video ? item.poster : item.src)} alt={decorative ? "" : t("community.galleryImageAlt")} loading="eager" />}
+      </figure>;
+    }))}
   </div>;
 }
 
