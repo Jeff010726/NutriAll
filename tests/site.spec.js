@@ -30,6 +30,12 @@ test("desktop home prioritizes insurance and booking", async ({ page }) => {
   await expect(page.getByRole("img", { name: "Healthfirst" })).toBeVisible();
   await expect(page.locator(".clinic-capability-grid > a")).toHaveCount(3);
   await expect(page.getByRole("heading", { name: "Need nutrition classes for your members? We can run the whole program." })).toBeVisible();
+  const communityGallery = page.locator(".community-gallery");
+  await expect(communityGallery.getByRole("heading", { name: "Learning happens wherever people gather." })).toBeVisible();
+  await expect(communityGallery.locator(".community-gallery-item")).toHaveCount(24);
+  await expect(communityGallery.locator("video")).toHaveCount(1);
+  await expect(communityGallery.locator("video")).toHaveAttribute("autoplay", "");
+  await expect(communityGallery.locator(".community-gallery-track").first()).toHaveCSS("animation-name", "community-gallery-scroll");
   await expect(page.getByRole("heading", { name: "You will not be handed the same plan as everyone else." })).toBeVisible();
   await expect(page.locator("body")).toHaveCSS("font-size", "18px");
   await expect(page.locator(".clinic-language-trust")).toHaveCSS("font-size", "16px");
@@ -90,6 +96,31 @@ test("care needs uses varied looping bubbles instead of service cards", async ({
   })));
   expect(coverage.every(({ trackWidth, viewportWidth }) => trackWidth * .75 >= viewportWidth)).toBe(true);
   await expectNoHorizontalOverflow(page);
+});
+
+test("community gallery loads real event media and loops without an empty rail", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.goto("./?lng=zh-CN", { waitUntil: "networkidle" });
+  const gallery = page.locator(".community-gallery");
+  await gallery.scrollIntoViewIfNeeded();
+  await expect(gallery.getByRole("heading", { name: "大家在哪里，我们就把营养知识带到哪里。" })).toBeVisible();
+  await expect.poll(() => gallery.locator("img").evaluateAll((images) => images.every((image) => image.complete && image.naturalWidth > 0))).toBe(true);
+  const coverage = await gallery.locator(".community-gallery-rail").evaluateAll((rails) => rails.map((rail) => ({
+    viewportWidth: rail.clientWidth,
+    groupWidth: rail.querySelector(".community-gallery-group")?.getBoundingClientRect().width ?? 0,
+  })));
+  expect(coverage.every(({ viewportWidth, groupWidth }) => groupWidth >= viewportWidth)).toBe(true);
+  await expect(gallery.locator("video")).toHaveJSProperty("muted", true);
+  await page.addStyleTag({ content: ".community-gallery-track { animation: none !important; }" });
+  await gallery.screenshot({ path: "test-results/community-gallery-desktop.png" });
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.reload({ waitUntil: "networkidle" });
+  await gallery.scrollIntoViewIfNeeded();
+  await expect.poll(() => gallery.locator("img").evaluateAll((images) => images.every((image) => image.complete && image.naturalWidth > 0))).toBe(true);
+  await page.locator(".booking-activity-close").click({ timeout: 3_000 }).catch(() => {});
+  await expectNoHorizontalOverflow(page);
+  await gallery.screenshot({ path: "test-results/community-gallery-mobile.png" });
 });
 
 test("every condition bubble has a detailed plain-language Chinese guide", async ({ page }) => {

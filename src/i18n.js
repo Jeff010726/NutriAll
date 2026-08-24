@@ -325,6 +325,38 @@ Object.assign(resources.es.translation.about, {
   ],
 });
 
+Object.assign(resources.en.translation.community, {
+  galleryEyebrow: "NutriAll in the community",
+  galleryTitle: "Learning happens wherever people gather.",
+  galleryIntro: "From neighborhood health fairs and senior centers to national nutrition conferences, we bring practical education into the rooms where people already live, meet, and learn.",
+  galleryImageAlt: "NutriAll dietitians teaching and meeting community members at classes, health fairs, and professional conferences",
+  galleryVideoLabel: "NutriAll community health fair highlights",
+});
+
+Object.assign(resources["zh-CN"].translation.community, {
+  galleryEyebrow: "NutriAll 在社区",
+  galleryTitle: "大家在哪里，我们就把营养知识带到哪里。",
+  galleryIntro: "从社区健康活动、老人中心课程，到全国营养专业会议，我们把实用、听得懂的营养知识带进大家本来就在生活、见面和学习的地方。",
+  galleryImageAlt: "NutriAll 营养师在社区课程、健康活动和专业会议中授课并与大家交流",
+  galleryVideoLabel: "NutriAll 社区健康活动现场视频",
+});
+
+Object.assign(resources["zh-TW"].translation.community, {
+  galleryEyebrow: "NutriAll 在社區",
+  galleryTitle: "大家在哪裡，我們就把營養知識帶到哪裡。",
+  galleryIntro: "從社區健康活動、老人中心課程，到全國營養專業會議，我們把實用、聽得懂的營養知識帶進大家本來就在生活、見面和學習的地方。",
+  galleryImageAlt: "NutriAll 營養師在社區課程、健康活動和專業會議中授課並與大家交流",
+  galleryVideoLabel: "NutriAll 社區健康活動現場影片",
+});
+
+Object.assign(resources.es.translation.community, {
+  galleryEyebrow: "NutriAll en la comunidad",
+  galleryTitle: "El aprendizaje ocurre donde las personas se reúnen.",
+  galleryIntro: "Desde ferias de salud y centros para mayores hasta conferencias nacionales, llevamos educación práctica a los espacios donde las personas ya viven, se reúnen y aprenden.",
+  galleryImageAlt: "Dietistas de NutriAll enseñando y conversando con la comunidad en clases, ferias de salud y conferencias",
+  galleryVideoLabel: "Momentos de NutriAll en una feria de salud comunitaria",
+});
+
 i18n.use(LanguageDetector).use(initReactI18next).init({
   resources,
   fallbackLng: "en",

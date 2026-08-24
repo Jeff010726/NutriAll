@@ -6,6 +6,7 @@ import { SiteLink } from "../components/SiteLink";
 import { CareJourney } from "../components/CareJourney";
 import { CareNeeds } from "../components/CareNeeds";
 import { HomeFaq } from "../components/HomeFaq";
+import { CommunityGallery } from "../components/CommunityGallery";
 import { asset } from "../lib";
 
 const weightServices = [
@@ -63,6 +64,8 @@ export function HomePage() {
         <div className="community-home-actions"><SiteLink className="button button-secondary" to="/community-programs">{t("community.homeAction")}</SiteLink><SiteLink className="button button-primary" to="/book?service=community">{t("community.book")}</SiteLink></div>
       </div>
     </section>
+
+    <CommunityGallery />
 
     <HomeFaq />
 
