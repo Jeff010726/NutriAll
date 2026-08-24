@@ -5580,9 +5580,8 @@ body { font-size: 18px; line-height: 1.72; }
 .community-gallery-rail { width: 100%; overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%); }
 .community-gallery-track { width: max-content; display: flex; animation: community-gallery-scroll 58s linear infinite; will-change: transform; }
 .community-gallery-rail-2 .community-gallery-track { animation-duration: 66s; animation-direction: reverse; }
-.community-gallery:hover .community-gallery-track, .community-gallery:focus-within .community-gallery-track { animation-play-state: paused; }
-.community-gallery-group { display: flex; gap: 16px; padding-right: 16px; }
-.community-gallery-item { height: 300px; flex: 0 0 auto; margin: 0; overflow: hidden; border-radius: 6px; background: #e7ece9; }
+.community-gallery-group { min-width: 100vw; display: flex; gap: 16px; padding-right: 16px; }
+.community-gallery-item { height: 300px; flex: 1 0 auto; margin: 0; overflow: hidden; border-radius: 6px; background: #e7ece9; }
 .community-gallery-rail-2 .community-gallery-item { height: 250px; }
 .community-gallery-item.is-video, .community-gallery-item.is-portrait { width: 240px; }
 .community-gallery-item.is-narrow { width: 190px; }

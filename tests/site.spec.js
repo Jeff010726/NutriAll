@@ -99,7 +99,7 @@ test("care needs uses varied looping bubbles instead of service cards", async ({
 });
 
 test("community gallery loads real event media and loops without an empty rail", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.setViewportSize({ width: 2560, height: 1440 });
   await page.goto("./?lng=zh-CN", { waitUntil: "networkidle" });
   const gallery = page.locator(".community-gallery");
   await gallery.scrollIntoViewIfNeeded();
@@ -111,6 +111,8 @@ test("community gallery loads real event media and loops without an empty rail",
   })));
   expect(coverage.every(({ viewportWidth, groupWidth }) => groupWidth >= viewportWidth)).toBe(true);
   await expect(gallery.locator("video")).toHaveJSProperty("muted", true);
+  await gallery.hover();
+  await expect(gallery.locator(".community-gallery-track").first()).toHaveCSS("animation-play-state", "running");
   await page.addStyleTag({ content: ".community-gallery-track { animation: none !important; }" });
   await gallery.screenshot({ path: "test-results/community-gallery-desktop.png" });
 
