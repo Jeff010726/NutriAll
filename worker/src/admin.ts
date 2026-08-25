@@ -511,6 +511,7 @@ export function adminPage(request: Request, env: Env) {
     .badge.failed { background: #fff1f2; color: #be123c; }
     .file-links { display: grid; gap: 6px; min-width: 92px; }
     .file-link { color: #4338ca; font-size: 13px; font-weight: 700; text-decoration: underline; text-underline-offset: 2px; }
+    .mobile-brand, .mobile-nav, .mobile-list, .mobile-filter-bar, .mobile-analytics-tabs, .mobile-sheet, .mobile-toast { display: none; }
     .login { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
     .login .card { width: min(420px, 100%); background: white; border: 1px solid #e5e7eb; border-radius: 8px; padding: 20px; }
     label { display: grid; gap: 6px; margin-top: 14px; font-weight: 700; font-size: 14px; }
@@ -520,7 +521,108 @@ export function adminPage(request: Request, env: Env) {
     .empty { color: #667085; padding: 16px 0; }
     .hidden { display: none; }
     @media (max-width: 1180px) { .metric-grid, .insights { grid-template-columns: repeat(2, minmax(0, 1fr)); } .chart-grid { grid-template-columns: 1fr; } }
-    @media (max-width: 840px) { .side { position: static; width: auto; height: auto; max-height: none; } .main { margin-left: 0; } .metric-grid, .insights { grid-template-columns: 1fr; } .top { display: grid; } .controls { justify-content: start; } }
+    @media (max-width: 840px) {
+      :root { --mobile-green: #17352e; --mobile-muted: #64716d; --mobile-line: #dce5e0; --mobile-coral: #ef604f; }
+      body { background: #f5f7f5; -webkit-tap-highlight-color: transparent; }
+      button, a, input, select, textarea { touch-action: manipulation; }
+      .side { display: none; }
+      .main { margin-left: 0; padding: 0 14px calc(88px + env(safe-area-inset-bottom)); }
+      .top { position: sticky; top: 0; z-index: 20; margin: 0 -14px 14px; padding: calc(10px + env(safe-area-inset-top)) 16px 12px; display: flex; align-items: end; background: rgba(255,255,255,.96); border-bottom: 1px solid var(--mobile-line); backdrop-filter: blur(14px); }
+      .top > div:first-child { min-width: 0; }
+      .mobile-brand { display: block; margin-bottom: 2px; color: #43816f; font-size: 11px; line-height: 1.2; font-weight: 850; text-transform: uppercase; }
+      h1 { color: var(--mobile-green); font-size: 23px; }
+      #admin-email { display: none; }
+      #range-caption { max-width: 250px; overflow: hidden; color: var(--mobile-muted); font-size: 11px; white-space: nowrap; text-overflow: ellipsis; }
+      .controls { margin-left: auto; flex-wrap: nowrap; justify-content: flex-end; align-items: center; gap: 7px; }
+      body:not(.analytics-view) .controls label, body:not(.analytics-view) .controls .quick { display: none; }
+      body:not(.analytics-view) #refresh { width: 44px; min-width: 44px; height: 44px; padding: 0; overflow: hidden; color: white; font-size: 24px; line-height: 1; }
+      body.analytics-view .top { display: grid; grid-template-columns: 1fr auto; }
+      body.analytics-view .controls { grid-column: 1 / -1; width: 100%; margin: 10px 0 0; padding-bottom: 2px; overflow-x: auto; justify-content: flex-start; }
+      body.analytics-view .controls label { min-width: 132px; margin: 0; }
+      body.analytics-view .controls label input { padding: 9px; }
+      body.analytics-view .quick, body.analytics-view #refresh { flex: 0 0 auto; min-height: 42px; padding: 9px 11px; }
+      .insights { grid-template-columns: 1fr; gap: 8px; }
+      .insight { min-height: 0; padding: 13px; box-shadow: none; }
+      .metric-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .metric-card { min-height: 126px; padding: 13px; box-shadow: none; }
+      .metric-value { font-size: 27px; }
+      .metric-head { display: grid; }
+      .chart-grid { grid-template-columns: 1fr; gap: 12px; }
+      .panel { padding: 14px; box-shadow: none; }
+      .chart { height: 220px; }
+      .chart-hit { touch-action: pan-y; }
+      .funnel-step { grid-template-columns: 88px 1fr 48px; gap: 8px; }
+      .status-panel { display: grid; }
+      .status-panel .primary { width: 100%; min-height: 44px; }
+      .tablewrap { display: none; }
+      .mobile-nav { position: fixed; z-index: 40; inset: auto 0 0; padding: 7px 8px calc(7px + env(safe-area-inset-bottom)); display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 2px; background: rgba(255,255,255,.97); border-top: 1px solid var(--mobile-line); backdrop-filter: blur(16px); }
+      .mobile-nav button { min-width: 0; min-height: 50px; padding: 6px 3px; border: 0; border-radius: 6px; background: transparent; color: #66736f; font-size: 11px; font-weight: 800; cursor: pointer; }
+      .mobile-nav button::before { content: ""; width: 18px; height: 3px; display: block; margin: 0 auto 6px; border-radius: 999px; background: transparent; }
+      .mobile-nav button.active { color: var(--mobile-green); background: #edf3ef; }
+      .mobile-nav button.active::before { background: var(--mobile-coral); }
+      .mobile-filter-bar { margin-bottom: 12px; display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; }
+      .mobile-filter-bar::-webkit-scrollbar, .mobile-analytics-tabs::-webkit-scrollbar { display: none; }
+      .mobile-filter-bar button, .mobile-analytics-tabs button { flex: 0 0 auto; min-height: 40px; padding: 8px 12px; border: 1px solid var(--mobile-line); border-radius: 6px; background: white; color: #53615d; font-size: 13px; font-weight: 800; }
+      .mobile-filter-bar button.active, .mobile-analytics-tabs button.active { border-color: var(--mobile-green); background: var(--mobile-green); color: white; }
+      .mobile-search { width: 100%; min-height: 46px; margin-bottom: 12px; padding: 11px 13px; border: 1px solid var(--mobile-line); background: white; }
+      .mobile-list { display: grid; gap: 10px; }
+      .mobile-card { padding: 14px; border: 1px solid var(--mobile-line); border-radius: 8px; background: white; }
+      .mobile-card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+      .mobile-card h2 { margin: 0; color: var(--mobile-green); font-size: 18px; line-height: 1.3; }
+      .mobile-card-meta { margin-top: 3px; color: var(--mobile-muted); font-size: 12px; line-height: 1.45; }
+      .mobile-card-summary { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; }
+      .mobile-card-summary div { min-width: 0; }
+      .mobile-card-summary span, .mobile-detail-grid dt { display: block; color: var(--mobile-muted); font-size: 11px; font-weight: 800; text-transform: uppercase; }
+      .mobile-card-summary strong { display: block; margin-top: 2px; overflow: hidden; color: #263b35; font-size: 14px; font-weight: 750; white-space: nowrap; text-overflow: ellipsis; }
+      .mobile-card-actions { margin-top: 13px; padding-top: 12px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; border-top: 1px solid #edf1ef; }
+      .mobile-card-actions a, .mobile-card-actions button { min-height: 42px; display: grid; place-items: center; padding: 8px; border: 1px solid #b9c9c1; border-radius: 6px; background: white; color: var(--mobile-green); font-size: 13px; font-weight: 850; text-decoration: none; }
+      .mobile-card-actions .mobile-detail-button { border-color: var(--mobile-green); background: var(--mobile-green); color: white; }
+      .mobile-status { max-width: 132px; min-height: 38px; padding: 7px 9px; border: 1px solid #b9c9c1; border-radius: 6px; background: #edf3ef; color: var(--mobile-green); font-size: 12px; font-weight: 850; }
+      .mobile-empty { padding: 42px 20px; border: 1px dashed #c9d5cf; border-radius: 8px; background: white; color: var(--mobile-muted); text-align: center; }
+      .mobile-action-grid { margin-bottom: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+      .mobile-action-stat { min-height: 104px; padding: 14px; border: 1px solid var(--mobile-line); border-radius: 8px; background: white; }
+      .mobile-action-stat span { display: block; color: var(--mobile-muted); font-size: 12px; font-weight: 800; }
+      .mobile-action-stat strong { display: block; margin-top: 12px; color: var(--mobile-green); font-size: 29px; }
+      .mobile-section-heading { margin: 22px 2px 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+      .mobile-section-heading h2 { margin: 0; color: var(--mobile-green); font-size: 17px; }
+      .mobile-section-heading button { border: 0; background: transparent; color: #357565; font-size: 13px; font-weight: 850; }
+      .mobile-analytics-tabs { margin-bottom: 12px; display: flex; gap: 7px; overflow-x: auto; scrollbar-width: none; }
+      .mobile-data-list { display: grid; gap: 8px; }
+      .mobile-data-row { padding: 12px; border: 1px solid var(--mobile-line); border-radius: 7px; background: white; }
+      .mobile-data-row strong { color: var(--mobile-green); }
+      .mobile-data-row dl { margin: 10px 0 0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .mobile-data-row dt { color: var(--mobile-muted); font-size: 10px; font-weight: 800; text-transform: uppercase; }
+      .mobile-data-row dd { margin: 2px 0 0; overflow-wrap: anywhere; font-size: 13px; }
+      .mobile-sheet { position: fixed; z-index: 70; inset: 0; display: grid; align-items: end; }
+      .mobile-sheet.hidden { display: none; }
+      .mobile-sheet-backdrop { position: absolute; inset: 0; border: 0; background: rgba(8,25,20,.46); }
+      .mobile-sheet-panel { position: relative; max-height: 88vh; padding: 0 16px calc(18px + env(safe-area-inset-bottom)); overflow-y: auto; border-radius: 8px 8px 0 0; background: white; }
+      .mobile-sheet-handle { width: 42px; height: 4px; margin: 9px auto 11px; border-radius: 999px; background: #cbd5d0; }
+      .mobile-sheet-header { position: sticky; top: 0; z-index: 1; padding: 8px 0 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: white; border-bottom: 1px solid var(--mobile-line); }
+      .mobile-sheet-header h2 { margin: 0; color: var(--mobile-green); font-size: 20px; }
+      .mobile-sheet-close { width: 44px; height: 44px; border: 0; border-radius: 50%; background: #edf3ef; color: var(--mobile-green); font-size: 22px; }
+      .mobile-sheet-body { padding-top: 14px; }
+      .mobile-detail-grid { margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .mobile-detail-grid > div.wide { grid-column: 1 / -1; }
+      .mobile-detail-grid dd { margin: 4px 0 0; color: #263b35; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
+      .mobile-sheet-form { display: grid; gap: 12px; }
+      .mobile-sheet-form label { margin: 0; color: #344b44; }
+      .mobile-sheet-form select, .mobile-sheet-form textarea { width: 100%; min-height: 46px; padding: 11px 12px; border: 1px solid #c5d1cb; border-radius: 6px; background: white; font: inherit; }
+      .mobile-sheet-form textarea { min-height: 116px; resize: vertical; }
+      .mobile-sheet-form .primary { min-height: 48px; margin-top: 5px; background: var(--mobile-green); }
+      .mobile-file-actions { margin-top: 16px; display: grid; gap: 8px; }
+      .mobile-file-actions a { min-height: 44px; display: grid; place-items: center; border: 1px solid #b9c9c1; border-radius: 6px; color: var(--mobile-green); font-weight: 850; text-decoration: none; }
+      .mobile-toast { position: fixed; z-index: 90; left: 16px; right: 16px; bottom: calc(76px + env(safe-area-inset-bottom)); min-height: 48px; padding: 12px 15px; display: block; border-radius: 7px; background: var(--mobile-green); color: white; font-size: 14px; font-weight: 800; }
+      .mobile-toast.hidden { display: none; }
+      #app.hidden + .mobile-nav { display: none; }
+      .mobile-menu { display: grid; gap: 8px; }
+      .mobile-menu button { min-height: 52px; padding: 12px 14px; border: 1px solid var(--mobile-line); border-radius: 7px; background: white; color: var(--mobile-green); text-align: left; font-size: 16px; font-weight: 800; }
+      .mobile-menu button.danger { color: #b42318; }
+      .mobile-detail-note { margin: 14px 0 0; padding: 12px; border-radius: 7px; background: #f4f7f5; color: #344b44; font-size: 14px; line-height: 1.55; white-space: pre-wrap; }
+      .mobile-inline-actions { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .mobile-inline-actions button, .mobile-inline-actions a { min-height: 46px; display: grid; place-items: center; padding: 10px; border: 1px solid #b9c9c1; border-radius: 6px; background: white; color: var(--mobile-green); font-weight: 850; text-decoration: none; }
+      .mobile-inline-actions .primary { border-color: var(--mobile-green); background: var(--mobile-green); color: white; }
+    }
   </style>
 </head>
 <body>
@@ -555,6 +657,7 @@ export function adminPage(request: Request, env: Env) {
     <main class="main">
       <div class="top">
         <div>
+          <div class="mobile-brand">NutriAll Admin</div>
           <h1 id="title">Dashboard</h1>
           <div class="muted" id="admin-email"></div>
           <div class="caption" id="range-caption"></div>
@@ -572,6 +675,24 @@ export function adminPage(request: Request, env: Env) {
     </main>
   </div>
 
+  <nav class="mobile-nav" aria-label="Mobile admin navigation">
+    <button type="button" data-mobile-view="overview">Overview</button>
+    <button type="button" data-mobile-view="bookings">Bookings</button>
+    <button type="button" data-mobile-view="classSignups">Classes</button>
+    <button type="button" data-mobile-view="dashboard">Data</button>
+    <button type="button" id="mobile-more">More</button>
+  </nav>
+
+  <div class="mobile-sheet hidden" id="mobile-sheet" role="dialog" aria-modal="true" aria-labelledby="mobile-sheet-title">
+    <button type="button" class="mobile-sheet-backdrop" id="mobile-sheet-backdrop" aria-label="Close panel"></button>
+    <section class="mobile-sheet-panel">
+      <div class="mobile-sheet-handle" aria-hidden="true"></div>
+      <header class="mobile-sheet-header"><h2 id="mobile-sheet-title">Details</h2><button type="button" class="mobile-sheet-close" id="mobile-sheet-close" aria-label="Close">×</button></header>
+      <div class="mobile-sheet-body" id="mobile-sheet-body"></div>
+    </section>
+  </div>
+  <div class="mobile-toast hidden" id="mobile-toast" role="status"></div>
+
   <script>
     const state = { view: "dashboard", admin: null, analytics: null };
     const $ = (id) => document.getElementById(id);
@@ -584,13 +705,103 @@ export function adminPage(request: Request, env: Env) {
       if (!res.ok) throw new Error(data.error || "Request failed");
       return data;
     }
-    function showLogin() { $("login").classList.remove("hidden"); $("app").classList.add("hidden"); }
-    function showApp() { $("login").classList.add("hidden"); $("app").classList.remove("hidden"); $("admin-email").textContent = state.admin?.email || ""; }
+    function isMobileAdmin() { return window.matchMedia("(max-width: 840px)").matches; }
+    function showLogin() { $("login").classList.remove("hidden"); $("app").classList.add("hidden"); closeMobileSheet(); }
+    function showApp() {
+      $("login").classList.add("hidden");
+      $("app").classList.remove("hidden");
+      $("admin-email").textContent = state.admin?.email || "";
+      if (isMobileAdmin() && state.view === "dashboard") state.view = "overview";
+      syncChrome();
+    }
     function isoDate(date) { return date.toISOString().slice(0, 10); }
     function escapeHtml(value) {
       return text(value).replace(/[&<>"']/g, function (char) {
         return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[char];
       });
+    }
+    const analyticsViews = ["dashboard", "traffic", "sources", "ads", "locations", "conversions"];
+    const statusLabels = { new: "New", contacted: "Contacted", benefits_check: "Insurance check", scheduled: "Scheduled", converted: "Converted", closed: "Closed" };
+    function statusLabel(value) { return statusLabels[value] || text(value); }
+    function phoneHref(value) { return "tel:" + String(value || "").replace(/[^+\d]/g, ""); }
+    function mobileDateValue(value) {
+      if (!value) return "";
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return String(value).slice(0, 16);
+      const local = new Date(parsed.getTime() - parsed.getTimezoneOffset() * 60000);
+      return local.toISOString().slice(0, 16);
+    }
+    function mobileDetailGrid(fields) {
+      return '<dl class="mobile-detail-grid">' + fields.map(function (field) {
+        return '<div' + (field.wide ? ' class="wide"' : '') + '><dt>' + escapeHtml(field.label) + '</dt><dd>' + escapeHtml(field.value) + '</dd></div>';
+      }).join("") + '</dl>';
+    }
+    function openMobileSheet(title, body) {
+      $("mobile-sheet-title").textContent = title;
+      $("mobile-sheet-body").innerHTML = body;
+      $("mobile-sheet").classList.remove("hidden");
+      document.body.style.overflow = "hidden";
+    }
+    function closeMobileSheet() {
+      if (!$("mobile-sheet")) return;
+      $("mobile-sheet").classList.add("hidden");
+      document.body.style.overflow = "";
+    }
+    let toastTimer;
+    function showToast(message) {
+      clearTimeout(toastTimer);
+      $("mobile-toast").textContent = message;
+      $("mobile-toast").classList.remove("hidden");
+      toastTimer = setTimeout(function () { $("mobile-toast").classList.add("hidden"); }, 2600);
+    }
+    async function openMobileEmailSystem() {
+      openMobileSheet("Email system", '<div class="mobile-empty">Checking email notification status...</div>');
+      try {
+        const status = await api("/admin/api/smtp-status");
+        const configured = status && status.configured;
+        const missing = status && status.missing && status.missing.length ? status.missing.join(", ") : "";
+        $("mobile-sheet-body").innerHTML = mobileDetailGrid([
+          { label: "Status", value: configured ? "Ready" : "Needs setup" },
+          { label: "Server", value: status.host || "-" },
+          { label: "Recipient", value: status.to || "-", wide: true },
+          { label: "Missing settings", value: missing || "None", wide: true }
+        ]) + '<div class="mobile-inline-actions"><button type="button" class="primary" id="mobile-smtp-test"' + (configured ? '' : ' disabled') + ' style="grid-column:1/-1">Send test email</button></div>';
+        if (configured) $("mobile-smtp-test").addEventListener("click", async function () {
+          const button = $("mobile-smtp-test");
+          button.disabled = true;
+          try { await api("/admin/api/smtp-test", { method: "POST" }); showToast("Test email sent"); }
+          catch (error) { showToast(error.message); }
+          finally { button.disabled = false; }
+        });
+      } catch (error) {
+        $("mobile-sheet-body").innerHTML = '<div class="mobile-empty">' + escapeHtml(error.message) + '</div>';
+      }
+    }
+    function mobileAnalyticsTabs() {
+      const labels = { dashboard: "Overview", traffic: "Traffic", sources: "Sources", ads: "Ads", locations: "Locations", conversions: "Conversions" };
+      return '<nav class="mobile-analytics-tabs" aria-label="Analytics sections">' + analyticsViews.map(function (view) {
+        return '<button type="button" data-analytics-view="' + view + '" class="' + (state.view === view ? 'active' : '') + '">' + labels[view] + '</button>';
+      }).join("") + '</nav>';
+    }
+    function bindAnalyticsTabs() {
+      document.querySelectorAll("[data-analytics-view]").forEach(function (button) {
+        button.addEventListener("click", function () { setView(button.dataset.analyticsView); });
+      });
+    }
+    function syncChrome() {
+      document.body.classList.toggle("analytics-view", analyticsViews.includes(state.view));
+      $("refresh").textContent = isMobileAdmin() && !analyticsViews.includes(state.view) ? "↻" : "Refresh";
+      document.querySelectorAll("[data-view]").forEach(function (item) { item.classList.toggle("active", item.dataset.view === state.view); });
+      const mobilePrimary = state.view === "overview" ? "overview" : state.view === "bookings" ? "bookings" : state.view === "classSignups" ? "classSignups" : analyticsViews.includes(state.view) ? "dashboard" : "more";
+      document.querySelectorAll("[data-mobile-view]").forEach(function (item) { item.classList.toggle("active", item.dataset.mobileView === mobilePrimary); });
+      $("mobile-more").classList.toggle("active", mobilePrimary === "more");
+    }
+    async function setView(view) {
+      state.view = view;
+      closeMobileSheet();
+      syncChrome();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      await load();
     }
     function parseBookingMessage(message) {
       const fields = {};
@@ -781,8 +992,9 @@ export function adminPage(request: Request, env: Env) {
           tooltip.style.top = Math.max(64, yAt(Math.max.apply(null, payload.series.map(function (item) { return Number(row[item.key] || 0); }))) / payload.height * wrapRect.height - 12) + "px";
           tooltip.style.opacity = "1";
         };
-        hit.addEventListener("mousemove", move);
-        hit.addEventListener("mouseleave", clear);
+        hit.addEventListener("pointermove", move);
+        hit.addEventListener("pointerleave", clear);
+        hit.addEventListener("pointerdown", move);
       });
     }
     function smtpPanelHtml(status) {
@@ -846,7 +1058,7 @@ export function adminPage(request: Request, env: Env) {
     }
     function renderDashboard(data) {
       $("title").textContent = "Dashboard";
-      $("content").innerHTML = insightsHtml(data) + metricsHtml(data) + '<section class="chart-grid">'
+      $("content").innerHTML = (isMobileAdmin() ? mobileAnalyticsTabs() : "") + insightsHtml(data) + metricsHtml(data) + '<section class="chart-grid">'
         + panel("Traffic over time", "Page views, visitors, and sessions", lineChart(data.timeline), true)
         + panel("Conversion funnel", "Sessions through registration", funnelChart(data.funnel), false)
         + panel("Top pages", "Pages ranked by views", barList(data.topPages, "pageViews"), false)
@@ -855,10 +1067,12 @@ export function adminPage(request: Request, env: Env) {
         + panel("Devices", "Desktop, mobile, and tablet split", barList(data.topDevices, "count"), false)
         + '</section>';
       bindCharts();
+      bindAnalyticsTabs();
     }
     function campaignTable(rows) {
       const data = rows || [];
       if (!data.length) return '<div class="empty">No UTM-tagged ad traffic yet.</div>';
+      if (isMobileAdmin()) return '<div class="mobile-data-list">' + data.map(function (row) { return '<article class="mobile-data-row"><strong>' + escapeHtml(row.label) + '</strong><dl><div><dt>Source</dt><dd>' + escapeHtml(row.source) + '</dd></div><div><dt>Sessions</dt><dd>' + num(row.sessions) + '</dd></div><div><dt>Contacts</dt><dd>' + num(row.contactSubmits) + '</dd></div><div><dt>Signups</dt><dd>' + num(row.memberSignups) + '</dd></div></dl></article>'; }).join("") + '</div>';
       return '<section class="tablewrap"><table><thead><tr><th>Campaign</th><th>Source</th><th>Medium</th><th>Sessions</th><th>Visitors</th><th>Page views</th><th>External clicks</th><th>Contacts</th><th>Signups</th></tr></thead><tbody>'
         + data.map(function (row) {
           return '<tr><td>' + escapeHtml(row.label) + '</td><td>' + escapeHtml(row.source) + '</td><td>' + escapeHtml(row.medium) + '</td><td>' + num(row.sessions) + '</td><td>' + num(row.visitors) + '</td><td>' + num(row.pageViews) + '</td><td>' + num(row.externalClicks) + '</td><td>' + num(row.contactSubmits) + '</td><td>' + num(row.memberSignups) + '</td></tr>';
@@ -867,6 +1081,7 @@ export function adminPage(request: Request, env: Env) {
     function contentTable(rows) {
       const data = rows || [];
       if (!data.length) return '<div class="empty">No ad content data yet. Add utm_content to ad URLs.</div>';
+      if (isMobileAdmin()) return '<div class="mobile-data-list">' + data.map(function (row) { return '<article class="mobile-data-row"><strong>' + escapeHtml(row.label) + '</strong><dl><div><dt>Campaign</dt><dd>' + escapeHtml(row.campaign) + '</dd></div><div><dt>Sessions</dt><dd>' + num(row.sessions) + '</dd></div><div><dt>Contacts</dt><dd>' + num(row.contactSubmits) + '</dd></div><div><dt>Signups</dt><dd>' + num(row.memberSignups) + '</dd></div></dl></article>'; }).join("") + '</div>';
       return '<section class="tablewrap"><table><thead><tr><th>Content</th><th>Campaign</th><th>Sessions</th><th>Visitors</th><th>Page views</th><th>External clicks</th><th>Contacts</th><th>Signups</th></tr></thead><tbody>'
         + data.map(function (row) {
           return '<tr><td>' + escapeHtml(row.label) + '</td><td>' + escapeHtml(row.campaign) + '</td><td>' + num(row.sessions) + '</td><td>' + num(row.visitors) + '</td><td>' + num(row.pageViews) + '</td><td>' + num(row.externalClicks) + '</td><td>' + num(row.contactSubmits) + '</td><td>' + num(row.memberSignups) + '</td></tr>';
@@ -875,6 +1090,7 @@ export function adminPage(request: Request, env: Env) {
     function recentAdEventsTable(rows) {
       const data = rows || [];
       if (!data.length) return '<div class="empty">No recent ad events in this range.</div>';
+      if (isMobileAdmin()) return '<div class="mobile-data-list">' + data.map(function (row) { return '<article class="mobile-data-row"><strong>' + escapeHtml(row.event_type) + '</strong><dl><div><dt>Time</dt><dd>' + escapeHtml(date(row.created_at)) + '</dd></div><div><dt>Campaign</dt><dd>' + escapeHtml(row.utm_campaign) + '</dd></div><div><dt>Page</dt><dd>' + escapeHtml(row.path) + '</dd></div><div><dt>Source</dt><dd>' + escapeHtml(row.utm_source) + '</dd></div></dl></article>'; }).join("") + '</div>';
       return '<section class="tablewrap"><table><thead><tr><th>Time</th><th>Event</th><th>Page</th><th>Source</th><th>Medium</th><th>Campaign</th><th>Content</th></tr></thead><tbody>'
         + data.map(function (row) {
           return '<tr><td>' + escapeHtml(date(row.created_at)) + '</td><td>' + escapeHtml(row.event_type) + '</td><td>' + escapeHtml(row.path) + '</td><td>' + escapeHtml(row.utm_source) + '</td><td>' + escapeHtml(row.utm_medium) + '</td><td>' + escapeHtml(row.utm_campaign) + '</td><td>' + escapeHtml(row.utm_content) + '</td></tr>';
@@ -883,7 +1099,7 @@ export function adminPage(request: Request, env: Env) {
     async function renderAds() {
       $("title").textContent = "Ads";
       const data = await getAdsAnalytics();
-      $("content").innerHTML = adsMetricsHtml(data) + '<section class="chart-grid">'
+      $("content").innerHTML = (isMobileAdmin() ? mobileAnalyticsTabs() : "") + adsMetricsHtml(data) + '<section class="chart-grid">'
         + panel("Ad traffic over time", "UTM-tagged sessions, visitors, and page views", lineChart(data.timeline), true)
         + panel("Ad conversion funnel", "UTM-tagged sessions through key actions", funnelChart(data.funnel), false)
         + panel("Landing pages", "Ad traffic by destination page", barList(data.landingPages, "sessions"), false)
@@ -892,10 +1108,11 @@ export function adminPage(request: Request, env: Env) {
         + panel("Recent ad events", "Latest UTM-tagged activity", recentAdEventsTable(data.recentEvents), true)
         + '</section>';
       bindCharts();
+      bindAnalyticsTabs();
     }
     function renderTraffic(data) {
       $("title").textContent = "Traffic";
-      $("content").innerHTML = metricsHtml(data) + '<section class="chart-grid">'
+      $("content").innerHTML = (isMobileAdmin() ? mobileAnalyticsTabs() : "") + metricsHtml(data) + '<section class="chart-grid">'
         + panel("Traffic over time", "Page views, visitors, and sessions", lineChart(data.timeline), true)
         + panel("Top pages", "Highest-viewed pages", barList(data.topPages, "pageViews"), false)
         + panel("Landing pages", "Entry pages by session count", barList(data.landingPages, "sessions"), false)
@@ -903,33 +1120,37 @@ export function adminPage(request: Request, env: Env) {
         + panel("Devices", "Device breakdown", barList(data.topDevices, "count"), false)
         + '</section>';
       bindCharts();
+      bindAnalyticsTabs();
     }
     function renderSources(data) {
       $("title").textContent = "Sources";
-      $("content").innerHTML = metricsHtml(data) + '<section class="chart-grid">'
+      $("content").innerHTML = (isMobileAdmin() ? mobileAnalyticsTabs() : "") + metricsHtml(data) + '<section class="chart-grid">'
         + panel("Source channels", "Direct, search, social, referral, and campaigns", barList(data.sourceChannels, "count"), false)
         + panel("Referrers", "Top referring URLs", barList(data.topReferrers, "count"), false)
         + panel("Traffic over time", "Traffic trend for selected range", lineChart(data.timeline), true)
         + '</section>';
       bindCharts();
+      bindAnalyticsTabs();
     }
     function renderLocations(data) {
       $("title").textContent = "Locations";
-      $("content").innerHTML = metricsHtml(data) + '<section class="chart-grid">'
+      $("content").innerHTML = (isMobileAdmin() ? mobileAnalyticsTabs() : "") + metricsHtml(data) + '<section class="chart-grid">'
         + panel("Countries", "Country-level traffic", barList(data.topCountries, "count"), false)
         + panel("Regions", "State or region activity", barList(data.topRegions, "count"), false)
         + panel("Cities", "City-level activity", barList(data.topCities, "count"), false)
         + panel("Traffic over time", "Location-filterable reports can be added later", lineChart(data.timeline), false)
         + '</section>';
       bindCharts();
+      bindAnalyticsTabs();
     }
     function renderConversions(data) {
       $("title").textContent = "Conversions";
-      $("content").innerHTML = metricsHtml(data) + '<section class="chart-grid">'
+      $("content").innerHTML = (isMobileAdmin() ? mobileAnalyticsTabs() : "") + metricsHtml(data) + '<section class="chart-grid">'
         + panel("Conversion funnel", "Sessions to booking, lead, and account creation", funnelChart(data.funnel), true)
         + panel("Booking clicks", "Booking intent over time", barList(data.timeline.map(function (row) { return { label: row.date, count: row.bookingClicks }; }), "count"), false)
         + panel("Contact submits", "Tracked contact form submits", barList(data.timeline.map(function (row) { return { label: row.date, count: row.contactSubmits }; }), "count"), false)
         + '</section>';
+      bindAnalyticsTabs();
     }
     async function loadAnalyticsView() {
       const data = await getAnalytics();
@@ -939,10 +1160,137 @@ export function adminPage(request: Request, env: Env) {
       if (state.view === "conversions") return renderConversions(data);
       return renderDashboard(data);
     }
+    async function saveBooking(booking, changes) {
+      const body = {
+        id: booking.id,
+        leadStatus: booking.lead_status || "new",
+        assignedTo: booking.assigned_to || "",
+        followUpAt: booking.follow_up_at || "",
+        notes: booking.notes || "",
+        ...changes,
+      };
+      await api("/admin/api/bookings/update", { method: "POST", body: JSON.stringify(body) });
+      Object.assign(booking, {
+        lead_status: body.leadStatus,
+        assigned_to: body.assignedTo,
+        follow_up_at: body.followUpAt,
+        notes: body.notes,
+      });
+    }
+    function mobileBookingCard(booking, compact) {
+      const parsed = parseBookingMessage(booking.message);
+      const phone = booking.phone || parsed.phone;
+      const service = booking.service_interest || "Free consultation";
+      return '<article class="mobile-card" data-booking-card data-search="' + escapeHtml([booking.name, booking.email, phone, service].join(" ").toLowerCase()) + '" data-status="' + escapeHtml(booking.lead_status || "new") + '">'
+        + '<div class="mobile-card-head"><div><h2>' + escapeHtml(booking.name) + '</h2><div class="mobile-card-meta">' + escapeHtml(date(booking.created_at)) + ' · ' + escapeHtml(service) + '</div></div>'
+        + (compact ? '<span class="badge">' + escapeHtml(statusLabel(booking.lead_status || "new")) + '</span>' : '<select class="mobile-status" data-booking-status="' + escapeHtml(booking.id) + '" aria-label="Booking status">' + Object.keys(statusLabels).map(function (status) { return '<option value="' + status + '"' + (status === (booking.lead_status || "new") ? ' selected' : '') + '>' + statusLabels[status] + '</option>'; }).join("") + '</select>') + '</div>'
+        + '<div class="mobile-card-summary"><div><span>Phone</span><strong>' + escapeHtml(phone) + '</strong></div><div><span>Follow-up</span><strong>' + escapeHtml(booking.follow_up_at ? date(booking.follow_up_at) : "Not set") + '</strong></div><div><span>Insurance</span><strong>' + escapeHtml(booking.insurance_company || parsed.insuranceCompany) + '</strong></div><div><span>Owner</span><strong>' + escapeHtml(booking.assigned_to || "Unassigned") + '</strong></div></div>'
+        + '<div class="mobile-card-actions">' + (phone ? '<a href="' + phoneHref(phone) + '">Call</a>' : '<button type="button" disabled>Call</button>') + '<a href="mailto:' + escapeHtml(booking.email) + '">Email</a><button type="button" class="mobile-detail-button" data-booking-detail="' + escapeHtml(booking.id) + '">Details</button></div></article>';
+    }
+    function bookingDetails(booking) {
+      const parsed = parseBookingMessage(booking.message);
+      const phone = booking.phone || parsed.phone;
+      openMobileSheet(booking.name || "Booking details", mobileDetailGrid([
+        { label: "Status", value: statusLabel(booking.lead_status || "new") },
+        { label: "Service", value: booking.service_interest },
+        { label: "Patient", value: booking.patient_type === "returning" ? "Returning patient" : booking.patient_type === "new" ? "New patient" : booking.patient_type },
+        { label: "Created", value: date(booking.created_at) },
+        { label: "Email", value: booking.email, wide: true },
+        { label: "Phone", value: phone },
+        { label: "Language", value: booking.preferred_language || parsed.preferredLanguage },
+        { label: "Available", value: booking.availability || parsed.availability, wide: true },
+        { label: "Insurance", value: booking.insurance_company || parsed.insuranceCompany },
+        { label: "Member ID", value: booking.insurance_member_id || parsed.insuranceMemberId },
+        { label: "Date of birth", value: booking.date_of_birth || parsed.dateOfBirth },
+        { label: "Assigned", value: booking.assigned_to || "Unassigned" },
+        { label: "Follow-up", value: booking.follow_up_at ? date(booking.follow_up_at) : "Not set", wide: true }
+      ]) + (booking.notes || booking.message ? '<div class="mobile-detail-note">' + escapeHtml(booking.notes || booking.message) + '</div>' : '')
+        + '<div class="mobile-inline-actions">' + (phone ? '<a href="' + phoneHref(phone) + '">Call</a>' : '<span></span>') + '<button type="button" class="primary" id="mobile-edit-booking">Edit follow-up</button></div>');
+      $("mobile-edit-booking").addEventListener("click", function () { bookingEditForm(booking); });
+    }
+    function bookingEditForm(booking) {
+      openMobileSheet("Update follow-up", '<form class="mobile-sheet-form" id="mobile-booking-form">'
+        + '<label>Status<select id="mobile-booking-status">' + Object.keys(statusLabels).map(function (status) { return '<option value="' + status + '"' + (status === (booking.lead_status || "new") ? ' selected' : '') + '>' + statusLabels[status] + '</option>'; }).join("") + '</select></label>'
+        + '<label>Assigned to<input id="mobile-booking-owner" value="' + escapeHtml(booking.assigned_to || "") + '" autocomplete="off"></label>'
+        + '<label>Next follow-up<input id="mobile-booking-followup" type="datetime-local" value="' + escapeHtml(mobileDateValue(booking.follow_up_at)) + '"></label>'
+        + '<label>Internal notes<textarea id="mobile-booking-notes">' + escapeHtml(booking.notes || "") + '</textarea></label>'
+        + '<button class="primary" type="submit">Save changes</button></form>');
+      $("mobile-booking-form").addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const button = event.currentTarget.querySelector("button[type=submit]");
+        button.disabled = true;
+        try {
+          const status = $("mobile-booking-status").value;
+          await saveBooking(booking, { leadStatus: status, assignedTo: $("mobile-booking-owner").value.trim(), followUpAt: $("mobile-booking-followup").value, notes: $("mobile-booking-notes").value.trim(), markContacted: status === "contacted" });
+          closeMobileSheet();
+          showToast("Booking updated");
+          await loadBookings();
+        } catch (error) {
+          showToast(error.message);
+          button.disabled = false;
+        }
+      });
+    }
+    function bindMobileBookingCards(bookings) {
+      const byId = Object.fromEntries(bookings.map(function (booking) { return [String(booking.id), booking]; }));
+      document.querySelectorAll("[data-booking-detail]").forEach(function (button) { button.addEventListener("click", function () { bookingDetails(byId[String(button.dataset.bookingDetail)]); }); });
+      document.querySelectorAll("[data-booking-status]").forEach(function (select) {
+        select.addEventListener("change", async function () {
+          const booking = byId[String(select.dataset.bookingStatus)];
+          select.disabled = true;
+          try { await saveBooking(booking, { leadStatus: select.value, markContacted: select.value === "contacted" }); showToast("Status updated"); }
+          catch (error) { select.value = booking.lead_status || "new"; showToast(error.message); }
+          finally { select.disabled = false; }
+        });
+      });
+    }
+    function renderMobileBookings(bookings, compact) {
+      const list = bookings || [];
+      $("content").innerHTML = (compact ? "" : '<input class="mobile-search" id="mobile-booking-search" type="search" placeholder="Search name, phone, email, or service"><div class="mobile-filter-bar" id="mobile-booking-filters"><button type="button" data-filter="all" class="active">All</button>' + Object.keys(statusLabels).map(function (status) { return '<button type="button" data-filter="' + status + '">' + statusLabels[status] + '</button>'; }).join("") + '</div>')
+        + '<div class="mobile-list">' + (list.length ? list.map(function (booking) { return mobileBookingCard(booking, compact); }).join("") : '<div class="mobile-empty">No booking requests yet.</div>') + '</div>';
+      bindMobileBookingCards(list);
+      if (!compact && $("mobile-booking-search")) {
+        let activeFilter = "all";
+        const applyFilter = function () {
+          const query = $("mobile-booking-search").value.trim().toLowerCase();
+          document.querySelectorAll("[data-booking-card]").forEach(function (card) { card.hidden = !card.dataset.search.includes(query) || (activeFilter !== "all" && card.dataset.status !== activeFilter); });
+        };
+        $("mobile-booking-search").addEventListener("input", applyFilter);
+        $("mobile-booking-filters").querySelectorAll("button").forEach(function (button) { button.addEventListener("click", function () { activeFilter = button.dataset.filter; $("mobile-booking-filters").querySelectorAll("button").forEach(function (item) { item.classList.toggle("active", item === button); }); applyFilter(); }); });
+      }
+    }
+    async function loadMobileOverview() {
+      $("title").textContent = "Overview";
+      $("range-caption").textContent = "What needs attention now";
+      const results = await Promise.all([
+        api("/admin/api/bookings?limit=100"),
+        api("/admin/api/class-signups?limit=100").catch(function () { return { signups: [] }; }),
+        getAnalytics().catch(function () { return null; })
+      ]);
+      $("range-caption").textContent = "What needs attention now";
+      const bookings = results[0].bookings || [];
+      const signups = results[1].signups || [];
+      const now = Date.now();
+      const newCount = bookings.filter(function (item) { return (item.lead_status || "new") === "new"; }).length;
+      const dueCount = bookings.filter(function (item) { return item.follow_up_at && new Date(item.follow_up_at).getTime() <= now && !["converted", "closed"].includes(item.lead_status); }).length;
+      const insuranceCount = bookings.filter(function (item) { return item.lead_status === "benefits_check"; }).length;
+      $("content").innerHTML = '<section class="mobile-action-grid"><article class="mobile-action-stat"><span>New bookings</span><strong>' + num(newCount) + '</strong></article><article class="mobile-action-stat"><span>Follow-ups due</span><strong>' + num(dueCount) + '</strong></article><article class="mobile-action-stat"><span>Insurance checks</span><strong>' + num(insuranceCount) + '</strong></article><article class="mobile-action-stat"><span>Class signups</span><strong>' + num(signups.length) + '</strong></article></section>'
+        + '<div class="mobile-section-heading"><h2>Recent bookings</h2><button type="button" id="mobile-view-all-bookings">View all</button></div><div id="mobile-recent-bookings"></div>';
+      const recentContainer = $("mobile-recent-bookings");
+      recentContainer.innerHTML = '<div class="mobile-list">' + (bookings.length ? bookings.slice(0, 4).map(function (booking) { return mobileBookingCard(booking, true); }).join("") : '<div class="mobile-empty">No recent bookings.</div>') + '</div>';
+      bindMobileBookingCards(bookings.slice(0, 4));
+      $("mobile-view-all-bookings").addEventListener("click", function () { setView("bookings"); });
+    }
     async function loadLeads() {
       $("title").textContent = "Contact Leads";
       $("range-caption").textContent = "";
       const data = await api("/admin/api/contact-leads?limit=100");
+      if (isMobileAdmin()) {
+        const leads = data.leads || [];
+        $("content").innerHTML = '<div class="mobile-list">' + (leads.length ? leads.map(function (lead, index) { return '<article class="mobile-card"><div class="mobile-card-head"><div><h2>' + escapeHtml(lead.name) + '</h2><div class="mobile-card-meta">' + escapeHtml(date(lead.created_at)) + '</div></div><span class="badge">' + escapeHtml(lead.sheet_status || "pending") + '</span></div><div class="mobile-card-summary"><div><span>Email</span><strong>' + escapeHtml(lead.email) + '</strong></div><div><span>Language</span><strong>' + escapeHtml(lead.preferred_language) + '</strong></div></div><div class="mobile-card-actions"><a href="mailto:' + escapeHtml(lead.email) + '">Email</a><button type="button" data-lead-detail="' + index + '" class="mobile-detail-button" style="grid-column:span 2">Details</button></div></article>'; }).join("") : '<div class="mobile-empty">No contact leads yet.</div>') + '</div>';
+        document.querySelectorAll("[data-lead-detail]").forEach(function (button) { button.addEventListener("click", function () { const lead = leads[Number(button.dataset.leadDetail)]; openMobileSheet(lead.name || "Contact lead", mobileDetailGrid([{ label: "Created", value: date(lead.created_at) }, { label: "Language", value: lead.preferred_language }, { label: "Email", value: lead.email, wide: true }, { label: "Source", value: lead.source_page, wide: true }]) + '<div class="mobile-detail-note">' + escapeHtml(lead.message) + '</div>'); }); });
+        return;
+      }
       const rows = data.leads.map((lead) => {
         const tr = document.createElement("tr");
         const cells = [date(lead.created_at), lead.name, lead.email, lead.message, lead.source_page, lead.preferred_language, lead.sheet_status, lead.sheet_error];
@@ -970,22 +1318,9 @@ export function adminPage(request: Request, env: Env) {
         api("/admin/api/bookings?limit=100"),
         api("/admin/api/smtp-status").catch((error) => ({ configured: false, missing: ["status check failed"], error: error.message })),
       ]);
-      async function saveBooking(booking, changes) {
-        const body = {
-          id: booking.id,
-          leadStatus: booking.lead_status || "new",
-          assignedTo: booking.assigned_to || "",
-          followUpAt: booking.follow_up_at || "",
-          notes: booking.notes || "",
-          ...changes,
-        };
-        await api("/admin/api/bookings/update", { method: "POST", body: JSON.stringify(body) });
-        Object.assign(booking, {
-          lead_status: body.leadStatus,
-          assigned_to: body.assignedTo,
-          follow_up_at: body.followUpAt,
-          notes: body.notes,
-        });
+      if (isMobileAdmin()) {
+        renderMobileBookings(data.bookings || [], false);
+        return;
       }
       const rows = data.bookings.map((booking) => {
         const parsed = parseBookingMessage(booking.message);
@@ -1088,6 +1423,34 @@ export function adminPage(request: Request, env: Env) {
         }
         return value;
       }
+      if (isMobileAdmin()) {
+        const signups = data.signups || [];
+        $("content").innerHTML = '<div class="mobile-list">' + (signups.length ? signups.map(function (signup, index) {
+          return '<article class="mobile-card"><div class="mobile-card-head"><div><h2>' + escapeHtml(signup.primary_language || "Class signup") + '</h2><div class="mobile-card-meta">' + escapeHtml(date(signup.created_at)) + '</div></div><span class="badge ' + (signup.agreement_accepted ? '' : 'failed') + '">' + (signup.agreement_accepted ? 'Accepted' : 'Agreement missing') + '</span></div><div class="mobile-card-summary"><div><span>Age</span><strong>' + escapeHtml(signup.age_range) + '</strong></div><div><span>State</span><strong>' + escapeHtml(signup.state_residence) + '</strong></div><div><span>Insurance</span><strong>' + escapeHtml(signup.has_us_health_insurance) + '</strong></div><div><span>Email status</span><strong>' + escapeHtml(signup.email_status) + '</strong></div></div><div class="mobile-card-actions"><button type="button" class="mobile-detail-button" data-signup-detail="' + index + '" style="grid-column:1/-1">View enrollment</button></div></article>';
+        }).join("") : '<div class="mobile-empty">No class signups yet.</div>') + '</div>';
+        document.querySelectorAll("[data-signup-detail]").forEach(function (button) {
+          button.addEventListener("click", function () {
+            const signup = signups[Number(button.dataset.signupDetail)];
+            const files = Array.isArray(signup.files) ? signup.files : [];
+            const fileLinks = files.length ? '<div class="mobile-file-actions">' + files.map(function (file) { return '<a href="/admin/api/class-signups/' + encodeURIComponent(signup.id) + '/files/' + encodeURIComponent(file.id) + '/download">Download insurance card ' + (file.kind === "back" ? "back" : "front") + '</a>'; }).join("") + '</div>' : '';
+            openMobileSheet("Enrollment details", mobileDetailGrid([
+              { label: "Submitted", value: date(signup.created_at), wide: true },
+              { label: "Age", value: signup.age_range },
+              { label: "Gender", value: signup.gender_other || signup.gender },
+              { label: "Race / ethnicity", value: listValue(signup.race_ethnicity), wide: true },
+              { label: "Language", value: signup.primary_language_other || signup.primary_language },
+              { label: "State", value: signup.state_residence },
+              { label: "Education", value: signup.education_level, wide: true },
+              { label: "Insurance", value: signup.has_us_health_insurance },
+              { label: "Agreement", value: signup.agreement_accepted ? "Accepted" : "Missing" },
+              { label: "Conditions", value: listValue(signup.diagnosed_conditions), wide: true },
+              { label: "Blood sugar monitoring", value: signup.blood_sugar_monitoring, wide: true },
+              { label: "Diabetes medications", value: listValue(signup.diabetes_medications), wide: true }
+            ]) + fileLinks);
+          });
+        });
+        return;
+      }
       const rows = data.signups.map((signup) => {
         const tr = document.createElement("tr");
         const agreement = signup.agreement_accepted ? "Accepted" : "Missing";
@@ -1149,6 +1512,11 @@ export function adminPage(request: Request, env: Env) {
       $("title").textContent = "Members";
       $("range-caption").textContent = "";
       const data = await api("/admin/api/members?limit=100");
+      if (isMobileAdmin()) {
+        const members = data.members || [];
+        $("content").innerHTML = '<div class="mobile-list">' + (members.length ? members.map(function (member) { const name = [member.first_name, member.last_name].filter(Boolean).join(" ") || member.email; return '<article class="mobile-card"><div class="mobile-card-head"><div><h2>' + escapeHtml(name) + '</h2><div class="mobile-card-meta">Joined ' + escapeHtml(date(member.created_at)) + '</div></div></div><div class="mobile-card-summary"><div><span>Email</span><strong>' + escapeHtml(member.email) + '</strong></div><div><span>Phone</span><strong>' + escapeHtml(member.phone) + '</strong></div><div><span>Language</span><strong>' + escapeHtml(member.preferred_language) + '</strong></div><div><span>Marketing</span><strong>' + (member.marketing_opt_in ? 'Yes' : 'No') + '</strong></div></div><div class="mobile-card-actions">' + (member.phone ? '<a href="' + phoneHref(member.phone) + '">Call</a>' : '<button disabled>Call</button>') + '<a href="mailto:' + escapeHtml(member.email) + '" style="grid-column:span 2">Email</a></div></article>'; }).join("") : '<div class="mobile-empty">No members yet.</div>') + '</div>';
+        return;
+      }
       const rows = data.members.map((member) => {
         const tr = document.createElement("tr");
         [date(member.created_at), member.email, member.phone, [member.first_name, member.last_name].filter(Boolean).join(" "), member.preferred_language, member.marketing_opt_in ? "Yes" : "No"].forEach((cell) => {
@@ -1161,6 +1529,7 @@ export function adminPage(request: Request, env: Env) {
       renderRows(["Created", "Email", "Phone", "Name", "Lang", "Marketing"], rows);
     }
     async function load() {
+      if (isMobileAdmin() && state.view === "overview") return loadMobileOverview();
       if (state.view === "members") return loadMembers();
       if (state.view === "leads") return loadLeads();
       if (state.view === "bookings") return loadBookings();
@@ -1183,11 +1552,17 @@ export function adminPage(request: Request, env: Env) {
         $("login-button").disabled = false;
       }
     });
-    document.querySelectorAll("[data-view]").forEach((button) => button.addEventListener("click", async () => {
-      state.view = button.dataset.view;
-      document.querySelectorAll("[data-view]").forEach((item) => item.classList.toggle("active", item === button));
-      await load();
-    }));
+    document.querySelectorAll("[data-view]").forEach(function (button) { button.addEventListener("click", function () { setView(button.dataset.view); }); });
+    document.querySelectorAll("[data-mobile-view]").forEach(function (button) { button.addEventListener("click", function () { setView(button.dataset.mobileView); }); });
+    $("mobile-more").addEventListener("click", function () {
+      openMobileSheet("More", '<div class="mobile-menu"><button type="button" data-more-view="leads">Contact leads</button><button type="button" data-more-view="members">Members</button><button type="button" id="mobile-email-system">Email system</button><button type="button" class="danger" id="mobile-sign-out">Sign out</button></div><div class="mobile-detail-note">Signed in as ' + escapeHtml(state.admin?.email || "") + '</div>');
+      document.querySelectorAll("[data-more-view]").forEach(function (button) { button.addEventListener("click", function () { setView(button.dataset.moreView); }); });
+      $("mobile-email-system").addEventListener("click", openMobileEmailSystem);
+      $("mobile-sign-out").addEventListener("click", function () { $("logout").click(); });
+    });
+    $("mobile-sheet-close").addEventListener("click", closeMobileSheet);
+    $("mobile-sheet-backdrop").addEventListener("click", closeMobileSheet);
+    document.addEventListener("keydown", function (event) { if (event.key === "Escape") closeMobileSheet(); });
     $("today").addEventListener("click", async () => { setRange(1); await load(); });
     $("last-7").addEventListener("click", async () => { setRange(7); await load(); });
     $("last-30").addEventListener("click", async () => { setRange(30); await load(); });
@@ -1195,6 +1570,10 @@ export function adminPage(request: Request, env: Env) {
     $("end-date").addEventListener("change", load);
     $("refresh").addEventListener("click", load);
     $("logout").addEventListener("click", async () => { await api("/admin/api/logout", { method: "POST" }).catch(() => {}); state.admin = null; showLogin(); });
+    window.addEventListener("resize", function () {
+      if (!isMobileAdmin() && state.view === "overview") { state.view = "dashboard"; syncChrome(); load(); return; }
+      syncChrome();
+    });
     setRange(30);
     api("/admin/api/me").then(async (data) => { state.admin = data.admin; if (state.admin) { showApp(); await load(); } else showLogin(); }).catch(showLogin);
   </script>
