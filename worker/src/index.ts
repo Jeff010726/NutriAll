@@ -15,6 +15,7 @@ import {
   adminSmtpTest,
   adminStats,
   adminUpdateBooking,
+  adminWhatsappClicks,
 } from "./admin";
 import { submitContact } from "./contact";
 import { publicBookingActivity } from "./bookingActivity";
@@ -68,6 +69,7 @@ function adminResponse(request: Request, env: Env) {
   if (url.pathname === "/admin/api/smtp-status" && request.method === "GET") return adminSmtpStatus(request, env);
   if (url.pathname === "/admin/api/smtp-test" && request.method === "POST") return adminSmtpTest(request, env);
   if (url.pathname === "/admin/api/contact-leads" && request.method === "GET") return adminContactLeads(request, env);
+  if (url.pathname === "/admin/api/whatsapp-clicks" && request.method === "GET") return adminWhatsappClicks(request, env);
   if (url.pathname === "/admin/api/members" && request.method === "GET") return adminMembers(request, env);
   if (request.method === "GET" && ["/", "/index.html", "/admin", "/admin/", "/admin/index.html"].includes(url.pathname)) return adminPage(request, env);
 

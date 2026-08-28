@@ -185,6 +185,53 @@ export async function adminContactLeads(request: Request, env: Env) {
   return adminJson(request, env, { leads: rows.results || [] });
 }
 
+export async function adminWhatsappClicks(request: Request, env: Env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+
+  const url = new URL(request.url);
+  const limit = Math.min(Math.max(Number(url.searchParams.get("limit") || 100), 1), 200);
+  const now = new Date();
+  const endParam = url.searchParams.get("end");
+  const startParam = url.searchParams.get("start");
+  const parsedEnd = endParam ? new Date(`${endParam}T23:59:59.999Z`) : now;
+  const end = Number.isNaN(parsedEnd.getTime()) ? now : parsedEnd;
+  const parsedStart = startParam ? new Date(`${startParam}T00:00:00.000Z`) : new Date(end.getTime() - 29 * 24 * 60 * 60 * 1000);
+  const start = Number.isNaN(parsedStart.getTime()) ? new Date(end.getTime() - 29 * 24 * 60 * 60 * 1000) : parsedStart;
+  const rangeStart = start <= end ? start.toISOString() : end.toISOString();
+  const rangeEnd = start <= end ? end.toISOString() : start.toISOString();
+  const db = getDb(env);
+  const [summary, rows] = await Promise.all([
+    db.prepare(
+      `SELECT COUNT(*) AS total,
+              COUNT(DISTINCT visitor_id) AS unique_visitors,
+              SUM(CASE WHEN NULLIF(utm_source, '') IS NOT NULL OR NULLIF(utm_campaign, '') IS NOT NULL THEN 1 ELSE 0 END) AS attributed_opens,
+              MAX(created_at) AS latest
+       FROM analytics_events
+       WHERE event_type = 'whatsapp_booking_click' AND created_at BETWEEN ? AND ?`,
+    ).bind(rangeStart, rangeEnd).first(),
+    db.prepare(
+      `SELECT id, created_at, path, referrer, utm_source, utm_medium, utm_campaign, utm_content,
+              country, region, city, timezone, device, browser, language, session_id, visitor_id
+       FROM analytics_events
+       WHERE event_type = 'whatsapp_booking_click' AND created_at BETWEEN ? AND ?
+       ORDER BY created_at DESC
+       LIMIT ?`,
+    ).bind(rangeStart, rangeEnd, limit).all(),
+  ]);
+
+  return adminJson(request, env, {
+    range: { start: rangeStart, end: rangeEnd },
+    summary: {
+      total: Number(summary?.total || 0),
+      uniqueVisitors: Number(summary?.unique_visitors || 0),
+      attributedOpens: Number(summary?.attributed_opens || 0),
+      latest: summary?.latest || null,
+    },
+    clicks: rows.results || [],
+  });
+}
+
 export async function adminBookings(request: Request, env: Env) {
   const unauthorized = await requireAdmin(request, env);
   if (unauthorized) return unauthorized;
@@ -580,7 +627,8 @@ export function adminPage(request: Request, env: Env) {
       .mobile-status { max-width: 132px; min-height: 38px; padding: 7px 9px; border: 1px solid #b9c9c1; border-radius: 6px; background: #edf3ef; color: var(--mobile-green); font-size: 12px; font-weight: 850; }
       .mobile-empty { padding: 42px 20px; border: 1px dashed #c9d5cf; border-radius: 8px; background: white; color: var(--mobile-muted); text-align: center; }
       .mobile-action-grid { margin-bottom: 14px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
-      .mobile-action-stat { min-height: 104px; padding: 14px; border: 1px solid var(--mobile-line); border-radius: 8px; background: white; }
+      .mobile-action-stat { min-height: 104px; padding: 14px; border: 1px solid var(--mobile-line); border-radius: 8px; background: white; text-align: left; }
+      button.mobile-action-stat { cursor: pointer; }
       .mobile-action-stat span { display: block; color: var(--mobile-muted); font-size: 12px; font-weight: 800; }
       .mobile-action-stat strong { display: block; margin-top: 12px; color: var(--mobile-green); font-size: 29px; }
       .mobile-section-heading { margin: 22px 2px 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
@@ -648,6 +696,7 @@ export function adminPage(request: Request, env: Env) {
         <button type="button" data-view="locations">Locations</button>
         <button type="button" data-view="conversions">Conversions</button>
         <button type="button" data-view="bookings">Bookings</button>
+        <button type="button" data-view="whatsapp">WhatsApp Opens</button>
         <button type="button" data-view="classSignups">Class Signups</button>
         <button type="button" data-view="leads">Contact Leads</button>
         <button type="button" data-view="members">Members</button>
@@ -843,6 +892,13 @@ export function adminPage(request: Request, env: Env) {
       if ($("start-date").value) params.set("start", $("start-date").value);
       if ($("end-date").value) params.set("end", $("end-date").value);
       return params.toString() ? "?" + params.toString() : "";
+    }
+    function whatsappQuery(limit) {
+      const params = new URLSearchParams();
+      if ($("start-date").value) params.set("start", $("start-date").value);
+      if ($("end-date").value) params.set("end", $("end-date").value);
+      params.set("limit", String(limit || 100));
+      return "?" + params.toString();
     }
     async function getAnalytics() {
       state.analytics = await api("/admin/api/analytics/dashboard" + rangeQuery());
@@ -1259,27 +1315,82 @@ export function adminPage(request: Request, env: Env) {
         $("mobile-booking-filters").querySelectorAll("button").forEach(function (button) { button.addEventListener("click", function () { activeFilter = button.dataset.filter; $("mobile-booking-filters").querySelectorAll("button").forEach(function (item) { item.classList.toggle("active", item === button); }); applyFilter(); }); });
       }
     }
+    function whatsappVisitor(click) {
+      const value = String(click.visitor_id || click.session_id || "");
+      return value ? "Visitor ..." + value.slice(-8) : "Anonymous visitor";
+    }
+    function whatsappLocation(click) {
+      return [click.city, click.region, click.country].filter(Boolean).join(", ") || "Unknown";
+    }
+    function whatsappSource(click) {
+      return click.utm_source || click.utm_campaign ? [click.utm_source || "Campaign", click.utm_campaign].filter(Boolean).join(" / ") : "Direct or unknown";
+    }
+    function whatsappSummary(data) {
+      const summary = data.summary || {};
+      return '<section class="mobile-action-grid"><article class="mobile-action-stat"><span>Total opens</span><strong>' + num(summary.total) + '</strong></article><article class="mobile-action-stat"><span>Unique visitors</span><strong>' + num(summary.uniqueVisitors) + '</strong></article><article class="mobile-action-stat"><span>From campaigns</span><strong>' + num(summary.attributedOpens) + '</strong></article><article class="mobile-action-stat"><span>Most recent</span><strong style="font-size:15px;line-height:1.35">' + escapeHtml(summary.latest ? date(summary.latest) : "No opens") + '</strong></article></section>';
+    }
+    function whatsappDetails(click) {
+      openMobileSheet("WhatsApp open", mobileDetailGrid([
+        { label: "Opened", value: date(click.created_at), wide: true },
+        { label: "Visitor", value: whatsappVisitor(click), wide: true },
+        { label: "Source", value: click.utm_source || "Direct or unknown" },
+        { label: "Medium", value: click.utm_medium },
+        { label: "Campaign", value: click.utm_campaign, wide: true },
+        { label: "Ad content", value: click.utm_content, wide: true },
+        { label: "Device", value: click.device },
+        { label: "Browser", value: click.browser },
+        { label: "Language", value: click.language },
+        { label: "Location", value: whatsappLocation(click), wide: true },
+        { label: "Time zone", value: click.timezone, wide: true },
+        { label: "Entry path", value: click.path, wide: true },
+        { label: "Referrer", value: click.referrer, wide: true }
+      ]) + '<div class="mobile-detail-note">This record means the visitor opened the WhatsApp handoff. It does not confirm that they sent a message or booked an appointment.</div>');
+    }
+    function renderMobileWhatsapp(data) {
+      const clicks = data.clicks || [];
+      $("content").innerHTML = '<div class="mobile-filter-bar"><button type="button" data-whatsapp-range="1">Today</button><button type="button" data-whatsapp-range="7">7 days</button><button type="button" data-whatsapp-range="30">30 days</button></div>' + whatsappSummary(data) + '<div class="mobile-detail-note" style="margin:0 0 14px">An open means the visitor reached the WhatsApp handoff. It is not a confirmed appointment.</div><div class="mobile-list">'
+        + (clicks.length ? clicks.map(function (click, index) { return '<article class="mobile-card"><div class="mobile-card-head"><div><h2>WhatsApp open</h2><div class="mobile-card-meta">' + escapeHtml(date(click.created_at)) + '</div></div><span class="badge">' + escapeHtml(click.utm_source ? "Campaign" : "Direct") + '</span></div><div class="mobile-card-summary"><div><span>Visitor</span><strong>' + escapeHtml(whatsappVisitor(click)) + '</strong></div><div><span>Source</span><strong>' + escapeHtml(whatsappSource(click)) + '</strong></div><div><span>Device</span><strong>' + escapeHtml(click.device) + '</strong></div><div><span>Location</span><strong>' + escapeHtml(whatsappLocation(click)) + '</strong></div></div><div class="mobile-card-actions"><button type="button" class="mobile-detail-button" data-whatsapp-detail="' + index + '" style="grid-column:1/-1">View details</button></div></article>'; }).join("") : '<div class="mobile-empty">No WhatsApp opens in this date range.</div>') + '</div>';
+      document.querySelectorAll("[data-whatsapp-detail]").forEach(function (button) { button.addEventListener("click", function () { whatsappDetails(clicks[Number(button.dataset.whatsappDetail)]); }); });
+      document.querySelectorAll("[data-whatsapp-range]").forEach(function (button) { button.addEventListener("click", function () { setRange(Number(button.dataset.whatsappRange)); loadWhatsappClicks(); }); });
+    }
+    async function loadWhatsappClicks() {
+      $("title").textContent = "WhatsApp Opens";
+      $("range-caption").textContent = "Intent signals only, not confirmed appointments.";
+      const data = await api("/admin/api/whatsapp-clicks" + whatsappQuery(100));
+      if (isMobileAdmin()) { renderMobileWhatsapp(data); return; }
+      const rows = (data.clicks || []).map(function (click) {
+        const tr = document.createElement("tr");
+        [date(click.created_at), whatsappVisitor(click), whatsappSource(click), click.utm_content, click.device, whatsappLocation(click), click.language, click.path].forEach(function (cell) { const td = document.createElement("td"); td.textContent = text(cell); tr.appendChild(td); });
+        return tr;
+      });
+      const summary = data.summary || {};
+      const prefix = '<section class="panel status-panel"><div><strong>WhatsApp handoff activity</strong><div class="muted">These records show that a visitor opened WhatsApp. They do not confirm a sent message or appointment.</div></div></section><section class="metric-grid"><article class="metric-card"><div class="metric-head"><span>Total opens</span></div><div class="metric-value">' + num(summary.total) + '</div><div class="caption">Selected range</div></article><article class="metric-card"><div class="metric-head"><span>Unique visitors</span></div><div class="metric-value">' + num(summary.uniqueVisitors) + '</div><div class="caption">Anonymous browser IDs</div></article><article class="metric-card"><div class="metric-head"><span>From campaigns</span></div><div class="metric-value">' + num(summary.attributedOpens) + '</div><div class="caption">Has UTM attribution</div></article><article class="metric-card"><div class="metric-head"><span>Most recent</span></div><div style="font-size:18px;font-weight:850;line-height:1.4">' + escapeHtml(summary.latest ? date(summary.latest) : "No opens") + '</div></article></section>';
+      renderRows(["Opened", "Visitor", "Source / Campaign", "Ad Content", "Device", "Location", "Language", "Path"], rows, prefix);
+    }
     async function loadMobileOverview() {
       $("title").textContent = "Overview";
       $("range-caption").textContent = "What needs attention now";
       const results = await Promise.all([
         api("/admin/api/bookings?limit=100"),
         api("/admin/api/class-signups?limit=100").catch(function () { return { signups: [] }; }),
-        getAnalytics().catch(function () { return null; })
+        getAnalytics().catch(function () { return null; }),
+        api("/admin/api/whatsapp-clicks" + whatsappQuery(4)).catch(function () { return { summary: { total: 0 }, clicks: [] }; })
       ]);
       $("range-caption").textContent = "What needs attention now";
       const bookings = results[0].bookings || [];
       const signups = results[1].signups || [];
+      const whatsappOpens = results[3].summary?.total || 0;
       const now = Date.now();
       const newCount = bookings.filter(function (item) { return (item.lead_status || "new") === "new"; }).length;
       const dueCount = bookings.filter(function (item) { return item.follow_up_at && new Date(item.follow_up_at).getTime() <= now && !["converted", "closed"].includes(item.lead_status); }).length;
       const insuranceCount = bookings.filter(function (item) { return item.lead_status === "benefits_check"; }).length;
-      $("content").innerHTML = '<section class="mobile-action-grid"><article class="mobile-action-stat"><span>New bookings</span><strong>' + num(newCount) + '</strong></article><article class="mobile-action-stat"><span>Follow-ups due</span><strong>' + num(dueCount) + '</strong></article><article class="mobile-action-stat"><span>Insurance checks</span><strong>' + num(insuranceCount) + '</strong></article><article class="mobile-action-stat"><span>Class signups</span><strong>' + num(signups.length) + '</strong></article></section>'
+      $("content").innerHTML = '<section class="mobile-action-grid"><article class="mobile-action-stat"><span>New bookings</span><strong>' + num(newCount) + '</strong></article><article class="mobile-action-stat"><span>Follow-ups due</span><strong>' + num(dueCount) + '</strong></article><article class="mobile-action-stat"><span>Insurance checks</span><strong>' + num(insuranceCount) + '</strong></article><article class="mobile-action-stat"><span>Class signups</span><strong>' + num(signups.length) + '</strong></article><button type="button" class="mobile-action-stat" id="mobile-whatsapp-stat"><span>WhatsApp opens</span><strong>' + num(whatsappOpens) + '</strong></button></section>'
         + '<div class="mobile-section-heading"><h2>Recent bookings</h2><button type="button" id="mobile-view-all-bookings">View all</button></div><div id="mobile-recent-bookings"></div>';
       const recentContainer = $("mobile-recent-bookings");
       recentContainer.innerHTML = '<div class="mobile-list">' + (bookings.length ? bookings.slice(0, 4).map(function (booking) { return mobileBookingCard(booking, true); }).join("") : '<div class="mobile-empty">No recent bookings.</div>') + '</div>';
       bindMobileBookingCards(bookings.slice(0, 4));
       $("mobile-view-all-bookings").addEventListener("click", function () { setView("bookings"); });
+      $("mobile-whatsapp-stat").addEventListener("click", function () { setView("whatsapp"); });
     }
     async function loadLeads() {
       $("title").textContent = "Contact Leads";
@@ -1533,6 +1644,7 @@ export function adminPage(request: Request, env: Env) {
       if (state.view === "members") return loadMembers();
       if (state.view === "leads") return loadLeads();
       if (state.view === "bookings") return loadBookings();
+      if (state.view === "whatsapp") return loadWhatsappClicks();
       if (state.view === "classSignups") return loadClassSignups();
       if (state.view === "ads") return renderAds();
       return loadAnalyticsView();
@@ -1555,7 +1667,7 @@ export function adminPage(request: Request, env: Env) {
     document.querySelectorAll("[data-view]").forEach(function (button) { button.addEventListener("click", function () { setView(button.dataset.view); }); });
     document.querySelectorAll("[data-mobile-view]").forEach(function (button) { button.addEventListener("click", function () { setView(button.dataset.mobileView); }); });
     $("mobile-more").addEventListener("click", function () {
-      openMobileSheet("More", '<div class="mobile-menu"><button type="button" data-more-view="leads">Contact leads</button><button type="button" data-more-view="members">Members</button><button type="button" id="mobile-email-system">Email system</button><button type="button" class="danger" id="mobile-sign-out">Sign out</button></div><div class="mobile-detail-note">Signed in as ' + escapeHtml(state.admin?.email || "") + '</div>');
+      openMobileSheet("More", '<div class="mobile-menu"><button type="button" data-more-view="whatsapp">WhatsApp opens</button><button type="button" data-more-view="leads">Contact leads</button><button type="button" data-more-view="members">Members</button><button type="button" id="mobile-email-system">Email system</button><button type="button" class="danger" id="mobile-sign-out">Sign out</button></div><div class="mobile-detail-note">Signed in as ' + escapeHtml(state.admin?.email || "") + '</div>');
       document.querySelectorAll("[data-more-view]").forEach(function (button) { button.addEventListener("click", function () { setView(button.dataset.moreView); }); });
       $("mobile-email-system").addEventListener("click", openMobileEmailSystem);
       $("mobile-sign-out").addEventListener("click", function () { $("logout").click(); });

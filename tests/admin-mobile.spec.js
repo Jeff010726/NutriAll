@@ -64,6 +64,17 @@ const signups = [{
   files: [{ id: "front", kind: "front" }, { id: "back", kind: "back" }],
 }];
 
+const whatsappData = {
+  range: { start: "2026-08-01T00:00:00.000Z", end: "2026-08-25T23:59:59.999Z" },
+  summary: { total: 4, uniqueVisitors: 4, attributedOpens: 3, latest: "2026-08-25T03:30:00.000Z" },
+  clicks: [{
+    id: "wa-1", created_at: "2026-08-25T03:30:00.000Z", path: "/booking-whatsapp/", referrer: "https://nutriallwellness.org/book",
+    utm_source: "facebook", utm_medium: "paid_social", utm_campaign: "weight_loss_2026", utm_content: "homepage_ad_01",
+    country: "US", region: "New York", city: "Flushing", timezone: "America/New_York", device: "mobile", browser: "Mobile Safari",
+    language: "zh-CN", session_id: "ses_12345678", visitor_id: "vis_87654321",
+  }],
+};
+
 async function mockAdmin(page, updates) {
   await page.route("**/admin/api/**", async (route) => {
     const request = route.request();
@@ -77,6 +88,7 @@ async function mockAdmin(page, updates) {
     }
     if (path === "/admin/api/class-signups") return route.fulfill({ json: { signups } });
     if (path === "/admin/api/contact-leads") return route.fulfill({ json: { leads: [{ created_at: "2026-08-25T02:00:00.000Z", name: "L. Wong", email: "lw@example.com", message: "Please explain insurance coverage.", source_page: "/contact", preferred_language: "Chinese", sheet_status: "synced" }] } });
+    if (path === "/admin/api/whatsapp-clicks") return route.fulfill({ json: whatsappData });
     if (path === "/admin/api/members") return route.fulfill({ json: { members: [{ created_at: "2026-08-20T02:00:00.000Z", email: "member@example.com", phone: "+1 718 555 0100", first_name: "Grace", last_name: "Lee", preferred_language: "English", marketing_opt_in: 1 }] } });
     if (path === "/admin/api/smtp-status") return route.fulfill({ json: { configured: true } });
     if (path === "/admin/api/logout") return route.fulfill({ json: { ok: true } });
@@ -122,6 +134,14 @@ test.describe("mobile admin", () => {
     await expect(page.getByRole("link", { name: "Download insurance card front" })).toBeVisible();
     await page.getByRole("button", { name: "Close", exact: true }).click();
     await page.getByRole("button", { name: "More" }).click();
+    await page.getByRole("button", { name: "WhatsApp opens" }).click();
+    await expect(page.getByRole("heading", { name: "WhatsApp Opens" })).toBeVisible();
+    await expect(page.getByText("Visitor ...87654321")).toBeVisible();
+    await page.screenshot({ path: "test-results/admin-mobile-whatsapp.png", fullPage: true });
+    await page.getByRole("button", { name: "View details" }).click();
+    await expect(page.getByText("It does not confirm that they sent a message or booked an appointment.")).toBeVisible();
+    await page.getByRole("button", { name: "Close", exact: true }).click();
+    await page.getByRole("button", { name: "More" }).click();
     await page.getByRole("button", { name: "Contact leads" }).click();
     await expect(page.getByRole("heading", { name: "L. Wong" })).toBeVisible();
     await page.getByRole("button", { name: "More" }).click();
@@ -140,6 +160,10 @@ test("desktop admin retains the existing table navigation", async ({ page }) => 
   await page.locator("[data-view='bookings']").click();
   await expect(page.locator(".tablewrap")).toBeVisible();
   await expect(page.locator("thead")).toContainText("Insurance Company");
+  await page.locator("[data-view='whatsapp']").click();
+  await expect(page.getByRole("heading", { name: "WhatsApp Opens" })).toBeVisible();
+  await expect(page.locator("thead")).toContainText("Source / Campaign");
+  await expect(page.getByText("These records show that a visitor opened WhatsApp.")).toBeVisible();
 });
 
 test("mobile admin remains contained across phone and tablet widths", async ({ page }) => {
