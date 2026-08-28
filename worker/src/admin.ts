@@ -185,7 +185,7 @@ export async function adminContactLeads(request: Request, env: Env) {
   return adminJson(request, env, { leads: rows.results || [] });
 }
 
-export async function adminWhatsappClicks(request: Request, env: Env) {
+async function adminHandoffClicks(request: Request, env: Env, eventType: "whatsapp_booking_click" | "kalix_booking_click") {
   const unauthorized = await requireAdmin(request, env);
   if (unauthorized) return unauthorized;
 
@@ -208,16 +208,16 @@ export async function adminWhatsappClicks(request: Request, env: Env) {
               SUM(CASE WHEN NULLIF(utm_source, '') IS NOT NULL OR NULLIF(utm_campaign, '') IS NOT NULL THEN 1 ELSE 0 END) AS attributed_opens,
               MAX(created_at) AS latest
        FROM analytics_events
-       WHERE event_type = 'whatsapp_booking_click' AND created_at BETWEEN ? AND ?`,
-    ).bind(rangeStart, rangeEnd).first(),
+       WHERE event_type = ? AND created_at BETWEEN ? AND ?`,
+    ).bind(eventType, rangeStart, rangeEnd).first(),
     db.prepare(
-      `SELECT id, created_at, path, referrer, utm_source, utm_medium, utm_campaign, utm_content,
+      `SELECT id, created_at, event_name, path, referrer, utm_source, utm_medium, utm_campaign, utm_content,
               country, region, city, timezone, device, browser, language, session_id, visitor_id
        FROM analytics_events
-       WHERE event_type = 'whatsapp_booking_click' AND created_at BETWEEN ? AND ?
+       WHERE event_type = ? AND created_at BETWEEN ? AND ?
        ORDER BY created_at DESC
        LIMIT ?`,
-    ).bind(rangeStart, rangeEnd, limit).all(),
+    ).bind(eventType, rangeStart, rangeEnd, limit).all(),
   ]);
 
   return adminJson(request, env, {
@@ -230,6 +230,14 @@ export async function adminWhatsappClicks(request: Request, env: Env) {
     },
     clicks: rows.results || [],
   });
+}
+
+export async function adminWhatsappClicks(request: Request, env: Env) {
+  return adminHandoffClicks(request, env, "whatsapp_booking_click");
+}
+
+export async function adminKalixClicks(request: Request, env: Env) {
+  return adminHandoffClicks(request, env, "kalix_booking_click");
 }
 
 export async function adminBookings(request: Request, env: Env) {
@@ -697,6 +705,7 @@ export function adminPage(request: Request, env: Env) {
         <button type="button" data-view="conversions">Conversions</button>
         <button type="button" data-view="bookings">Bookings</button>
         <button type="button" data-view="whatsapp">WhatsApp Opens</button>
+        <button type="button" data-view="kalix">Kalix Opens</button>
         <button type="button" data-view="classSignups">Class Signups</button>
         <button type="button" data-view="leads">Contact Leads</button>
         <button type="button" data-view="members">Members</button>
@@ -1315,24 +1324,35 @@ export function adminPage(request: Request, env: Env) {
         $("mobile-booking-filters").querySelectorAll("button").forEach(function (button) { button.addEventListener("click", function () { activeFilter = button.dataset.filter; $("mobile-booking-filters").querySelectorAll("button").forEach(function (item) { item.classList.toggle("active", item === button); }); applyFilter(); }); });
       }
     }
-    function whatsappVisitor(click) {
+    function handoffVisitor(click) {
       const value = String(click.visitor_id || click.session_id || "");
       return value ? "Visitor ..." + value.slice(-8) : "Anonymous visitor";
     }
-    function whatsappLocation(click) {
+    function handoffLocation(click) {
       return [click.city, click.region, click.country].filter(Boolean).join(", ") || "Unknown";
     }
-    function whatsappSource(click) {
+    function handoffSource(click) {
       return click.utm_source || click.utm_campaign ? [click.utm_source || "Campaign", click.utm_campaign].filter(Boolean).join(" / ") : "Direct or unknown";
     }
-    function whatsappSummary(data) {
+    function handoffConfig(kind) {
+      return kind === "kalix"
+        ? { title: "Kalix Opens", item: "Kalix open", endpoint: "/admin/api/kalix-clicks", empty: "No Kalix opens in this date range.", note: "An open means the visitor reached the Kalix booking calendar. It is not a confirmed appointment." }
+        : { title: "WhatsApp Opens", item: "WhatsApp open", endpoint: "/admin/api/whatsapp-clicks", empty: "No WhatsApp opens in this date range.", note: "An open means the visitor reached the WhatsApp handoff. It does not confirm that they sent a message or booked an appointment." };
+    }
+    function handoffService(click, kind) {
+      if (kind !== "kalix") return "WhatsApp";
+      return { glpCare: "GLP-1 care", medical: "Medical weight loss", insurance: "Insurance" }[click.event_name] || click.event_name || "Kalix booking";
+    }
+    function handoffSummary(data) {
       const summary = data.summary || {};
       return '<section class="mobile-action-grid"><article class="mobile-action-stat"><span>Total opens</span><strong>' + num(summary.total) + '</strong></article><article class="mobile-action-stat"><span>Unique visitors</span><strong>' + num(summary.uniqueVisitors) + '</strong></article><article class="mobile-action-stat"><span>From campaigns</span><strong>' + num(summary.attributedOpens) + '</strong></article><article class="mobile-action-stat"><span>Most recent</span><strong style="font-size:15px;line-height:1.35">' + escapeHtml(summary.latest ? date(summary.latest) : "No opens") + '</strong></article></section>';
     }
-    function whatsappDetails(click) {
-      openMobileSheet("WhatsApp open", mobileDetailGrid([
+    function handoffDetails(click, kind) {
+      const config = handoffConfig(kind);
+      openMobileSheet(config.item, mobileDetailGrid([
         { label: "Opened", value: date(click.created_at), wide: true },
-        { label: "Visitor", value: whatsappVisitor(click), wide: true },
+        { label: "Visitor", value: handoffVisitor(click), wide: true },
+        { label: "Service", value: handoffService(click, kind), wide: true },
         { label: "Source", value: click.utm_source || "Direct or unknown" },
         { label: "Medium", value: click.utm_medium },
         { label: "Campaign", value: click.utm_campaign, wide: true },
@@ -1340,33 +1360,37 @@ export function adminPage(request: Request, env: Env) {
         { label: "Device", value: click.device },
         { label: "Browser", value: click.browser },
         { label: "Language", value: click.language },
-        { label: "Location", value: whatsappLocation(click), wide: true },
+        { label: "Location", value: handoffLocation(click), wide: true },
         { label: "Time zone", value: click.timezone, wide: true },
         { label: "Entry path", value: click.path, wide: true },
         { label: "Referrer", value: click.referrer, wide: true }
-      ]) + '<div class="mobile-detail-note">This record means the visitor opened the WhatsApp handoff. It does not confirm that they sent a message or booked an appointment.</div>');
+      ]) + '<div class="mobile-detail-note">' + config.note + '</div>');
     }
-    function renderMobileWhatsapp(data) {
+    function renderMobileHandoff(data, kind) {
+      const config = handoffConfig(kind);
       const clicks = data.clicks || [];
-      $("content").innerHTML = '<div class="mobile-filter-bar"><button type="button" data-whatsapp-range="1">Today</button><button type="button" data-whatsapp-range="7">7 days</button><button type="button" data-whatsapp-range="30">30 days</button></div>' + whatsappSummary(data) + '<div class="mobile-detail-note" style="margin:0 0 14px">An open means the visitor reached the WhatsApp handoff. It is not a confirmed appointment.</div><div class="mobile-list">'
-        + (clicks.length ? clicks.map(function (click, index) { return '<article class="mobile-card"><div class="mobile-card-head"><div><h2>WhatsApp open</h2><div class="mobile-card-meta">' + escapeHtml(date(click.created_at)) + '</div></div><span class="badge">' + escapeHtml(click.utm_source ? "Campaign" : "Direct") + '</span></div><div class="mobile-card-summary"><div><span>Visitor</span><strong>' + escapeHtml(whatsappVisitor(click)) + '</strong></div><div><span>Source</span><strong>' + escapeHtml(whatsappSource(click)) + '</strong></div><div><span>Device</span><strong>' + escapeHtml(click.device) + '</strong></div><div><span>Location</span><strong>' + escapeHtml(whatsappLocation(click)) + '</strong></div></div><div class="mobile-card-actions"><button type="button" class="mobile-detail-button" data-whatsapp-detail="' + index + '" style="grid-column:1/-1">View details</button></div></article>'; }).join("") : '<div class="mobile-empty">No WhatsApp opens in this date range.</div>') + '</div>';
-      document.querySelectorAll("[data-whatsapp-detail]").forEach(function (button) { button.addEventListener("click", function () { whatsappDetails(clicks[Number(button.dataset.whatsappDetail)]); }); });
-      document.querySelectorAll("[data-whatsapp-range]").forEach(function (button) { button.addEventListener("click", function () { setRange(Number(button.dataset.whatsappRange)); loadWhatsappClicks(); }); });
+      $("content").innerHTML = '<div class="mobile-filter-bar"><button type="button" data-handoff-range="1">Today</button><button type="button" data-handoff-range="7">7 days</button><button type="button" data-handoff-range="30">30 days</button></div>' + handoffSummary(data) + '<div class="mobile-detail-note" style="margin:0 0 14px">' + config.note + '</div><div class="mobile-list">'
+        + (clicks.length ? clicks.map(function (click, index) { return '<article class="mobile-card"><div class="mobile-card-head"><div><h2>' + config.item + '</h2><div class="mobile-card-meta">' + escapeHtml(date(click.created_at)) + '</div></div><span class="badge">' + escapeHtml(click.utm_source ? "Campaign" : "Direct") + '</span></div><div class="mobile-card-summary"><div><span>Visitor</span><strong>' + escapeHtml(handoffVisitor(click)) + '</strong></div><div><span>Service</span><strong>' + escapeHtml(handoffService(click, kind)) + '</strong></div><div><span>Source</span><strong>' + escapeHtml(handoffSource(click)) + '</strong></div><div><span>Device</span><strong>' + escapeHtml(click.device) + '</strong></div><div><span>Location</span><strong>' + escapeHtml(handoffLocation(click)) + '</strong></div></div><div class="mobile-card-actions"><button type="button" class="mobile-detail-button" data-handoff-detail="' + index + '" style="grid-column:1/-1">View details</button></div></article>'; }).join("") : '<div class="mobile-empty">' + config.empty + '</div>') + '</div>';
+      document.querySelectorAll("[data-handoff-detail]").forEach(function (button) { button.addEventListener("click", function () { handoffDetails(clicks[Number(button.dataset.handoffDetail)], kind); }); });
+      document.querySelectorAll("[data-handoff-range]").forEach(function (button) { button.addEventListener("click", function () { setRange(Number(button.dataset.handoffRange)); loadHandoffClicks(kind); }); });
     }
-    async function loadWhatsappClicks() {
-      $("title").textContent = "WhatsApp Opens";
+    async function loadHandoffClicks(kind) {
+      const config = handoffConfig(kind);
+      $("title").textContent = config.title;
       $("range-caption").textContent = "Intent signals only, not confirmed appointments.";
-      const data = await api("/admin/api/whatsapp-clicks" + whatsappQuery(100));
-      if (isMobileAdmin()) { renderMobileWhatsapp(data); return; }
+      const data = await api(config.endpoint + whatsappQuery(100));
+      if (isMobileAdmin()) { renderMobileHandoff(data, kind); return; }
       const rows = (data.clicks || []).map(function (click) {
         const tr = document.createElement("tr");
-        [date(click.created_at), whatsappVisitor(click), whatsappSource(click), click.utm_content, click.device, whatsappLocation(click), click.language, click.path].forEach(function (cell) { const td = document.createElement("td"); td.textContent = text(cell); tr.appendChild(td); });
+        [date(click.created_at), handoffVisitor(click), handoffService(click, kind), handoffSource(click), click.utm_content, click.device, handoffLocation(click), click.language, click.path].forEach(function (cell) { const td = document.createElement("td"); td.textContent = text(cell); tr.appendChild(td); });
         return tr;
       });
       const summary = data.summary || {};
-      const prefix = '<section class="panel status-panel"><div><strong>WhatsApp handoff activity</strong><div class="muted">These records show that a visitor opened WhatsApp. They do not confirm a sent message or appointment.</div></div></section><section class="metric-grid"><article class="metric-card"><div class="metric-head"><span>Total opens</span></div><div class="metric-value">' + num(summary.total) + '</div><div class="caption">Selected range</div></article><article class="metric-card"><div class="metric-head"><span>Unique visitors</span></div><div class="metric-value">' + num(summary.uniqueVisitors) + '</div><div class="caption">Anonymous browser IDs</div></article><article class="metric-card"><div class="metric-head"><span>From campaigns</span></div><div class="metric-value">' + num(summary.attributedOpens) + '</div><div class="caption">Has UTM attribution</div></article><article class="metric-card"><div class="metric-head"><span>Most recent</span></div><div style="font-size:18px;font-weight:850;line-height:1.4">' + escapeHtml(summary.latest ? date(summary.latest) : "No opens") + '</div></article></section>';
-      renderRows(["Opened", "Visitor", "Source / Campaign", "Ad Content", "Device", "Location", "Language", "Path"], rows, prefix);
+      const prefix = '<section class="panel status-panel"><div><strong>' + config.title + '</strong><div class="muted">' + config.note + '</div></div></section><section class="metric-grid"><article class="metric-card"><div class="metric-head"><span>Total opens</span></div><div class="metric-value">' + num(summary.total) + '</div><div class="caption">Selected range</div></article><article class="metric-card"><div class="metric-head"><span>Unique visitors</span></div><div class="metric-value">' + num(summary.uniqueVisitors) + '</div><div class="caption">Anonymous browser IDs</div></article><article class="metric-card"><div class="metric-head"><span>From campaigns</span></div><div class="metric-value">' + num(summary.attributedOpens) + '</div><div class="caption">Has UTM attribution</div></article><article class="metric-card"><div class="metric-head"><span>Most recent</span></div><div style="font-size:18px;font-weight:850;line-height:1.4">' + escapeHtml(summary.latest ? date(summary.latest) : "No opens") + '</div></article></section>';
+      renderRows(["Opened", "Visitor", "Service", "Source / Campaign", "Ad Content", "Device", "Location", "Language", "Path"], rows, prefix);
     }
+    async function loadWhatsappClicks() { return loadHandoffClicks("whatsapp"); }
+    async function loadKalixClicks() { return loadHandoffClicks("kalix"); }
     async function loadMobileOverview() {
       $("title").textContent = "Overview";
       $("range-caption").textContent = "What needs attention now";
@@ -1374,23 +1398,26 @@ export function adminPage(request: Request, env: Env) {
         api("/admin/api/bookings?limit=100"),
         api("/admin/api/class-signups?limit=100").catch(function () { return { signups: [] }; }),
         getAnalytics().catch(function () { return null; }),
-        api("/admin/api/whatsapp-clicks" + whatsappQuery(4)).catch(function () { return { summary: { total: 0 }, clicks: [] }; })
+        api("/admin/api/whatsapp-clicks" + whatsappQuery(4)).catch(function () { return { summary: { total: 0 }, clicks: [] }; }),
+        api("/admin/api/kalix-clicks" + whatsappQuery(4)).catch(function () { return { summary: { total: 0 }, clicks: [] }; })
       ]);
       $("range-caption").textContent = "What needs attention now";
       const bookings = results[0].bookings || [];
       const signups = results[1].signups || [];
       const whatsappOpens = results[3].summary?.total || 0;
+      const kalixOpens = results[4].summary?.total || 0;
       const now = Date.now();
       const newCount = bookings.filter(function (item) { return (item.lead_status || "new") === "new"; }).length;
       const dueCount = bookings.filter(function (item) { return item.follow_up_at && new Date(item.follow_up_at).getTime() <= now && !["converted", "closed"].includes(item.lead_status); }).length;
       const insuranceCount = bookings.filter(function (item) { return item.lead_status === "benefits_check"; }).length;
-      $("content").innerHTML = '<section class="mobile-action-grid"><article class="mobile-action-stat"><span>New bookings</span><strong>' + num(newCount) + '</strong></article><article class="mobile-action-stat"><span>Follow-ups due</span><strong>' + num(dueCount) + '</strong></article><article class="mobile-action-stat"><span>Insurance checks</span><strong>' + num(insuranceCount) + '</strong></article><article class="mobile-action-stat"><span>Class signups</span><strong>' + num(signups.length) + '</strong></article><button type="button" class="mobile-action-stat" id="mobile-whatsapp-stat"><span>WhatsApp opens</span><strong>' + num(whatsappOpens) + '</strong></button></section>'
+      $("content").innerHTML = '<section class="mobile-action-grid"><article class="mobile-action-stat"><span>New bookings</span><strong>' + num(newCount) + '</strong></article><article class="mobile-action-stat"><span>Follow-ups due</span><strong>' + num(dueCount) + '</strong></article><article class="mobile-action-stat"><span>Insurance checks</span><strong>' + num(insuranceCount) + '</strong></article><article class="mobile-action-stat"><span>Class signups</span><strong>' + num(signups.length) + '</strong></article><button type="button" class="mobile-action-stat" id="mobile-whatsapp-stat"><span>WhatsApp opens</span><strong>' + num(whatsappOpens) + '</strong></button><button type="button" class="mobile-action-stat" id="mobile-kalix-stat"><span>Kalix opens</span><strong>' + num(kalixOpens) + '</strong></button></section>'
         + '<div class="mobile-section-heading"><h2>Recent bookings</h2><button type="button" id="mobile-view-all-bookings">View all</button></div><div id="mobile-recent-bookings"></div>';
       const recentContainer = $("mobile-recent-bookings");
       recentContainer.innerHTML = '<div class="mobile-list">' + (bookings.length ? bookings.slice(0, 4).map(function (booking) { return mobileBookingCard(booking, true); }).join("") : '<div class="mobile-empty">No recent bookings.</div>') + '</div>';
       bindMobileBookingCards(bookings.slice(0, 4));
       $("mobile-view-all-bookings").addEventListener("click", function () { setView("bookings"); });
       $("mobile-whatsapp-stat").addEventListener("click", function () { setView("whatsapp"); });
+      $("mobile-kalix-stat").addEventListener("click", function () { setView("kalix"); });
     }
     async function loadLeads() {
       $("title").textContent = "Contact Leads";
@@ -1645,6 +1672,7 @@ export function adminPage(request: Request, env: Env) {
       if (state.view === "leads") return loadLeads();
       if (state.view === "bookings") return loadBookings();
       if (state.view === "whatsapp") return loadWhatsappClicks();
+      if (state.view === "kalix") return loadKalixClicks();
       if (state.view === "classSignups") return loadClassSignups();
       if (state.view === "ads") return renderAds();
       return loadAnalyticsView();
@@ -1667,7 +1695,7 @@ export function adminPage(request: Request, env: Env) {
     document.querySelectorAll("[data-view]").forEach(function (button) { button.addEventListener("click", function () { setView(button.dataset.view); }); });
     document.querySelectorAll("[data-mobile-view]").forEach(function (button) { button.addEventListener("click", function () { setView(button.dataset.mobileView); }); });
     $("mobile-more").addEventListener("click", function () {
-      openMobileSheet("More", '<div class="mobile-menu"><button type="button" data-more-view="whatsapp">WhatsApp opens</button><button type="button" data-more-view="leads">Contact leads</button><button type="button" data-more-view="members">Members</button><button type="button" id="mobile-email-system">Email system</button><button type="button" class="danger" id="mobile-sign-out">Sign out</button></div><div class="mobile-detail-note">Signed in as ' + escapeHtml(state.admin?.email || "") + '</div>');
+      openMobileSheet("More", '<div class="mobile-menu"><button type="button" data-more-view="whatsapp">WhatsApp opens</button><button type="button" data-more-view="kalix">Kalix opens</button><button type="button" data-more-view="leads">Contact leads</button><button type="button" data-more-view="members">Members</button><button type="button" id="mobile-email-system">Email system</button><button type="button" class="danger" id="mobile-sign-out">Sign out</button></div><div class="mobile-detail-note">Signed in as ' + escapeHtml(state.admin?.email || "") + '</div>');
       document.querySelectorAll("[data-more-view]").forEach(function (button) { button.addEventListener("click", function () { setView(button.dataset.moreView); }); });
       $("mobile-email-system").addEventListener("click", openMobileEmailSystem);
       $("mobile-sign-out").addEventListener("click", function () { $("logout").click(); });

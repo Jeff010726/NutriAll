@@ -7,6 +7,7 @@ import {
   adminDeleteClassSignup,
   adminDownloadClassSignupFile,
   adminLogin,
+  adminKalixClicks,
   adminLogout,
   adminMe,
   adminMembers,
@@ -70,6 +71,7 @@ function adminResponse(request: Request, env: Env) {
   if (url.pathname === "/admin/api/smtp-test" && request.method === "POST") return adminSmtpTest(request, env);
   if (url.pathname === "/admin/api/contact-leads" && request.method === "GET") return adminContactLeads(request, env);
   if (url.pathname === "/admin/api/whatsapp-clicks" && request.method === "GET") return adminWhatsappClicks(request, env);
+  if (url.pathname === "/admin/api/kalix-clicks" && request.method === "GET") return adminKalixClicks(request, env);
   if (url.pathname === "/admin/api/members" && request.method === "GET") return adminMembers(request, env);
   if (request.method === "GET" && ["/", "/index.html", "/admin", "/admin/", "/admin/index.html"].includes(url.pathname)) return adminPage(request, env);
 

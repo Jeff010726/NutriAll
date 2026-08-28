@@ -75,6 +75,15 @@ const whatsappData = {
   }],
 };
 
+const kalixData = {
+  range: whatsappData.range,
+  summary: { total: 3, uniqueVisitors: 2, attributedOpens: 3, latest: "2026-08-25T04:15:00.000Z" },
+  clicks: [{
+    ...whatsappData.clicks[0], id: "kalix-1", created_at: "2026-08-25T04:15:00.000Z", event_name: "glpCare",
+    path: "/glp1-care", visitor_id: "vis_11223344",
+  }],
+};
+
 async function mockAdmin(page, updates) {
   await page.route("**/admin/api/**", async (route) => {
     const request = route.request();
@@ -89,6 +98,7 @@ async function mockAdmin(page, updates) {
     if (path === "/admin/api/class-signups") return route.fulfill({ json: { signups } });
     if (path === "/admin/api/contact-leads") return route.fulfill({ json: { leads: [{ created_at: "2026-08-25T02:00:00.000Z", name: "L. Wong", email: "lw@example.com", message: "Please explain insurance coverage.", source_page: "/contact", preferred_language: "Chinese", sheet_status: "synced" }] } });
     if (path === "/admin/api/whatsapp-clicks") return route.fulfill({ json: whatsappData });
+    if (path === "/admin/api/kalix-clicks") return route.fulfill({ json: kalixData });
     if (path === "/admin/api/members") return route.fulfill({ json: { members: [{ created_at: "2026-08-20T02:00:00.000Z", email: "member@example.com", phone: "+1 718 555 0100", first_name: "Grace", last_name: "Lee", preferred_language: "English", marketing_opt_in: 1 }] } });
     if (path === "/admin/api/smtp-status") return route.fulfill({ json: { configured: true } });
     if (path === "/admin/api/logout") return route.fulfill({ json: { ok: true } });
@@ -139,7 +149,15 @@ test.describe("mobile admin", () => {
     await expect(page.getByText("Visitor ...87654321")).toBeVisible();
     await page.screenshot({ path: "test-results/admin-mobile-whatsapp.png", fullPage: true });
     await page.getByRole("button", { name: "View details" }).click();
-    await expect(page.getByText("It does not confirm that they sent a message or booked an appointment.")).toBeVisible();
+    await expect(page.locator("#mobile-sheet-body .mobile-detail-note")).toContainText("It does not confirm that they sent a message or booked an appointment.");
+    await page.getByRole("button", { name: "Close", exact: true }).click();
+    await page.getByRole("button", { name: "More" }).click();
+    await page.getByRole("button", { name: "Kalix opens" }).click();
+    await expect(page.getByRole("heading", { name: "Kalix Opens" })).toBeVisible();
+    await expect(page.getByText("GLP-1 care")).toBeVisible();
+    await page.screenshot({ path: "test-results/admin-mobile-kalix.png", fullPage: true });
+    await page.getByRole("button", { name: "View details" }).click();
+    await expect(page.locator("#mobile-sheet-body .mobile-detail-note")).toContainText("It is not a confirmed appointment.");
     await page.getByRole("button", { name: "Close", exact: true }).click();
     await page.getByRole("button", { name: "More" }).click();
     await page.getByRole("button", { name: "Contact leads" }).click();
@@ -163,7 +181,11 @@ test("desktop admin retains the existing table navigation", async ({ page }) => 
   await page.locator("[data-view='whatsapp']").click();
   await expect(page.getByRole("heading", { name: "WhatsApp Opens" })).toBeVisible();
   await expect(page.locator("thead")).toContainText("Source / Campaign");
-  await expect(page.getByText("These records show that a visitor opened WhatsApp.")).toBeVisible();
+  await expect(page.getByText(/visitor reached the WhatsApp handoff/)).toBeVisible();
+  await page.locator("[data-view='kalix']").click();
+  await expect(page.getByRole("heading", { name: "Kalix Opens" })).toBeVisible();
+  await expect(page.locator("thead")).toContainText("Service");
+  await expect(page.getByText("GLP-1 care")).toBeVisible();
 });
 
 test("mobile admin remains contained across phone and tablet widths", async ({ page }) => {
