@@ -380,7 +380,16 @@ test("WhatsApp booking route records attribution before redirecting", async ({ p
   expect(event.utmCampaign).toBe("weight-loss");
   expect(event.utmContent).toBe("creative-01");
   const pixelQueue = await page.evaluate(() => window.fbq?.queue || []);
-  expect(pixelQueue).toContainEqual(["trackCustom", "ExternalLinkClick"]);
+  expect(pixelQueue).toContainEqual(["trackCustom", "WhatsAppOpen"]);
+  expect(pixelQueue).not.toContainEqual(["trackCustom", "ExternalLinkClick"]);
+});
+
+test("Kalix booking uses its own Meta event", async ({ page }) => {
+  await page.goto("./glp1-care", { waitUntil: "networkidle" });
+  await page.getByRole("link", { name: "Book Now" }).dispatchEvent("click");
+  const pixelQueue = await page.evaluate(() => window.fbq?.queue || []);
+  expect(pixelQueue).toContainEqual(["trackCustom", "KalixOpen"]);
+  expect(pixelQueue).not.toContainEqual(["trackCustom", "ExternalLinkClick"]);
 });
 
 test("mobile booking form is usable without overflow", async ({ page }) => {

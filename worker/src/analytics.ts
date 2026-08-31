@@ -61,6 +61,9 @@ type TimelineRow = {
   visitors?: number;
   sessions?: number;
   bookingClicks?: number;
+  externalClicks?: number;
+  whatsappOpens?: number;
+  kalixOpens?: number;
   contactSubmits?: number;
   registrations?: number;
 };
@@ -128,6 +131,9 @@ function fillTimeline(rows: TimelineRow[], start: string, end: string, granulari
       visitors: Number(row?.visitors || 0),
       sessions: Number(row?.sessions || 0),
       bookingClicks: Number(row?.bookingClicks || 0),
+      externalClicks: Number(row?.externalClicks || 0),
+      whatsappOpens: Number(row?.whatsappOpens || 0),
+      kalixOpens: Number(row?.kalixOpens || 0),
       contactSubmits: Number(row?.contactSubmits || 0),
       registrations: Number(row?.registrations || 0),
     });
@@ -412,8 +418,14 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
     previousSessions,
     pageViews,
     previousPageViews,
+    bookingPageClicks,
+    previousBookingPageClicks,
     externalClicks,
     previousExternalClicks,
+    whatsappOpens,
+    previousWhatsappOpens,
+    kalixOpens,
+    previousKalixOpens,
     contactSubmits,
     previousContactSubmits,
     memberSignups,
@@ -430,8 +442,14 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
     count(db, distinctSql("session_id"), previousStart, previousEnd),
     count(db, metricSql("event_type = 'page_view'"), start, end),
     count(db, metricSql("event_type = 'page_view'"), previousStart, previousEnd),
-    count(db, metricSql("event_type IN ('booking_click', 'whatsapp_booking_click')"), start, end),
-    count(db, metricSql("event_type IN ('booking_click', 'whatsapp_booking_click')"), previousStart, previousEnd),
+    count(db, metricSql("event_type = 'booking_click' AND event_name = 'book_link'"), start, end),
+    count(db, metricSql("event_type = 'booking_click' AND event_name = 'book_link'"), previousStart, previousEnd),
+    count(db, metricSql("event_type = 'booking_click' AND event_name = 'booking_form_success'"), start, end),
+    count(db, metricSql("event_type = 'booking_click' AND event_name = 'booking_form_success'"), previousStart, previousEnd),
+    count(db, metricSql("event_type = 'whatsapp_booking_click'"), start, end),
+    count(db, metricSql("event_type = 'whatsapp_booking_click'"), previousStart, previousEnd),
+    count(db, metricSql("event_type = 'kalix_booking_click'"), start, end),
+    count(db, metricSql("event_type = 'kalix_booking_click'"), previousStart, previousEnd),
     count(db, metricSql("event_type = 'contact_submit'"), start, end),
     count(db, metricSql("event_type = 'contact_submit'"), previousStart, previousEnd),
     count(db, metricSql("event_type = 'member_register'"), start, end),
@@ -443,9 +461,12 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
               COUNT(DISTINCT session_id) AS sessions,
               COUNT(DISTINCT visitor_id) AS visitors,
               SUM(CASE WHEN event_type = 'page_view' THEN 1 ELSE 0 END) AS pageViews,
-              SUM(CASE WHEN event_type IN ('booking_click', 'whatsapp_booking_click') THEN 1 ELSE 0 END) AS bookingClicks,
+              SUM(CASE WHEN event_type = 'booking_click' AND event_name = 'book_link' THEN 1 ELSE 0 END) AS bookingClicks,
+              SUM(CASE WHEN event_type = 'booking_click' AND event_name = 'booking_form_success' THEN 1 ELSE 0 END) AS externalClicks,
+              SUM(CASE WHEN event_type = 'whatsapp_booking_click' THEN 1 ELSE 0 END) AS whatsappOpens,
+              SUM(CASE WHEN event_type = 'kalix_booking_click' THEN 1 ELSE 0 END) AS kalixOpens,
               SUM(CASE WHEN event_type = 'contact_submit' THEN 1 ELSE 0 END) AS contactSubmits,
-              SUM(CASE WHEN event_type = 'member_register' THEN 1 ELSE 0 END) AS registrations
+              SUM(CASE WHEN event_type = 'member_register' THEN 1 ELSE 0 END) AS memberSignups
        FROM analytics_events
        WHERE ${adWhere} AND created_at BETWEEN ? AND ?
        GROUP BY label, source, medium
@@ -458,7 +479,10 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
               COUNT(DISTINCT session_id) AS sessions,
               COUNT(DISTINCT visitor_id) AS visitors,
               SUM(CASE WHEN event_type = 'page_view' THEN 1 ELSE 0 END) AS pageViews,
-              SUM(CASE WHEN event_type IN ('booking_click', 'whatsapp_booking_click') THEN 1 ELSE 0 END) AS externalClicks,
+              SUM(CASE WHEN event_type = 'booking_click' AND event_name = 'book_link' THEN 1 ELSE 0 END) AS bookingClicks,
+              SUM(CASE WHEN event_type = 'booking_click' AND event_name = 'booking_form_success' THEN 1 ELSE 0 END) AS externalClicks,
+              SUM(CASE WHEN event_type = 'whatsapp_booking_click' THEN 1 ELSE 0 END) AS whatsappOpens,
+              SUM(CASE WHEN event_type = 'kalix_booking_click' THEN 1 ELSE 0 END) AS kalixOpens,
               SUM(CASE WHEN event_type = 'contact_submit' THEN 1 ELSE 0 END) AS contactSubmits,
               SUM(CASE WHEN event_type = 'member_register' THEN 1 ELSE 0 END) AS memberSignups
        FROM analytics_events
@@ -471,7 +495,10 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
       `SELECT COALESCE(path, '/') AS label,
               COUNT(DISTINCT session_id) AS sessions,
               SUM(CASE WHEN event_type = 'page_view' THEN 1 ELSE 0 END) AS pageViews,
-              SUM(CASE WHEN event_type IN ('booking_click', 'whatsapp_booking_click') THEN 1 ELSE 0 END) AS externalClicks,
+              SUM(CASE WHEN event_type = 'booking_click' AND event_name = 'book_link' THEN 1 ELSE 0 END) AS bookingClicks,
+              SUM(CASE WHEN event_type = 'booking_click' AND event_name = 'booking_form_success' THEN 1 ELSE 0 END) AS externalClicks,
+              SUM(CASE WHEN event_type = 'whatsapp_booking_click' THEN 1 ELSE 0 END) AS whatsappOpens,
+              SUM(CASE WHEN event_type = 'kalix_booking_click' THEN 1 ELSE 0 END) AS kalixOpens,
               SUM(CASE WHEN event_type = 'contact_submit' THEN 1 ELSE 0 END) AS contactSubmits,
               SUM(CASE WHEN event_type = 'member_register' THEN 1 ELSE 0 END) AS memberSignups
        FROM analytics_events
@@ -485,9 +512,12 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
               SUM(CASE WHEN event_type = 'page_view' THEN 1 ELSE 0 END) AS pageViews,
               COUNT(DISTINCT visitor_id) AS visitors,
               COUNT(DISTINCT session_id) AS sessions,
-              SUM(CASE WHEN event_type IN ('booking_click', 'whatsapp_booking_click') THEN 1 ELSE 0 END) AS externalClicks,
+              SUM(CASE WHEN event_type = 'booking_click' AND event_name = 'book_link' THEN 1 ELSE 0 END) AS bookingClicks,
+              SUM(CASE WHEN event_type = 'booking_click' AND event_name = 'booking_form_success' THEN 1 ELSE 0 END) AS externalClicks,
+              SUM(CASE WHEN event_type = 'whatsapp_booking_click' THEN 1 ELSE 0 END) AS whatsappOpens,
+              SUM(CASE WHEN event_type = 'kalix_booking_click' THEN 1 ELSE 0 END) AS kalixOpens,
               SUM(CASE WHEN event_type = 'contact_submit' THEN 1 ELSE 0 END) AS contactSubmits,
-              SUM(CASE WHEN event_type = 'member_register' THEN 1 ELSE 0 END) AS memberSignups
+              SUM(CASE WHEN event_type = 'member_register' THEN 1 ELSE 0 END) AS registrations
        FROM analytics_events
        WHERE ${adWhere} AND created_at BETWEEN ? AND ?
        GROUP BY date
@@ -502,19 +532,18 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
     ).bind(start, end).all(),
   ]);
 
-  const conversions = externalClicks + contactSubmits + memberSignups;
-  const previousConversions = previousExternalClicks + previousContactSubmits + previousMemberSignups;
+  // A successful booking emits both contact_submit and booking_form_success.
+  // Count it once in the conversion total; handoff opens remain intent signals.
+  const conversions = contactSubmits + memberSignups;
+  const previousConversions = previousContactSubmits + previousMemberSignups;
   const conversionRate = percent(conversions, sessions || pageViews);
   const previousConversionRate = percent(previousConversions, previousSessions || previousPageViews);
   const contactRate = percent(contactSubmits, sessions || pageViews);
   const previousContactRate = percent(previousContactSubmits, previousSessions || previousPageViews);
   const currentTimeline = fillTimeline((timeline.results || []) as TimelineRow[], start, end, granularity).map((row) => ({
     ...row,
-    externalClicks: Number(row.bookingClicks || 0),
     memberSignups: Number(row.registrations || 0),
-    conversions: Number(row.bookingClicks || 0)
-      + Number(row.contactSubmits || 0)
-      + Number(row.registrations || 0),
+    conversions: Number(row.contactSubmits || 0) + Number(row.registrations || 0),
   }));
 
   return adminJson(request, env, {
@@ -523,7 +552,10 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
       visitors: metric(visitors, previousVisitors),
       sessions: metric(sessions, previousSessions),
       pageViews: metric(pageViews, previousPageViews),
+      bookingClicks: metric(bookingPageClicks, previousBookingPageClicks),
       externalClicks: metric(externalClicks, previousExternalClicks),
+      whatsappOpens: metric(whatsappOpens, previousWhatsappOpens),
+      kalixOpens: metric(kalixOpens, previousKalixOpens),
       contactSubmits: metric(contactSubmits, previousContactSubmits),
       memberSignups: metric(memberSignups, previousMemberSignups),
       conversions: metric(conversions, previousConversions),
@@ -534,16 +566,20 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
       visitors: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.visitors || 0) })),
       sessions: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.sessions || 0) })),
       pageViews: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.pageViews || 0) })),
+      bookingClicks: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.bookingClicks || 0) })),
       externalClicks: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.externalClicks || 0) })),
+      whatsappOpens: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.whatsappOpens || 0) })),
+      kalixOpens: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.kalixOpens || 0) })),
       contactSubmits: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.contactSubmits || 0) })),
       memberSignups: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.memberSignups || 0) })),
       conversions: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.conversions || 0) })),
     },
-    funnel: [
-      { label: "Ad sessions", value: sessions },
+    actions: [
+      { label: "Booking page clicks", value: bookingPageClicks },
+      { label: "WhatsApp opens", value: whatsappOpens },
+      { label: "Kalix opens", value: kalixOpens },
       { label: "External clicks", value: externalClicks },
-      { label: "Contact submits", value: contactSubmits },
-      { label: "Member signups", value: memberSignups },
+      { label: "Successful submits", value: contactSubmits },
     ],
     timeline: currentTimeline,
     campaigns: campaigns.results || [],

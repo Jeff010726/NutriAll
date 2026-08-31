@@ -1113,6 +1113,9 @@ export function adminPage(request: Request, env: Env) {
         + metricCard("Contact submits", data.metrics.contactSubmits, data.sparklines.contactSubmits)
         + metricCard("Member signups", data.metrics.memberSignups, data.sparklines.memberSignups)
         + metricCard("External clicks", data.metrics.externalClicks, data.sparklines.externalClicks)
+        + metricCard("WhatsApp opens", data.metrics.whatsappOpens, data.sparklines.whatsappOpens)
+        + metricCard("Kalix opens", data.metrics.kalixOpens, data.sparklines.kalixOpens)
+        + metricCard("Booking page clicks", data.metrics.bookingClicks, data.sparklines.bookingClicks)
         + metricCard("Contact rate", data.metrics.contactRate, data.sparklines.contactSubmits, "%")
         + '</section>';
     }
@@ -1137,19 +1140,19 @@ export function adminPage(request: Request, env: Env) {
     function campaignTable(rows) {
       const data = rows || [];
       if (!data.length) return '<div class="empty">No UTM-tagged ad traffic yet.</div>';
-      if (isMobileAdmin()) return '<div class="mobile-data-list">' + data.map(function (row) { return '<article class="mobile-data-row"><strong>' + escapeHtml(row.label) + '</strong><dl><div><dt>Source</dt><dd>' + escapeHtml(row.source) + '</dd></div><div><dt>Sessions</dt><dd>' + num(row.sessions) + '</dd></div><div><dt>Contacts</dt><dd>' + num(row.contactSubmits) + '</dd></div><div><dt>Signups</dt><dd>' + num(row.memberSignups) + '</dd></div></dl></article>'; }).join("") + '</div>';
-      return '<section class="tablewrap"><table><thead><tr><th>Campaign</th><th>Source</th><th>Medium</th><th>Sessions</th><th>Visitors</th><th>Page views</th><th>External clicks</th><th>Contacts</th><th>Signups</th></tr></thead><tbody>'
+      if (isMobileAdmin()) return '<div class="mobile-data-list">' + data.map(function (row) { return '<article class="mobile-data-row"><strong>' + escapeHtml(row.label) + '</strong><dl><div><dt>Source</dt><dd>' + escapeHtml(row.source) + '</dd></div><div><dt>Sessions</dt><dd>' + num(row.sessions) + '</dd></div><div><dt>Booking page</dt><dd>' + num(row.bookingClicks) + '</dd></div><div><dt>WhatsApp</dt><dd>' + num(row.whatsappOpens) + '</dd></div><div><dt>Kalix</dt><dd>' + num(row.kalixOpens) + '</dd></div><div><dt>External</dt><dd>' + num(row.externalClicks) + '</dd></div><div><dt>Submits</dt><dd>' + num(row.contactSubmits) + '</dd></div><div><dt>Signups</dt><dd>' + num(row.memberSignups) + '</dd></div></dl></article>'; }).join("") + '</div>';
+      return '<section class="tablewrap"><table><thead><tr><th>Campaign</th><th>Source</th><th>Medium</th><th>Sessions</th><th>Visitors</th><th>Page views</th><th>Booking page clicks</th><th>WhatsApp opens</th><th>Kalix opens</th><th>External clicks</th><th>Successful submits</th><th>Signups</th></tr></thead><tbody>'
         + data.map(function (row) {
-          return '<tr><td>' + escapeHtml(row.label) + '</td><td>' + escapeHtml(row.source) + '</td><td>' + escapeHtml(row.medium) + '</td><td>' + num(row.sessions) + '</td><td>' + num(row.visitors) + '</td><td>' + num(row.pageViews) + '</td><td>' + num(row.externalClicks) + '</td><td>' + num(row.contactSubmits) + '</td><td>' + num(row.memberSignups) + '</td></tr>';
+          return '<tr><td>' + escapeHtml(row.label) + '</td><td>' + escapeHtml(row.source) + '</td><td>' + escapeHtml(row.medium) + '</td><td>' + num(row.sessions) + '</td><td>' + num(row.visitors) + '</td><td>' + num(row.pageViews) + '</td><td>' + num(row.bookingClicks) + '</td><td>' + num(row.whatsappOpens) + '</td><td>' + num(row.kalixOpens) + '</td><td>' + num(row.externalClicks) + '</td><td>' + num(row.contactSubmits) + '</td><td>' + num(row.memberSignups) + '</td></tr>';
         }).join("") + '</tbody></table></section>';
     }
     function contentTable(rows) {
       const data = rows || [];
       if (!data.length) return '<div class="empty">No ad content data yet. Add utm_content to ad URLs.</div>';
-      if (isMobileAdmin()) return '<div class="mobile-data-list">' + data.map(function (row) { return '<article class="mobile-data-row"><strong>' + escapeHtml(row.label) + '</strong><dl><div><dt>Campaign</dt><dd>' + escapeHtml(row.campaign) + '</dd></div><div><dt>Sessions</dt><dd>' + num(row.sessions) + '</dd></div><div><dt>Contacts</dt><dd>' + num(row.contactSubmits) + '</dd></div><div><dt>Signups</dt><dd>' + num(row.memberSignups) + '</dd></div></dl></article>'; }).join("") + '</div>';
-      return '<section class="tablewrap"><table><thead><tr><th>Content</th><th>Campaign</th><th>Sessions</th><th>Visitors</th><th>Page views</th><th>External clicks</th><th>Contacts</th><th>Signups</th></tr></thead><tbody>'
+      if (isMobileAdmin()) return '<div class="mobile-data-list">' + data.map(function (row) { return '<article class="mobile-data-row"><strong>' + escapeHtml(row.label) + '</strong><dl><div><dt>Campaign</dt><dd>' + escapeHtml(row.campaign) + '</dd></div><div><dt>Sessions</dt><dd>' + num(row.sessions) + '</dd></div><div><dt>Booking page</dt><dd>' + num(row.bookingClicks) + '</dd></div><div><dt>WhatsApp</dt><dd>' + num(row.whatsappOpens) + '</dd></div><div><dt>Kalix</dt><dd>' + num(row.kalixOpens) + '</dd></div><div><dt>External</dt><dd>' + num(row.externalClicks) + '</dd></div><div><dt>Submits</dt><dd>' + num(row.contactSubmits) + '</dd></div><div><dt>Signups</dt><dd>' + num(row.memberSignups) + '</dd></div></dl></article>'; }).join("") + '</div>';
+      return '<section class="tablewrap"><table><thead><tr><th>Content</th><th>Campaign</th><th>Sessions</th><th>Visitors</th><th>Page views</th><th>Booking page clicks</th><th>WhatsApp opens</th><th>Kalix opens</th><th>External clicks</th><th>Successful submits</th><th>Signups</th></tr></thead><tbody>'
         + data.map(function (row) {
-          return '<tr><td>' + escapeHtml(row.label) + '</td><td>' + escapeHtml(row.campaign) + '</td><td>' + num(row.sessions) + '</td><td>' + num(row.visitors) + '</td><td>' + num(row.pageViews) + '</td><td>' + num(row.externalClicks) + '</td><td>' + num(row.contactSubmits) + '</td><td>' + num(row.memberSignups) + '</td></tr>';
+          return '<tr><td>' + escapeHtml(row.label) + '</td><td>' + escapeHtml(row.campaign) + '</td><td>' + num(row.sessions) + '</td><td>' + num(row.visitors) + '</td><td>' + num(row.pageViews) + '</td><td>' + num(row.bookingClicks) + '</td><td>' + num(row.whatsappOpens) + '</td><td>' + num(row.kalixOpens) + '</td><td>' + num(row.externalClicks) + '</td><td>' + num(row.contactSubmits) + '</td><td>' + num(row.memberSignups) + '</td></tr>';
         }).join("") + '</tbody></table></section>';
     }
     function recentAdEventsTable(rows) {
@@ -1166,7 +1169,7 @@ export function adminPage(request: Request, env: Env) {
       const data = await getAdsAnalytics();
       $("content").innerHTML = (isMobileAdmin() ? mobileAnalyticsTabs() : "") + adsMetricsHtml(data) + '<section class="chart-grid">'
         + panel("Ad traffic over time", "UTM-tagged sessions, visitors, and page views", lineChart(data.timeline), true)
-        + panel("Ad conversion funnel", "UTM-tagged sessions through key actions", funnelChart(data.funnel), false)
+        + panel("Ad actions", "Each action is counted separately", barList(data.actions, "value"), false)
         + panel("Landing pages", "Ad traffic by destination page", barList(data.landingPages, "sessions"), false)
         + panel("Campaigns", "UTM campaign performance", campaignTable(data.campaigns), true)
         + panel("Ad content", "UTM content performance by creative or copy", contentTable(data.contents), true)

@@ -34,6 +34,28 @@ const analytics = {
   insights: ["Booking interest increased during this range."],
 };
 
+const adsAnalytics = {
+  range: analytics.range,
+  metrics: {
+    visitors: metric(80), sessions: metric(100), pageViews: metric(180), conversions: metric(3),
+    contactSubmits: metric(2), memberSignups: metric(1), externalClicks: metric(2), whatsappOpens: metric(4),
+    kalixOpens: metric(3), bookingClicks: metric(12), contactRate: metric(2),
+  },
+  sparklines: {
+    visitors: [], sessions: [], pageViews: [], conversions: [], contactSubmits: [], memberSignups: [],
+    externalClicks: [], whatsappOpens: [], kalixOpens: [], bookingClicks: [],
+  },
+  timeline: [],
+  actions: [
+    { label: "Booking page clicks", value: 12 }, { label: "WhatsApp opens", value: 4 },
+    { label: "Kalix opens", value: 3 }, { label: "External clicks", value: 2 }, { label: "Successful submits", value: 2 },
+  ],
+  landingPages: [{ label: "/", sessions: 100 }],
+  campaigns: [{ label: "weight_loss_2026", source: "facebook", medium: "paid_social", sessions: 100, visitors: 80, pageViews: 180, bookingClicks: 12, whatsappOpens: 4, kalixOpens: 3, externalClicks: 2, contactSubmits: 2, memberSignups: 1 }],
+  contents: [{ label: "homepage_ad_01", campaign: "weight_loss_2026", sessions: 100, visitors: 80, pageViews: 180, bookingClicks: 12, whatsappOpens: 4, kalixOpens: 3, externalClicks: 2, contactSubmits: 2, memberSignups: 1 }],
+  recentEvents: [],
+};
+
 const bookings = [
   {
     id: "booking-1", created_at: "2026-08-25T01:30:00.000Z", lead_status: "new",
@@ -90,6 +112,7 @@ async function mockAdmin(page, updates) {
     const path = new URL(request.url()).pathname;
     if (path === "/admin/api/me") return route.fulfill({ json: { admin: { email: "owner@nutriallwellness.org" } } });
     if (path === "/admin/api/analytics/dashboard") return route.fulfill({ json: analytics });
+    if (path === "/admin/api/analytics/ads") return route.fulfill({ json: adsAnalytics });
     if (path === "/admin/api/bookings") return route.fulfill({ json: { bookings } });
     if (path === "/admin/api/bookings/update") {
       updates.push(request.postDataJSON());
@@ -186,6 +209,13 @@ test("desktop admin retains the existing table navigation", async ({ page }) => 
   await expect(page.getByRole("heading", { name: "Kalix Opens" })).toBeVisible();
   await expect(page.locator("thead")).toContainText("Service");
   await expect(page.getByText("GLP-1 care")).toBeVisible();
+  await page.locator("[data-view='ads']").click();
+  await expect(page.getByRole("heading", { name: "Ads" })).toBeVisible();
+  await expect(page.getByText("WhatsApp opens", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Kalix opens", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Booking page clicks", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("External clicks", { exact: true }).first()).toBeVisible();
+  await page.screenshot({ path: "test-results/admin-desktop-ad-actions.png", fullPage: true });
 });
 
 test("mobile admin remains contained across phone and tablet widths", async ({ page }) => {

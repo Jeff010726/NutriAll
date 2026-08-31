@@ -50,7 +50,7 @@ export function trackMetaPageView() {
 export function trackMetaConversion(eventType, eventName = "") {
   if (eventType === "contact_submit") trackCustom("ContactFormSubmit");
   if (eventType === "member_register") trackCustom("MemberSignup");
-  if ((eventType === "booking_click" && eventName === "booking_form_success") || eventType === "whatsapp_booking_click") {
-    trackCustom("ExternalLinkClick");
-  }
+  if (eventType === "booking_click" && eventName === "booking_form_success") trackCustom("ExternalLinkClick");
+  if (eventType === "whatsapp_booking_click") trackCustom("WhatsAppOpen");
+  if (eventType === "kalix_booking_click") trackCustom("KalixOpen");
 }
