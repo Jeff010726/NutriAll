@@ -277,6 +277,12 @@ test("language switcher updates conversion content", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
 });
 
+test("language switcher temporarily hides Traditional Chinese", async ({ page }) => {
+  await page.goto("./?lng=en", { waitUntil: "networkidle" });
+  const options = await page.getByLabel("Language").first().locator("option").allTextContents();
+  expect(options).toEqual(["English", "简体中文", "Español"]);
+});
+
 test("retired diabetes routes return visitors to the focused home page", async ({ page }) => {
   for (const path of ["diabetes-care", "diabetes-classes", "pump-training", "cgm-training", "providers", "recipes", "research"]) {
     await page.goto(`./${path}?lng=en`, { waitUntil: "networkidle" });
@@ -293,6 +299,7 @@ test("community contracting page explains the offer and keeps a free-call path v
   await expect(page.locator(".community-format-grid article")).toHaveCount(3);
   await expect(page.getByText("Churches and faith communities", { exact: true })).toBeVisible();
   await expect(page.locator(".community-program-hero").getByRole("link", { name: /Book a Free Call/ })).toHaveAttribute("href", "/book?service=community");
+  await expect(page.locator(".community-program-hero img")).toHaveAttribute("src", /community-gallery\/church-diabetes-class\.jpg$/);
   const communityCtaHeading = await page.locator(".community-final-cta h2").boundingBox();
   expect(communityCtaHeading?.width).toBeGreaterThan(800);
   expect(communityCtaHeading?.height).toBeLessThan(100);

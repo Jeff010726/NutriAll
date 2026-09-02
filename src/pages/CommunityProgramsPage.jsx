@@ -18,7 +18,7 @@ export function CommunityProgramsPage() {
         <p>{content.intro}</p>
         <SiteLink className="button button-primary" to="/book?service=community">{content.book} <ArrowRight size={18} aria-hidden="true" /></SiteLink>
       </div>
-      <img src={asset("generated/community-workshop.jpg")} alt={content.imageAlt} />
+      <img src={asset("community-gallery/church-diabetes-class.jpg")} alt={content.imageAlt} />
     </section>
 
     <section className="community-audiences" aria-labelledby="community-audiences-title">

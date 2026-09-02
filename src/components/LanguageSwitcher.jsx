@@ -4,7 +4,8 @@ import { localeLabels, supportedLocales } from "../i18n";
 
 export function LanguageSwitcher({ onChange }) {
   const { i18n, t } = useTranslation();
-  const active = supportedLocales.includes(i18n.resolvedLanguage) ? i18n.resolvedLanguage : "en";
+  const visibleLocales = supportedLocales.filter((locale) => locale !== "zh-TW");
+  const active = visibleLocales.includes(i18n.resolvedLanguage) ? i18n.resolvedLanguage : i18n.resolvedLanguage === "zh-TW" ? "zh-CN" : "en";
 
   return <label className="language-switcher">
     <span className="sr-only">{t("language")}</span>
@@ -13,7 +14,7 @@ export function LanguageSwitcher({ onChange }) {
       void i18n.changeLanguage(event.target.value);
       onChange?.();
     }}>
-      {supportedLocales.map((locale) => <option value={locale} key={locale}>{localeLabels[locale]}</option>)}
+      {visibleLocales.map((locale) => <option value={locale} key={locale}>{localeLabels[locale]}</option>)}
     </select>
   </label>;
 }
