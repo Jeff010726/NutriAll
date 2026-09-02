@@ -1,3 +1,5 @@
+import { getExpansionContent } from "./siteExpansionContent";
+
 const sources = {
   weight: ["NIDDK: Treatment for Overweight & Obesity", "https://www.niddk.nih.gov/health-information/weight-management/adult-overweight-obesity/treatment"],
   medication: ["NIDDK: Prescription Medications to Treat Overweight & Obesity", "https://www.niddk.nih.gov/health-information/weight-management/prescription-medications-treat-overweight-obesity"],
@@ -27,9 +29,9 @@ const shared = {
     sourcesLabel: "Medical sources reviewed for this guide",
     disclaimer: "This page is for general education. It does not diagnose a condition or replace your physician, specialist, therapist, or emergency care.",
     relatedLabel: "You may also want to read",
-    bookingTitle: "Not sure whether this is the right kind of support?",
-    bookingText: "Book a free 15-minute call. Tell us what is going on, and we will help you decide whether a dietitian, a physician, or another specialist is the best next step.",
-    bookingButton: "Book a free 15-minute call",
+    bookingTitle: "Want to ask whether this service fits your needs?",
+    bookingText: "Use the free 15-minute consultation to describe your situation. We will explain whether the next appointment should be with a dietitian, a physician, or another specialist.",
+    bookingButton: "Book a free 15-minute consultation",
   },
   "zh-CN": {
     eyebrow: "把营养和身体讲明白",
@@ -41,10 +43,30 @@ const shared = {
     sourcesLabel: "本页参考的医学资料",
     disclaimer: "本页用于一般健康教育，不能代替医生诊断、专科治疗、心理治疗或急诊处理。",
     relatedLabel: "你可能也想了解",
-    bookingTitle: "不确定自己该不该找营养师？",
-    bookingText: "可以先免费聊 15 分钟。告诉我们你遇到的情况，我们会帮你判断下一步更适合找营养师、医生，还是其他专科人员。",
-    bookingButton: "免费聊 15 分钟",
+    bookingTitle: "想先确认这项服务是否合适？",
+    bookingText: "可以预约一次免费的 15 分钟咨询，说明你的情况。我们会告诉你下一次应该预约营养师、医生，还是其他专科人员。",
+    bookingButton: "免费预约 15 分钟咨询",
   },
+};
+
+const spanishGuide = {
+  eyebrow: "Guía nutricional en lenguaje claro",
+  overviewLabel: "Qué significa y qué conviene revisar",
+  focusLabel: "En qué puede ayudarle la dietista",
+  visitLabel: "Qué ocurre en la primera visita",
+  urgentLabel: "Busque atención médica sin demora si presenta",
+  faqLabel: "Preguntas frecuentes",
+  sourcesLabel: "Fuentes médicas consultadas",
+  disclaimer: "Esta página ofrece educación general. No diagnostica una condición ni reemplaza a su médico, especialista, terapeuta o servicio de urgencias.",
+  relatedLabel: "También puede consultar",
+  bookingTitle: "¿Quiere confirmar si este servicio corresponde a su situación?",
+  bookingText: "Reserve una consulta gratuita de 15 minutos y describa lo que necesita. Le explicaremos si la siguiente cita debe ser con una dietista, un médico u otro especialista.",
+  bookingButton: "Consulta gratuita de 15 minutos",
+  overview: ["La recomendación depende de sus síntomas, diagnóstico, medicamentos, análisis, alimentación y objetivos. Una sola lista de alimentos no sirve para todas las personas.", "La dietista trabaja junto con la atención médica que ya recibe. Las decisiones sobre diagnóstico, medicamentos y tratamiento corresponden a los profesionales autorizados."],
+  focus: ["Revisar cómo come ahora y qué se ha vuelto difícil.", "Relacionar comidas, síntomas, medicamentos, horarios y resultados de laboratorio.", "Elegir cambios concretos que pueda aplicar en casa, en el trabajo y al comer fuera.", "Preparar preguntas para su médico cuando algo necesite evaluación clínica."],
+  visit: ["Revisamos su historia de salud, medicamentos, suplementos, síntomas y comidas habituales.", "Acordamos una o dos prioridades para comenzar.", "Sale con pasos claros y un plan de seguimiento."],
+  urgent: ["Síntomas repentinos o intensos, desmayo, dolor en el pecho, dificultad para respirar o confusión.", "Vómitos persistentes, deshidratación, sangrado o incapacidad para comer y beber.", "Cualquier señal que su equipo médico le haya indicado tratar como una urgencia."],
+  faq: [{ q: "¿Recibiré una dieta estándar?", a: "No. Las recomendaciones dependen de su salud, alimentos habituales, cultura, horario, presupuesto y preferencias." }, { q: "¿La dietista puede cambiar mis medicamentos?", a: "No. Puede ayudarle a registrar alimentos y síntomas, pero las recetas y dosis corresponden al profesional que las indicó." }],
 };
 
 const en = {
@@ -472,6 +494,11 @@ export const guidePaths = {
 };
 
 export function getCareGuide(slug, language = "en") {
+  if (language.toLowerCase().startsWith("es")) {
+    const item = getExpansionContent("es").services.items[slug];
+    if (!item || !metadata[slug]) return null;
+    return { ...spanishGuide, ...metadata[slug], title: item[0], shortTitle: item[0], intro: item[1], imageAlt: `Orientación nutricional para ${item[0].toLowerCase()}`, locale: "es" };
+  }
   const useChinese = language.toLowerCase().startsWith("zh");
   const locale = useChinese ? "zh-CN" : "en";
   const content = useChinese ? zh[slug] : en[slug];

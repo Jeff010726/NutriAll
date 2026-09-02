@@ -53,4 +53,6 @@ export function trackMetaConversion(eventType, eventName = "") {
   if (eventType === "booking_click" && eventName === "booking_form_success") trackCustom("ExternalLinkClick");
   if (eventType === "whatsapp_booking_click") trackCustom("WhatsAppOpen");
   if (eventType === "kalix_booking_click") trackCustom("KalixOpen");
+  if (eventType === "community_inquiry_submit") trackCustom("CommunityProgramInquiry");
+  if (eventType === "xt_diabetes_referral") trackCustom("XTDiabetesReferral");
 }

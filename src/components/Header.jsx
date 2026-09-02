@@ -7,6 +7,7 @@ import { SiteLink } from "./SiteLink";
 
 const groups = {
   weight: [
+    ["/services", "nav.allServices", "ALL"],
     ["/one-to-one-weight-loss", "nav.oneToOne", "1:1"],
     ["/glp1-care", "nav.glpCare", "GLP-1"],
     ["/medical-weight-loss", "nav.medical", "MD"],
@@ -85,7 +86,7 @@ export function Header() {
         <p>{t(`nav.${name}`)}</p>
         {links.map(([to, key]) => <SiteLink to={to} onClick={closeAll} key={to}>{t(key)}</SiteLink>)}
       </section>)}
-      <section><p>{t("nav.team")}</p><SiteLink to="/about" onClick={closeAll}>{t("nav.about")}</SiteLink><SiteLink to="/community-programs" onClick={closeAll}>{t("nav.community")}</SiteLink><SiteLink to="/insurance" onClick={closeAll}>{t("nav.insurance")}</SiteLink></section>
+      <section><p>{t("nav.team")}</p><SiteLink to="/about" onClick={closeAll}>{t("nav.about")}</SiteLink><SiteLink to="/community-programs" onClick={closeAll}>{t("nav.community")}</SiteLink><SiteLink to="/community-events" onClick={closeAll}>{t("nav.events")}</SiteLink><SiteLink to="/diabetes-education" onClick={closeAll}>{t("nav.diabetes")}</SiteLink><SiteLink to="/insurance" onClick={closeAll}>{t("nav.insurance")}</SiteLink></section>
       <LanguageSwitcher onChange={closeAll} />
       <SiteLink className="button button-primary" to="/book" onClick={closeAll}>{t("nav.book")}</SiteLink>
     </nav>

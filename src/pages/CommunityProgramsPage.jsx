@@ -16,7 +16,7 @@ export function CommunityProgramsPage() {
         <p className="eyebrow">{content.eyebrow}</p>
         <h1>{content.title}</h1>
         <p>{content.intro}</p>
-        <SiteLink className="button button-primary" to="/book?service=community">{content.book} <ArrowRight size={18} aria-hidden="true" /></SiteLink>
+        <SiteLink className="button button-primary" to="/community-programs/inquiry">{content.book} <ArrowRight size={18} aria-hidden="true" /></SiteLink>
       </div>
       <img src={asset("community-gallery/church-diabetes-class.jpg")} alt={content.imageAlt} />
     </section>
@@ -63,7 +63,7 @@ export function CommunityProgramsPage() {
     <section className="clinic-final-cta community-final-cta">
       <h2>{content.finalTitle}</h2>
       <p>{content.finalText}</p>
-      <SiteLink className="button button-primary" to="/book?service=community">{content.book}</SiteLink>
+      <div className="community-final-actions"><SiteLink className="button button-primary" to="/community-programs/inquiry">{content.book}</SiteLink><SiteLink className="button button-secondary" to="/community-events">{content.eventsAction}</SiteLink></div>
     </section>
   </main></Layout>;
 }

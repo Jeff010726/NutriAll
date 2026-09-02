@@ -6,10 +6,12 @@ import { SiteLink } from "./SiteLink";
 export function Footer({ note }) {
   const { t } = useTranslation();
   const links = [
+    ["nav.allServices", "/services"],
     ["nav.oneToOne", "/one-to-one-weight-loss"], ["nav.glpCare", "/glp1-care"],
     ["nav.medical", "/medical-weight-loss"], ["nav.insurance", "/insurance"],
     ["nav.about", "/about"], ["nav.community", "/community-programs"],
-    ["nav.book", "/book"],
+    ["nav.events", "/community-events"], ["nav.diabetes", "/diabetes-education"],
+    ["nav.privacy", "/privacy"], ["nav.terms", "/terms"], ["nav.book", "/book"],
   ];
   return <footer className="site-footer clinic-footer">
     <div className="clinic-footer-brand"><SiteLink className="brand footer-brand" to="/"><img src={asset("nutriall-logo.png")} alt="NutriAll Wellness" /></SiteLink><p>{note || t("footer.note")}</p><LanguageSwitcher /></div>

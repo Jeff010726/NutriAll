@@ -1,0 +1,42 @@
+CREATE TABLE IF NOT EXISTS community_inquiries (
+  id TEXT PRIMARY KEY,
+  organization TEXT NOT NULL,
+  organization_type TEXT NOT NULL,
+  contact_name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  audience_size TEXT NOT NULL,
+  audience_age TEXT NOT NULL,
+  preferred_language TEXT NOT NULL,
+  topic TEXT NOT NULL,
+  program_format TEXT NOT NULL,
+  delivery TEXT NOT NULL,
+  preferred_date TEXT NOT NULL,
+  location TEXT,
+  budget TEXT,
+  notes TEXT,
+  consent_accepted INTEGER NOT NULL DEFAULT 0,
+  page_language TEXT,
+  time_zone TEXT,
+  source_page TEXT,
+  utm_source TEXT,
+  utm_medium TEXT,
+  utm_campaign TEXT,
+  utm_content TEXT,
+  ip TEXT,
+  user_agent TEXT,
+  lead_status TEXT NOT NULL DEFAULT 'new',
+  assigned_to TEXT,
+  follow_up_at TEXT,
+  internal_notes TEXT,
+  email_status TEXT NOT NULL DEFAULT 'pending',
+  email_error TEXT,
+  confirmation_email_status TEXT NOT NULL DEFAULT 'pending',
+  confirmation_email_error TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_community_inquiries_created ON community_inquiries(created_at);
+CREATE INDEX IF NOT EXISTS idx_community_inquiries_status ON community_inquiries(lead_status);
+CREATE INDEX IF NOT EXISTS idx_community_inquiries_email ON community_inquiries(email);

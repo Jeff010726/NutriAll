@@ -11,6 +11,13 @@ import { MedicalWeightLossPage } from "./pages/MedicalWeightLossPage";
 import { OneToOneWeightLossPage } from "./pages/OneToOneWeightLossPage";
 import { CommunityProgramsPage } from "./pages/CommunityProgramsPage";
 import { ConditionPage } from "./pages/ConditionPage";
+import { CommunityEventsPage } from "./pages/CommunityEventsPage";
+import { CommunityInquiryPage } from "./pages/CommunityInquiryPage";
+import { CommunityInquiryThanksPage } from "./pages/CommunityInquiryThanksPage";
+import { DiabetesEducationPage } from "./pages/DiabetesEducationPage";
+import { PrivacyPage } from "./pages/PrivacyPage";
+import { ServicesPage } from "./pages/ServicesPage";
+import { TermsPage } from "./pages/TermsPage";
 
 export default function App() {
   return <BrowserRouter basename={import.meta.env.BASE_URL}><Routes>
@@ -20,6 +27,13 @@ export default function App() {
     <Route path="/one-to-one-weight-loss" element={<OneToOneWeightLossPage />} />
     <Route path="/medical-director" element={<MedicalDirectorPage />} />
     <Route path="/community-programs" element={<CommunityProgramsPage />} />
+    <Route path="/community-programs/inquiry" element={<CommunityInquiryPage />} />
+    <Route path="/community-programs/thanks" element={<CommunityInquiryThanksPage />} />
+    <Route path="/community-events" element={<CommunityEventsPage />} />
+    <Route path="/services" element={<ServicesPage />} />
+    <Route path="/diabetes-education" element={<DiabetesEducationPage />} />
+    <Route path="/privacy" element={<PrivacyPage />} />
+    <Route path="/terms" element={<TermsPage />} />
     <Route path="/conditions/:condition" element={<ConditionPage />} />
     <Route path="/coverage" element={<Navigate replace to="/insurance" />} />
     <Route path="/insurance" element={<InsurancePage />} />

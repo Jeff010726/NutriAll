@@ -7,7 +7,6 @@ import { SiteLink } from "./SiteLink";
 import { trackEvent } from "../analytics";
 import { trackMetaPageView } from "../metaPixel";
 import { useTranslation } from "react-i18next";
-import { BookingActivityToast } from "./BookingActivityToast";
 
 const defaultDescription = "Physician-led medical weight loss, GLP-1 care, and one-to-one nutrition support from NutriAll.";
 
@@ -42,5 +41,6 @@ export function Layout({ children, description = defaultDescription, footerProps
     return () => window.clearTimeout(timer);
   }, [pathname]);
 
-  return <><Header />{children}<Footer {...footerProps} /><BookingActivityToast language={i18n.resolvedLanguage} pathname={pathname} /><SiteLink className="mobile-booking-bar" to="/book?service=general"><span>{t("insurance.badge")}</span><strong>{t("mobileCta")}</strong></SiteLink></>;
+  const hideMobileBookingBar = ["/book", "/booking-redirect", "/booking-whatsapp", "/community-programs/inquiry", "/community-programs/thanks"].includes(pathname);
+  return <><Header />{children}<Footer {...footerProps} />{!hideMobileBookingBar && <SiteLink className="mobile-booking-bar" to="/book?service=general"><span>{t("insurance.badge")}</span><strong>{t("mobileCta")}</strong></SiteLink>}</>;
 }

@@ -2,6 +2,7 @@ import { adminAdsAnalytics, adminAnalyticsDashboard, collectAnalytics } from "./
 import {
   adminBookings,
   adminClassSignups,
+  adminCommunityInquiries,
   adminContactLeads,
   adminDeleteBooking,
   adminDeleteClassSignup,
@@ -16,9 +17,11 @@ import {
   adminSmtpTest,
   adminStats,
   adminUpdateBooking,
+  adminUpdateCommunityInquiry,
   adminWhatsappClicks,
 } from "./admin";
 import { submitContact } from "./contact";
+import { submitCommunityInquiry } from "./communityInquiry";
 import { publicBookingActivity } from "./bookingActivity";
 import { responseHeaders, json, serverError } from "./http";
 import {
@@ -61,6 +64,8 @@ function adminResponse(request: Request, env: Env) {
   if (url.pathname === "/admin/api/bookings" && request.method === "GET") return adminBookings(request, env);
   if (url.pathname === "/admin/api/bookings/update" && request.method === "POST") return adminUpdateBooking(request, env);
   if (url.pathname === "/admin/api/class-signups" && request.method === "GET") return adminClassSignups(request, env);
+  if (url.pathname === "/admin/api/community-inquiries" && request.method === "GET") return adminCommunityInquiries(request, env);
+  if (url.pathname === "/admin/api/community-inquiries/update" && request.method === "POST") return adminUpdateCommunityInquiry(request, env);
   if (url.pathname === "/admin/api/bookings/delete" && request.method === "POST") return adminDeleteBooking(request, env);
   if (url.pathname === "/admin/api/class-signups/delete" && request.method === "POST") return adminDeleteClassSignup(request, env);
   const classSignupFileMatch = url.pathname.match(/^\/admin\/api\/class-signups\/([^/]+)\/files\/([^/]+)\/download$/);
@@ -181,6 +186,7 @@ async function route(request: Request, env: Env, ctx: ExecutionContext) {
   }
 
   if (url.pathname === "/api/analytics/collect" && request.method === "POST") return collectAnalytics(request, env);
+  if (url.pathname === "/api/community-inquiry" && request.method === "POST") return submitCommunityInquiry(request, env, ctx);
   if (url.pathname === "/api/booking-activity" && request.method === "GET") return publicBookingActivity(request, env);
   if (url.pathname === "/api/contact" && request.method === "POST") return submitContact(request, env, ctx);
   if (url.pathname.startsWith("/api/")) return json(request, env, { error: "Not found" }, { status: 404 });

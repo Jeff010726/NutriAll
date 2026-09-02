@@ -6,6 +6,7 @@ import { apiRequest } from "../api";
 import { getAttribution, trackEvent } from "../analytics";
 import { InsuranceLogos } from "../components/InsuranceLogos";
 import { Layout } from "../components/Layout";
+import { SiteLink } from "../components/SiteLink";
 
 const availabilityOptions = [
   "8AM - 10AM", "10AM - 12PM", "12PM - 2PM", "2PM - 4PM",
@@ -115,7 +116,7 @@ export function BookPage() {
 
         {status === "error" && <p className="form-error" role="alert">{error}</p>}
         <button className="button button-primary intake-submit" type="submit" disabled={status === "submitting"}>{status === "submitting" ? t("book.submitting") : <>{t("book.submit")} <ArrowRight size={19} aria-hidden="true" /></>}</button>
-        <p className="form-disclaimer">{t("book.disclaimer")}</p>
+        <p className="form-disclaimer">{t("book.disclaimer")} <SiteLink to="/privacy">{t("book.privacyLink")}</SiteLink></p>
       </form>
     </section>
   </main></Layout>;

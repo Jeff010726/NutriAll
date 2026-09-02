@@ -64,6 +64,8 @@ type TimelineRow = {
   externalClicks?: number;
   whatsappOpens?: number;
   kalixOpens?: number;
+  communityInquiries?: number;
+  xtReferrals?: number;
   contactSubmits?: number;
   registrations?: number;
 };
@@ -134,6 +136,8 @@ function fillTimeline(rows: TimelineRow[], start: string, end: string, granulari
       externalClicks: Number(row?.externalClicks || 0),
       whatsappOpens: Number(row?.whatsappOpens || 0),
       kalixOpens: Number(row?.kalixOpens || 0),
+      communityInquiries: Number(row?.communityInquiries || 0),
+      xtReferrals: Number(row?.xtReferrals || 0),
       contactSubmits: Number(row?.contactSubmits || 0),
       registrations: Number(row?.registrations || 0),
     });
@@ -426,6 +430,10 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
     previousWhatsappOpens,
     kalixOpens,
     previousKalixOpens,
+    communityInquiries,
+    previousCommunityInquiries,
+    xtReferrals,
+    previousXtReferrals,
     contactSubmits,
     previousContactSubmits,
     memberSignups,
@@ -450,6 +458,10 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
     count(db, metricSql("event_type = 'whatsapp_booking_click'"), previousStart, previousEnd),
     count(db, metricSql("event_type = 'kalix_booking_click'"), start, end),
     count(db, metricSql("event_type = 'kalix_booking_click'"), previousStart, previousEnd),
+    count(db, metricSql("event_type = 'community_inquiry_submit'"), start, end),
+    count(db, metricSql("event_type = 'community_inquiry_submit'"), previousStart, previousEnd),
+    count(db, metricSql("event_type = 'xt_diabetes_referral'"), start, end),
+    count(db, metricSql("event_type = 'xt_diabetes_referral'"), previousStart, previousEnd),
     count(db, metricSql("event_type = 'contact_submit'"), start, end),
     count(db, metricSql("event_type = 'contact_submit'"), previousStart, previousEnd),
     count(db, metricSql("event_type = 'member_register'"), start, end),
@@ -465,6 +477,8 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
               SUM(CASE WHEN event_type = 'booking_click' AND event_name = 'booking_form_success' THEN 1 ELSE 0 END) AS externalClicks,
               SUM(CASE WHEN event_type = 'whatsapp_booking_click' THEN 1 ELSE 0 END) AS whatsappOpens,
               SUM(CASE WHEN event_type = 'kalix_booking_click' THEN 1 ELSE 0 END) AS kalixOpens,
+              SUM(CASE WHEN event_type = 'community_inquiry_submit' THEN 1 ELSE 0 END) AS communityInquiries,
+              SUM(CASE WHEN event_type = 'xt_diabetes_referral' THEN 1 ELSE 0 END) AS xtReferrals,
               SUM(CASE WHEN event_type = 'contact_submit' THEN 1 ELSE 0 END) AS contactSubmits,
               SUM(CASE WHEN event_type = 'member_register' THEN 1 ELSE 0 END) AS memberSignups
        FROM analytics_events
@@ -483,6 +497,8 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
               SUM(CASE WHEN event_type = 'booking_click' AND event_name = 'booking_form_success' THEN 1 ELSE 0 END) AS externalClicks,
               SUM(CASE WHEN event_type = 'whatsapp_booking_click' THEN 1 ELSE 0 END) AS whatsappOpens,
               SUM(CASE WHEN event_type = 'kalix_booking_click' THEN 1 ELSE 0 END) AS kalixOpens,
+              SUM(CASE WHEN event_type = 'community_inquiry_submit' THEN 1 ELSE 0 END) AS communityInquiries,
+              SUM(CASE WHEN event_type = 'xt_diabetes_referral' THEN 1 ELSE 0 END) AS xtReferrals,
               SUM(CASE WHEN event_type = 'contact_submit' THEN 1 ELSE 0 END) AS contactSubmits,
               SUM(CASE WHEN event_type = 'member_register' THEN 1 ELSE 0 END) AS memberSignups
        FROM analytics_events
@@ -499,6 +515,8 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
               SUM(CASE WHEN event_type = 'booking_click' AND event_name = 'booking_form_success' THEN 1 ELSE 0 END) AS externalClicks,
               SUM(CASE WHEN event_type = 'whatsapp_booking_click' THEN 1 ELSE 0 END) AS whatsappOpens,
               SUM(CASE WHEN event_type = 'kalix_booking_click' THEN 1 ELSE 0 END) AS kalixOpens,
+              SUM(CASE WHEN event_type = 'community_inquiry_submit' THEN 1 ELSE 0 END) AS communityInquiries,
+              SUM(CASE WHEN event_type = 'xt_diabetes_referral' THEN 1 ELSE 0 END) AS xtReferrals,
               SUM(CASE WHEN event_type = 'contact_submit' THEN 1 ELSE 0 END) AS contactSubmits,
               SUM(CASE WHEN event_type = 'member_register' THEN 1 ELSE 0 END) AS memberSignups
        FROM analytics_events
@@ -516,6 +534,8 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
               SUM(CASE WHEN event_type = 'booking_click' AND event_name = 'booking_form_success' THEN 1 ELSE 0 END) AS externalClicks,
               SUM(CASE WHEN event_type = 'whatsapp_booking_click' THEN 1 ELSE 0 END) AS whatsappOpens,
               SUM(CASE WHEN event_type = 'kalix_booking_click' THEN 1 ELSE 0 END) AS kalixOpens,
+              SUM(CASE WHEN event_type = 'community_inquiry_submit' THEN 1 ELSE 0 END) AS communityInquiries,
+              SUM(CASE WHEN event_type = 'xt_diabetes_referral' THEN 1 ELSE 0 END) AS xtReferrals,
               SUM(CASE WHEN event_type = 'contact_submit' THEN 1 ELSE 0 END) AS contactSubmits,
               SUM(CASE WHEN event_type = 'member_register' THEN 1 ELSE 0 END) AS registrations
        FROM analytics_events
@@ -534,8 +554,8 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
 
   // A successful booking emits both contact_submit and booking_form_success.
   // Count it once in the conversion total; handoff opens remain intent signals.
-  const conversions = contactSubmits + memberSignups;
-  const previousConversions = previousContactSubmits + previousMemberSignups;
+  const conversions = contactSubmits + communityInquiries + memberSignups;
+  const previousConversions = previousContactSubmits + previousCommunityInquiries + previousMemberSignups;
   const conversionRate = percent(conversions, sessions || pageViews);
   const previousConversionRate = percent(previousConversions, previousSessions || previousPageViews);
   const contactRate = percent(contactSubmits, sessions || pageViews);
@@ -543,7 +563,7 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
   const currentTimeline = fillTimeline((timeline.results || []) as TimelineRow[], start, end, granularity).map((row) => ({
     ...row,
     memberSignups: Number(row.registrations || 0),
-    conversions: Number(row.contactSubmits || 0) + Number(row.registrations || 0),
+    conversions: Number(row.contactSubmits || 0) + Number(row.communityInquiries || 0) + Number(row.registrations || 0),
   }));
 
   return adminJson(request, env, {
@@ -556,6 +576,8 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
       externalClicks: metric(externalClicks, previousExternalClicks),
       whatsappOpens: metric(whatsappOpens, previousWhatsappOpens),
       kalixOpens: metric(kalixOpens, previousKalixOpens),
+      communityInquiries: metric(communityInquiries, previousCommunityInquiries),
+      xtReferrals: metric(xtReferrals, previousXtReferrals),
       contactSubmits: metric(contactSubmits, previousContactSubmits),
       memberSignups: metric(memberSignups, previousMemberSignups),
       conversions: metric(conversions, previousConversions),
@@ -570,6 +592,8 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
       externalClicks: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.externalClicks || 0) })),
       whatsappOpens: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.whatsappOpens || 0) })),
       kalixOpens: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.kalixOpens || 0) })),
+      communityInquiries: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.communityInquiries || 0) })),
+      xtReferrals: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.xtReferrals || 0) })),
       contactSubmits: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.contactSubmits || 0) })),
       memberSignups: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.memberSignups || 0) })),
       conversions: currentTimeline.map((row) => ({ date: String(row.date), value: Number(row.conversions || 0) })),
@@ -578,6 +602,8 @@ export async function adminAdsAnalytics(request: Request, env: Env) {
       { label: "Booking page clicks", value: bookingPageClicks },
       { label: "WhatsApp opens", value: whatsappOpens },
       { label: "Kalix opens", value: kalixOpens },
+      { label: "Community inquiries", value: communityInquiries },
+      { label: "XT Diabetes referrals", value: xtReferrals },
       { label: "External clicks", value: externalClicks },
       { label: "Successful submits", value: contactSubmits },
     ],

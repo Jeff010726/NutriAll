@@ -25,7 +25,6 @@ export function HomePage() {
         <p>{t("home.intro")}</p>
         <div className="clinic-hero-actions">
           <SiteLink className="button button-primary" to="/book?service=one-to-one">{t("home.primary")}</SiteLink>
-          <SiteLink className="button button-secondary" to="/insurance">{t("home.secondary")}</SiteLink>
         </div>
         <div className="clinic-language-trust"><Users size={19} aria-hidden="true" /><span>{t("home.trust")}</span></div>
       </div>
@@ -41,6 +40,7 @@ export function HomePage() {
     <section className="clinic-capabilities" aria-labelledby="capabilities-title">
       <div className="clinic-section-heading"><p className="eyebrow">{t("home.clinicalEyebrow")}</p><h2 id="capabilities-title">{t("home.clinicalTitle")}</h2><p>{t("home.clinicalIntro")}</p></div>
       <div className="clinic-capability-grid">{weightServices.map(([Icon, title, text, to]) => <SiteLink to={to} key={to}><span><Icon size={23} aria-hidden="true" /></span><h3>{t(title)}</h3><p>{t(text)}</p><b>{t("home.learn")} <ArrowRight size={16} aria-hidden="true" /></b></SiteLink>)}</div>
+      <div className="clinic-capability-action"><SiteLink className="button button-secondary" to="/services">{t("home.allServices")} <ArrowRight size={17} aria-hidden="true" /></SiteLink></div>
     </section>
 
     <section className="clinic-team-preview">
@@ -55,13 +55,13 @@ export function HomePage() {
     </section>
 
     <section className="community-home-band">
-      <div className="community-home-media"><img src={asset("generated/community-workshop.jpg")} alt={t("community.imageAlt")} /><span>{t("community.contractBadge")}</span></div>
+      <div className="community-home-media"><img src={asset("community-gallery/church-diabetes-class.jpg")} alt={t("community.imageAlt")} /><span>{t("community.contractBadge")}</span></div>
       <div className="community-home-copy">
         <p className="eyebrow">{t("community.eyebrow")}</p>
         <h2>{t("community.homeTitle")}</h2>
         <p>{t("community.homeText")}</p>
         <div className="community-home-formats"><span>{t("community.homeFormat1")}</span><span>{t("community.homeFormat2")}</span><span>{t("community.homeFormat3")}</span></div>
-        <div className="community-home-actions"><SiteLink className="button button-secondary" to="/community-programs">{t("community.homeAction")}</SiteLink><SiteLink className="button button-primary" to="/book?service=community">{t("community.book")}</SiteLink></div>
+        <div className="community-home-actions"><SiteLink className="button button-secondary" to="/community-programs">{t("community.homeAction")}</SiteLink><SiteLink className="button button-primary" to="/community-programs/inquiry">{t("community.book")}</SiteLink></div>
       </div>
     </section>
 

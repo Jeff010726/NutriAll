@@ -1,26 +1,21 @@
 import { useTranslation } from "react-i18next";
 import { asset } from "../lib";
+import { SiteLink } from "./SiteLink";
 
 const galleryRows = [
   [
     { src: "community-gallery/community-highlights.mp4", poster: "community-gallery/community-highlights-poster.webp", shape: "video", video: true },
+    { src: "community-gallery/church-diabetes-class.jpg", shape: "portrait" },
     { src: "community-gallery/outdoor-family-fair.webp", shape: "portrait" },
-    { src: "community-gallery/outdoor-team.webp", shape: "portrait" },
-    { src: "community-gallery/wellness-booth.webp", shape: "portrait" },
+    { src: "community-gallery/wellness-booth.webp", shape: "landscape" },
+    { src: "community-gallery/conference-poster-presentation.webp", shape: "wide" },
     { src: "community-gallery/conference-poster-team.webp", shape: "landscape" },
     { src: "community-gallery/fnce-2025-group.webp", shape: "landscape" },
-  ],
-  [
-    { src: "community-gallery/senior-community-class-1.webp", shape: "narrow" },
-    { src: "community-gallery/senior-community-class-2.webp", shape: "narrow" },
-    { src: "community-gallery/bilingual-dsmes-poster-team.webp", shape: "landscape" },
-    { src: "community-gallery/conference-poster-presentation.webp", shape: "wide" },
-    { src: "community-gallery/adces-conference-team.webp", shape: "portrait" },
-    { src: "community-gallery/fnce-2025-pair.webp", shape: "landscape" },
+    { src: "community-gallery/senior-community-class-1.webp", shape: "portrait" },
   ],
 ];
 
-const galleryContentRepeats = 3;
+const galleryContentRepeats = 1;
 
 function GalleryGroup({ items, duplicate = false }) {
   const { t } = useTranslation();
@@ -46,6 +41,7 @@ export function CommunityGallery() {
       <p className="eyebrow">{t("community.galleryEyebrow")}</p>
       <h2 id="community-gallery-title">{t("community.galleryTitle")}</h2>
       <p>{t("community.galleryIntro")}</p>
+      <SiteLink className="community-gallery-link" to="/community-events">{t("community.eventsAction")}</SiteLink>
     </header>
     <div className="community-gallery-rows">
       {galleryRows.map((items, index) => <div className={`community-gallery-rail community-gallery-rail-${index + 1}`} key={index}>

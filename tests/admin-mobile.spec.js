@@ -37,22 +37,23 @@ const analytics = {
 const adsAnalytics = {
   range: analytics.range,
   metrics: {
-    visitors: metric(80), sessions: metric(100), pageViews: metric(180), conversions: metric(3),
+    visitors: metric(80), sessions: metric(100), pageViews: metric(180), conversions: metric(5),
     contactSubmits: metric(2), memberSignups: metric(1), externalClicks: metric(2), whatsappOpens: metric(4),
     kalixOpens: metric(3), bookingClicks: metric(12), contactRate: metric(2),
+    communityInquiries: metric(2), xtReferrals: metric(5),
   },
   sparklines: {
     visitors: [], sessions: [], pageViews: [], conversions: [], contactSubmits: [], memberSignups: [],
-    externalClicks: [], whatsappOpens: [], kalixOpens: [], bookingClicks: [],
+    externalClicks: [], whatsappOpens: [], kalixOpens: [], bookingClicks: [], communityInquiries: [], xtReferrals: [],
   },
   timeline: [],
   actions: [
     { label: "Booking page clicks", value: 12 }, { label: "WhatsApp opens", value: 4 },
-    { label: "Kalix opens", value: 3 }, { label: "External clicks", value: 2 }, { label: "Successful submits", value: 2 },
+    { label: "Kalix opens", value: 3 }, { label: "Community inquiries", value: 2 }, { label: "XT Diabetes referrals", value: 5 }, { label: "External clicks", value: 2 }, { label: "Successful submits", value: 2 },
   ],
   landingPages: [{ label: "/", sessions: 100 }],
-  campaigns: [{ label: "weight_loss_2026", source: "facebook", medium: "paid_social", sessions: 100, visitors: 80, pageViews: 180, bookingClicks: 12, whatsappOpens: 4, kalixOpens: 3, externalClicks: 2, contactSubmits: 2, memberSignups: 1 }],
-  contents: [{ label: "homepage_ad_01", campaign: "weight_loss_2026", sessions: 100, visitors: 80, pageViews: 180, bookingClicks: 12, whatsappOpens: 4, kalixOpens: 3, externalClicks: 2, contactSubmits: 2, memberSignups: 1 }],
+  campaigns: [{ label: "weight_loss_2026", source: "facebook", medium: "paid_social", sessions: 100, visitors: 80, pageViews: 180, bookingClicks: 12, whatsappOpens: 4, kalixOpens: 3, externalClicks: 2, contactSubmits: 2, communityInquiries: 2, xtReferrals: 5, memberSignups: 1 }],
+  contents: [{ label: "homepage_ad_01", campaign: "weight_loss_2026", sessions: 100, visitors: 80, pageViews: 180, bookingClicks: 12, whatsappOpens: 4, kalixOpens: 3, externalClicks: 2, contactSubmits: 2, communityInquiries: 2, xtReferrals: 5, memberSignups: 1 }],
   recentEvents: [],
 };
 
@@ -106,6 +107,15 @@ const kalixData = {
   }],
 };
 
+const communityData = { inquiries: [{
+  id: "org-1", organization: "Flushing Community Center", organization_type: "Community or senior center", contact_name: "Jamie Lee",
+  email: "jamie@example.org", phone: "7185550198", audience_size: "60", audience_age: "Older adults", preferred_language: "Mandarin",
+  topic: "Diabetes meal planning", program_format: "Multi-session series", delivery: "In person", preferred_date: "October mornings",
+  location: "Flushing, NY", budget: "$1,000-$2,000", notes: "Please include printed handouts.", lead_status: "new", assigned_to: "",
+  follow_up_at: "", internal_notes: "", page_language: "en", time_zone: "America/New_York", source_page: "/community-programs/inquiry",
+  utm_source: "partner", utm_medium: "email", utm_campaign: "fall_classes", email_status: "sent", confirmation_email_status: "sent", created_at: "2026-09-02T01:00:00.000Z",
+}] };
+
 async function mockAdmin(page, updates) {
   await page.route("**/admin/api/**", async (route) => {
     const request = route.request();
@@ -122,6 +132,11 @@ async function mockAdmin(page, updates) {
     if (path === "/admin/api/contact-leads") return route.fulfill({ json: { leads: [{ created_at: "2026-08-25T02:00:00.000Z", name: "L. Wong", email: "lw@example.com", message: "Please explain insurance coverage.", source_page: "/contact", preferred_language: "Chinese", sheet_status: "synced" }] } });
     if (path === "/admin/api/whatsapp-clicks") return route.fulfill({ json: whatsappData });
     if (path === "/admin/api/kalix-clicks") return route.fulfill({ json: kalixData });
+    if (path === "/admin/api/community-inquiries") return route.fulfill({ json: communityData });
+    if (path === "/admin/api/community-inquiries/update") {
+      updates.push({ kind: "community", ...request.postDataJSON() });
+      return route.fulfill({ json: { ok: true } });
+    }
     if (path === "/admin/api/members") return route.fulfill({ json: { members: [{ created_at: "2026-08-20T02:00:00.000Z", email: "member@example.com", phone: "+1 718 555 0100", first_name: "Grace", last_name: "Lee", preferred_language: "English", marketing_opt_in: 1 }] } });
     if (path === "/admin/api/smtp-status") return route.fulfill({ json: { configured: true } });
     if (path === "/admin/api/logout") return route.fulfill({ json: { ok: true } });
@@ -160,12 +175,24 @@ test.describe("mobile admin", () => {
   });
 
   test("shows class files and secondary admin areas", async ({ page }) => {
-    await mockAdmin(page, []);
+    const updates = [];
+    await mockAdmin(page, updates);
     await page.goto("http://127.0.0.1:8790/admin");
     await page.getByRole("button", { name: "Classes" }).click();
     await page.getByRole("button", { name: "View enrollment" }).click();
     await expect(page.getByRole("link", { name: "Download insurance card front" })).toBeVisible();
     await page.getByRole("button", { name: "Close", exact: true }).click();
+    await page.getByRole("button", { name: "More" }).click();
+    await page.getByRole("button", { name: "Community inquiries" }).click();
+    await expect(page.getByRole("heading", { name: "Flushing Community Center" })).toBeVisible();
+    await page.getByRole("button", { name: "Details" }).click();
+    await expect(page.getByText("Diabetes meal planning")).toBeVisible();
+    await page.getByRole("button", { name: "Edit follow-up" }).click();
+    await page.locator("#mobile-community-status").selectOption("planning");
+    await page.locator("#mobile-community-owner").fill("Xiaofang Tan");
+    await page.getByRole("button", { name: "Save changes" }).click();
+    await expect(page.getByText("Community inquiry updated")).toBeVisible();
+    expect(updates.at(-1)).toMatchObject({ kind: "community", id: "org-1", leadStatus: "planning", assignedTo: "Xiaofang Tan" });
     await page.getByRole("button", { name: "More" }).click();
     await page.getByRole("button", { name: "WhatsApp opens" }).click();
     await expect(page.getByRole("heading", { name: "WhatsApp Opens" })).toBeVisible();
@@ -209,12 +236,18 @@ test("desktop admin retains the existing table navigation", async ({ page }) => 
   await expect(page.getByRole("heading", { name: "Kalix Opens" })).toBeVisible();
   await expect(page.locator("thead")).toContainText("Service");
   await expect(page.getByText("GLP-1 care")).toBeVisible();
+  await page.locator("[data-view='communityInquiries']").click();
+  await expect(page.getByRole("heading", { name: "Community Inquiries" })).toBeVisible();
+  await expect(page.locator("thead")).toContainText("Organization");
+  await expect(page.getByText("Flushing Community Center")).toBeVisible();
   await page.locator("[data-view='ads']").click();
   await expect(page.getByRole("heading", { name: "Ads" })).toBeVisible();
   await expect(page.getByText("WhatsApp opens", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Kalix opens", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("Booking page clicks", { exact: true }).first()).toBeVisible();
   await expect(page.getByText("External clicks", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Community inquiries", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("XT Diabetes referrals", { exact: true }).first()).toBeVisible();
   await page.screenshot({ path: "test-results/admin-desktop-ad-actions.png", fullPage: true });
 });
 

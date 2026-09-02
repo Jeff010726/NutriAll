@@ -1,5 +1,6 @@
 export const dietitians = [
   {
+    id: "cici",
     name: "Siqian (Cici) Chen, MS, RD, LDN",
     role: "Registered Dietitian / Certified Intuitive Eating Counselor",
     image: "team/siqian-chen-dark-studio.jpg",
@@ -12,6 +13,7 @@ export const dietitians = [
     details: ["English, Mandarin, Fuzhounese", "Weight management / Intuitive eating / Eating disorders"],
   },
   {
+    id: "xiaofang",
     name: "Xiaofang Tan, MS, RD, CDN, CDCES",
     role: "Registered Dietitian / Diabetes Care and Education Specialist",
     image: "team/xiaofang-tan-dark-studio.jpg",
@@ -24,6 +26,7 @@ export const dietitians = [
     details: ["English, Cantonese, Mandarin, Hakka", "Diabetes / Sports nutrition / Digestive health"],
   },
   {
+    id: "yue",
     name: "Yue Jin, MS, RD",
     role: "Registered Dietitian / Weight-inclusive Nutrition",
     image: "team/yue-jin-dark-studio.jpg",
@@ -36,6 +39,7 @@ export const dietitians = [
     details: ["English, Mandarin", "Intuitive eating / Digestive health / Eating disorders / Diabetes"],
   },
   {
+    id: "ziying",
     name: "Ziying Zhang, MS, RDN",
     role: "Registered Dietitian / Diabetes Educator",
     image: "team/ziying-dark-studio.jpg",
@@ -48,6 +52,7 @@ export const dietitians = [
     details: ["English, Mandarin", "Diabetes education / Digestive health / Weight management"],
   },
   {
+    id: "yirao",
     name: "Yirao (Rebecca) Wang, RDN, LDN, MPH",
     role: "Registered Dietitian / Diabetes Educator",
     image: "team/yirao-wang-dark-studio.jpg",
@@ -61,6 +66,7 @@ export const dietitians = [
     details: ["Diabetes / Chronic disease management", "Culturally tailored education"],
   },
   {
+    id: "jinhui",
     name: "Jinhui Zhou, MS, RD, CDN, CDCES",
     role: "Registered Dietitian / Certified Diabetes Care and Education Specialist",
     image: "team/jinhui-zhou-dark-studio.jpg",
@@ -73,3 +79,27 @@ export const dietitians = [
     details: ["English, Mandarin", "Diabetes / Weight management / Sustainable habits"],
   },
 ];
+
+const translations = {
+  "zh-CN": {
+    cici: { role: "注册营养师 / 直觉饮食认证咨询师", details: ["英语、普通话、福州话", "体重管理 / 直觉饮食 / 进食障碍"], bio: ["Cici 在纽约市立大学获得营养学硕士学位，并在 Hunter College 完成营养师实习。她主要从事体重管理、进食障碍、直觉饮食和心理健康相关营养服务。", "她会结合循证营养和具体生活情况，帮助客户改善与食物的关系，服务中不会使用体重羞辱。"] },
+    xiaofang: { role: "注册营养师 / 糖尿病照护与教育专家", details: ["英语、粤语、普通话、客家话", "糖尿病 / 运动营养 / 肠胃健康"], bio: ["Tan 获得营养学硕士学位，并在 Northwell Health 完成营养师实习。她是注册营养师、糖尿病照护与教育专家，也是 NASM 认证私人教练。", "她的专业方向包括糖尿病管理、运动营养、IBS 和 IBD 等肠胃问题，以及女性健康。"] },
+    yue: { role: "注册营养师 / 体重包容营养服务", details: ["英语、普通话", "直觉饮食 / 肠胃健康 / 进食障碍 / 糖尿病"], bio: ["Yue 在 Cornell University 获得营养学硕士学位，并在 Cornell Sports Nutrition 和 Strong Memorial Hospital 完成临床训练。她还拥有加州大学戴维斯分校临床营养和心理学学士学位。", "她主要从事直觉饮食、肠胃健康、进食障碍和糖尿病营养服务，并采用体重包容和循证的方法。"] },
+    ziying: { role: "注册营养师 / 糖尿病教育者", details: ["英语、普通话", "糖尿病教育 / 肠胃健康 / 体重管理"], bio: ["Ziying 在 Columbia University Teachers College 完成营养科学硕士和营养师实习，并在加州大学戴维斯分校获得临床营养学学士学位。", "她目前担任临床营养师并负责糖尿病教育项目。她关注糖尿病、肠胃健康和体重管理，服务中重视信任、长期可行的改变和吃饭本身的乐趣。"] },
+    yirao: { role: "注册营养师 / 糖尿病教育者", details: ["糖尿病 / 慢性病管理", "结合文化背景的营养教育"], bio: ["Yirao 在家人确诊糖尿病后开始关注糖尿病照护。她发现患者需要的不只是禁食清单，还需要能放进文化和日常生活的具体方法。", "她在 New York University 完成公共卫生硕士和营养课程，并在 Yale New Haven Hospital 及长期照护机构接受临床训练。她目前主要服务糖尿病及慢性病患者。", "她也参与为亚洲社区开发符合文化饮食习惯的糖尿病课程，帮助减少语言障碍。"] },
+    jinhui: { role: "注册营养师 / 糖尿病照护与教育专家", details: ["英语、普通话", "糖尿病 / 体重管理 / 日常习惯"], bio: ["Jinhui 帮助患者把糖尿病管理放进每天的吃饭和作息里。她会把营养信息说明白，再围绕血糖目标安排能够继续执行的习惯。", "她关注饮食和血糖管理中的压力，帮助客户使用具体工具处理每天的问题。"] },
+  },
+  es: {
+    cici: { role: "Dietista registrada / Consejera certificada en alimentación intuitiva", details: ["Inglés, mandarín y fuzhounés", "Peso / Alimentación intuitiva / Trastornos alimentarios"], bio: ["Cici obtuvo una maestría en nutrición en CUNY y completó sus prácticas en Hunter College. Trabaja en control del peso, trastornos alimentarios, alimentación intuitiva y salud mental.", "Combina nutrición basada en evidencia con apoyo práctico y evita el estigma relacionado con el peso."] },
+    xiaofang: { role: "Dietista registrada / Especialista en educación y cuidado de la diabetes", details: ["Inglés, cantonés, mandarín y hakka", "Diabetes / Deporte / Salud digestiva"], bio: ["Tan obtuvo una maestría en nutrición y completó sus prácticas en Northwell Health. Es dietista registrada, especialista en diabetes y entrenadora personal certificada por NASM.", "Sus áreas incluyen diabetes, nutrición deportiva, IBS, IBD y salud de la mujer."] },
+    yue: { role: "Dietista registrada / Nutrición inclusiva del peso", details: ["Inglés y mandarín", "Alimentación intuitiva / Digestión / Trastornos alimentarios / Diabetes"], bio: ["Yue obtuvo una maestría en nutrición en Cornell University y realizó formación clínica con Cornell Sports Nutrition y Strong Memorial Hospital. También estudió nutrición clínica y psicología en UC Davis.", "Trabaja con alimentación intuitiva, salud digestiva, trastornos alimentarios y diabetes desde un enfoque inclusivo y basado en evidencia."] },
+    ziying: { role: "Dietista registrada / Educadora en diabetes", details: ["Inglés y mandarín", "Diabetes / Digestión / Peso"], bio: ["Ziying completó una maestría en nutrición y prácticas dietéticas en Teachers College, Columbia University, y estudió nutrición clínica en UC Davis.", "Actualmente trabaja como dietista clínica y dirige un programa de educación en diabetes. Su atención se centra en confianza, cambios sostenibles y conservar el gusto por la comida."] },
+    yirao: { role: "Dietista registrada / Educadora en diabetes", details: ["Diabetes / Enfermedades crónicas", "Educación adaptada a la cultura"], bio: ["Yirao se interesó en el cuidado de la diabetes tras el diagnóstico de su padre. Aprendió que las personas necesitan orientación práctica y cultural, además de listas de alimentos.", "Completó una maestría en salud pública y estudios de dietética en New York University, con formación clínica en Yale New Haven Hospital y centros de cuidados prolongados.", "También desarrolla educación sobre diabetes adaptada a comunidades asiáticas y sus idiomas."] },
+    jinhui: { role: "Dietista registrada / Especialista en educación y cuidado de la diabetes", details: ["Inglés y mandarín", "Diabetes / Peso / Hábitos diarios"], bio: ["Jinhui ayuda a integrar el manejo de la diabetes en la alimentación y las rutinas diarias. Explica la información nutricional y convierte las metas de glucosa en acciones concretas.", "Su trabajo busca reducir la presión alrededor de la comida y ofrecer herramientas que puedan seguir usándose entre visitas."] },
+  },
+};
+
+export function localizeDietitian(dietitian, language = "en") {
+  const locale = language.toLowerCase().startsWith("zh") ? "zh-CN" : language.toLowerCase().startsWith("es") ? "es" : "en";
+  return locale === "en" ? dietitian : { ...dietitian, ...(translations[locale]?.[dietitian.id] || {}) };
+}

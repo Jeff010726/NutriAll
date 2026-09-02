@@ -23,6 +23,14 @@ type UpdateBookingPayload = {
   markContacted?: boolean;
 };
 
+type UpdateCommunityInquiryPayload = {
+  id?: string;
+  leadStatus?: string;
+  assignedTo?: string;
+  followUpAt?: string;
+  notes?: string;
+};
+
 type ClassSignupFileRow = {
   id: string;
   signup_id: string;
@@ -260,6 +268,36 @@ export async function adminBookings(request: Request, env: Env) {
     .all();
 
   return adminJson(request, env, { bookings: rows.results || [] });
+}
+
+export async function adminCommunityInquiries(request: Request, env: Env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+  const limit = Math.min(Math.max(Number(new URL(request.url).searchParams.get("limit") || 100), 1), 200);
+  const rows = await getDb(env).prepare(
+    `SELECT id, organization, organization_type, contact_name, email, phone, audience_size, audience_age,
+            preferred_language, topic, program_format, delivery, preferred_date, location, budget, notes,
+            lead_status, assigned_to, follow_up_at, internal_notes, page_language, time_zone, source_page,
+            utm_source, utm_medium, utm_campaign, utm_content, email_status, confirmation_email_status, created_at
+     FROM community_inquiries ORDER BY created_at DESC LIMIT ?`,
+  ).bind(limit).all();
+  return adminJson(request, env, { inquiries: rows.results || [] });
+}
+
+export async function adminUpdateCommunityInquiry(request: Request, env: Env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+  const payload = await readJson<UpdateCommunityInquiryPayload>(request);
+  const id = payload?.id?.trim() || "";
+  if (!id) return badRequest(request, env, "Inquiry id is required");
+  const allowedStatuses = ["new", "contacted", "planning", "proposal_sent", "confirmed", "closed"];
+  const status = payload?.leadStatus?.trim() || "new";
+  if (!allowedStatuses.includes(status)) return badRequest(request, env, "Invalid inquiry status");
+  const result = await getDb(env).prepare(
+    `UPDATE community_inquiries SET lead_status = ?, assigned_to = ?, follow_up_at = ?, internal_notes = ?, updated_at = ? WHERE id = ?`,
+  ).bind(status, payload?.assignedTo?.trim().slice(0, 120) || "", payload?.followUpAt?.trim().slice(0, 40) || "", payload?.notes?.trim().slice(0, 4000) || "", new Date().toISOString(), id).run();
+  if (!result.meta.changes) return adminJson(request, env, { error: "Inquiry not found" }, { status: 404 });
+  return adminJson(request, env, { ok: true });
 }
 
 export async function adminUpdateBooking(request: Request, env: Env) {
@@ -706,6 +744,7 @@ export function adminPage(request: Request, env: Env) {
         <button type="button" data-view="bookings">Bookings</button>
         <button type="button" data-view="whatsapp">WhatsApp Opens</button>
         <button type="button" data-view="kalix">Kalix Opens</button>
+        <button type="button" data-view="communityInquiries">Community Inquiries</button>
         <button type="button" data-view="classSignups">Class Signups</button>
         <button type="button" data-view="leads">Contact Leads</button>
         <button type="button" data-view="members">Members</button>
@@ -1115,6 +1154,8 @@ export function adminPage(request: Request, env: Env) {
         + metricCard("External clicks", data.metrics.externalClicks, data.sparklines.externalClicks)
         + metricCard("WhatsApp opens", data.metrics.whatsappOpens, data.sparklines.whatsappOpens)
         + metricCard("Kalix opens", data.metrics.kalixOpens, data.sparklines.kalixOpens)
+        + metricCard("Community inquiries", data.metrics.communityInquiries, data.sparklines.communityInquiries)
+        + metricCard("XT Diabetes referrals", data.metrics.xtReferrals, data.sparklines.xtReferrals)
         + metricCard("Booking page clicks", data.metrics.bookingClicks, data.sparklines.bookingClicks)
         + metricCard("Contact rate", data.metrics.contactRate, data.sparklines.contactSubmits, "%")
         + '</section>';
@@ -1140,19 +1181,19 @@ export function adminPage(request: Request, env: Env) {
     function campaignTable(rows) {
       const data = rows || [];
       if (!data.length) return '<div class="empty">No UTM-tagged ad traffic yet.</div>';
-      if (isMobileAdmin()) return '<div class="mobile-data-list">' + data.map(function (row) { return '<article class="mobile-data-row"><strong>' + escapeHtml(row.label) + '</strong><dl><div><dt>Source</dt><dd>' + escapeHtml(row.source) + '</dd></div><div><dt>Sessions</dt><dd>' + num(row.sessions) + '</dd></div><div><dt>Booking page</dt><dd>' + num(row.bookingClicks) + '</dd></div><div><dt>WhatsApp</dt><dd>' + num(row.whatsappOpens) + '</dd></div><div><dt>Kalix</dt><dd>' + num(row.kalixOpens) + '</dd></div><div><dt>External</dt><dd>' + num(row.externalClicks) + '</dd></div><div><dt>Submits</dt><dd>' + num(row.contactSubmits) + '</dd></div><div><dt>Signups</dt><dd>' + num(row.memberSignups) + '</dd></div></dl></article>'; }).join("") + '</div>';
-      return '<section class="tablewrap"><table><thead><tr><th>Campaign</th><th>Source</th><th>Medium</th><th>Sessions</th><th>Visitors</th><th>Page views</th><th>Booking page clicks</th><th>WhatsApp opens</th><th>Kalix opens</th><th>External clicks</th><th>Successful submits</th><th>Signups</th></tr></thead><tbody>'
+      if (isMobileAdmin()) return '<div class="mobile-data-list">' + data.map(function (row) { return '<article class="mobile-data-row"><strong>' + escapeHtml(row.label) + '</strong><dl><div><dt>Source</dt><dd>' + escapeHtml(row.source) + '</dd></div><div><dt>Sessions</dt><dd>' + num(row.sessions) + '</dd></div><div><dt>Booking page</dt><dd>' + num(row.bookingClicks) + '</dd></div><div><dt>WhatsApp</dt><dd>' + num(row.whatsappOpens) + '</dd></div><div><dt>Kalix</dt><dd>' + num(row.kalixOpens) + '</dd></div><div><dt>External</dt><dd>' + num(row.externalClicks) + '</dd></div><div><dt>Submits</dt><dd>' + num(row.contactSubmits) + '</dd></div><div><dt>Community</dt><dd>' + num(row.communityInquiries) + '</dd></div><div><dt>XT referrals</dt><dd>' + num(row.xtReferrals) + '</dd></div><div><dt>Signups</dt><dd>' + num(row.memberSignups) + '</dd></div></dl></article>'; }).join("") + '</div>';
+      return '<section class="tablewrap"><table><thead><tr><th>Campaign</th><th>Source</th><th>Medium</th><th>Sessions</th><th>Visitors</th><th>Page views</th><th>Booking page clicks</th><th>WhatsApp opens</th><th>Kalix opens</th><th>External clicks</th><th>Successful submits</th><th>Community inquiries</th><th>XT referrals</th><th>Signups</th></tr></thead><tbody>'
         + data.map(function (row) {
-          return '<tr><td>' + escapeHtml(row.label) + '</td><td>' + escapeHtml(row.source) + '</td><td>' + escapeHtml(row.medium) + '</td><td>' + num(row.sessions) + '</td><td>' + num(row.visitors) + '</td><td>' + num(row.pageViews) + '</td><td>' + num(row.bookingClicks) + '</td><td>' + num(row.whatsappOpens) + '</td><td>' + num(row.kalixOpens) + '</td><td>' + num(row.externalClicks) + '</td><td>' + num(row.contactSubmits) + '</td><td>' + num(row.memberSignups) + '</td></tr>';
+          return '<tr><td>' + escapeHtml(row.label) + '</td><td>' + escapeHtml(row.source) + '</td><td>' + escapeHtml(row.medium) + '</td><td>' + num(row.sessions) + '</td><td>' + num(row.visitors) + '</td><td>' + num(row.pageViews) + '</td><td>' + num(row.bookingClicks) + '</td><td>' + num(row.whatsappOpens) + '</td><td>' + num(row.kalixOpens) + '</td><td>' + num(row.externalClicks) + '</td><td>' + num(row.contactSubmits) + '</td><td>' + num(row.communityInquiries) + '</td><td>' + num(row.xtReferrals) + '</td><td>' + num(row.memberSignups) + '</td></tr>';
         }).join("") + '</tbody></table></section>';
     }
     function contentTable(rows) {
       const data = rows || [];
       if (!data.length) return '<div class="empty">No ad content data yet. Add utm_content to ad URLs.</div>';
-      if (isMobileAdmin()) return '<div class="mobile-data-list">' + data.map(function (row) { return '<article class="mobile-data-row"><strong>' + escapeHtml(row.label) + '</strong><dl><div><dt>Campaign</dt><dd>' + escapeHtml(row.campaign) + '</dd></div><div><dt>Sessions</dt><dd>' + num(row.sessions) + '</dd></div><div><dt>Booking page</dt><dd>' + num(row.bookingClicks) + '</dd></div><div><dt>WhatsApp</dt><dd>' + num(row.whatsappOpens) + '</dd></div><div><dt>Kalix</dt><dd>' + num(row.kalixOpens) + '</dd></div><div><dt>External</dt><dd>' + num(row.externalClicks) + '</dd></div><div><dt>Submits</dt><dd>' + num(row.contactSubmits) + '</dd></div><div><dt>Signups</dt><dd>' + num(row.memberSignups) + '</dd></div></dl></article>'; }).join("") + '</div>';
-      return '<section class="tablewrap"><table><thead><tr><th>Content</th><th>Campaign</th><th>Sessions</th><th>Visitors</th><th>Page views</th><th>Booking page clicks</th><th>WhatsApp opens</th><th>Kalix opens</th><th>External clicks</th><th>Successful submits</th><th>Signups</th></tr></thead><tbody>'
+      if (isMobileAdmin()) return '<div class="mobile-data-list">' + data.map(function (row) { return '<article class="mobile-data-row"><strong>' + escapeHtml(row.label) + '</strong><dl><div><dt>Campaign</dt><dd>' + escapeHtml(row.campaign) + '</dd></div><div><dt>Sessions</dt><dd>' + num(row.sessions) + '</dd></div><div><dt>Booking page</dt><dd>' + num(row.bookingClicks) + '</dd></div><div><dt>WhatsApp</dt><dd>' + num(row.whatsappOpens) + '</dd></div><div><dt>Kalix</dt><dd>' + num(row.kalixOpens) + '</dd></div><div><dt>External</dt><dd>' + num(row.externalClicks) + '</dd></div><div><dt>Submits</dt><dd>' + num(row.contactSubmits) + '</dd></div><div><dt>Community</dt><dd>' + num(row.communityInquiries) + '</dd></div><div><dt>XT referrals</dt><dd>' + num(row.xtReferrals) + '</dd></div><div><dt>Signups</dt><dd>' + num(row.memberSignups) + '</dd></div></dl></article>'; }).join("") + '</div>';
+      return '<section class="tablewrap"><table><thead><tr><th>Content</th><th>Campaign</th><th>Sessions</th><th>Visitors</th><th>Page views</th><th>Booking page clicks</th><th>WhatsApp opens</th><th>Kalix opens</th><th>External clicks</th><th>Successful submits</th><th>Community inquiries</th><th>XT referrals</th><th>Signups</th></tr></thead><tbody>'
         + data.map(function (row) {
-          return '<tr><td>' + escapeHtml(row.label) + '</td><td>' + escapeHtml(row.campaign) + '</td><td>' + num(row.sessions) + '</td><td>' + num(row.visitors) + '</td><td>' + num(row.pageViews) + '</td><td>' + num(row.bookingClicks) + '</td><td>' + num(row.whatsappOpens) + '</td><td>' + num(row.kalixOpens) + '</td><td>' + num(row.externalClicks) + '</td><td>' + num(row.contactSubmits) + '</td><td>' + num(row.memberSignups) + '</td></tr>';
+          return '<tr><td>' + escapeHtml(row.label) + '</td><td>' + escapeHtml(row.campaign) + '</td><td>' + num(row.sessions) + '</td><td>' + num(row.visitors) + '</td><td>' + num(row.pageViews) + '</td><td>' + num(row.bookingClicks) + '</td><td>' + num(row.whatsappOpens) + '</td><td>' + num(row.kalixOpens) + '</td><td>' + num(row.externalClicks) + '</td><td>' + num(row.contactSubmits) + '</td><td>' + num(row.communityInquiries) + '</td><td>' + num(row.xtReferrals) + '</td><td>' + num(row.memberSignups) + '</td></tr>';
         }).join("") + '</tbody></table></section>';
     }
     function recentAdEventsTable(rows) {
@@ -1402,18 +1443,20 @@ export function adminPage(request: Request, env: Env) {
         api("/admin/api/class-signups?limit=100").catch(function () { return { signups: [] }; }),
         getAnalytics().catch(function () { return null; }),
         api("/admin/api/whatsapp-clicks" + whatsappQuery(4)).catch(function () { return { summary: { total: 0 }, clicks: [] }; }),
-        api("/admin/api/kalix-clicks" + whatsappQuery(4)).catch(function () { return { summary: { total: 0 }, clicks: [] }; })
+        api("/admin/api/kalix-clicks" + whatsappQuery(4)).catch(function () { return { summary: { total: 0 }, clicks: [] }; }),
+        api("/admin/api/community-inquiries?limit=100").catch(function () { return { inquiries: [] }; })
       ]);
       $("range-caption").textContent = "What needs attention now";
       const bookings = results[0].bookings || [];
       const signups = results[1].signups || [];
       const whatsappOpens = results[3].summary?.total || 0;
       const kalixOpens = results[4].summary?.total || 0;
+      const communityCount = (results[5].inquiries || []).filter(function (item) { return (item.lead_status || "new") !== "closed"; }).length;
       const now = Date.now();
       const newCount = bookings.filter(function (item) { return (item.lead_status || "new") === "new"; }).length;
       const dueCount = bookings.filter(function (item) { return item.follow_up_at && new Date(item.follow_up_at).getTime() <= now && !["converted", "closed"].includes(item.lead_status); }).length;
       const insuranceCount = bookings.filter(function (item) { return item.lead_status === "benefits_check"; }).length;
-      $("content").innerHTML = '<section class="mobile-action-grid"><article class="mobile-action-stat"><span>New bookings</span><strong>' + num(newCount) + '</strong></article><article class="mobile-action-stat"><span>Follow-ups due</span><strong>' + num(dueCount) + '</strong></article><article class="mobile-action-stat"><span>Insurance checks</span><strong>' + num(insuranceCount) + '</strong></article><article class="mobile-action-stat"><span>Class signups</span><strong>' + num(signups.length) + '</strong></article><button type="button" class="mobile-action-stat" id="mobile-whatsapp-stat"><span>WhatsApp opens</span><strong>' + num(whatsappOpens) + '</strong></button><button type="button" class="mobile-action-stat" id="mobile-kalix-stat"><span>Kalix opens</span><strong>' + num(kalixOpens) + '</strong></button></section>'
+      $("content").innerHTML = '<section class="mobile-action-grid"><article class="mobile-action-stat"><span>New bookings</span><strong>' + num(newCount) + '</strong></article><article class="mobile-action-stat"><span>Follow-ups due</span><strong>' + num(dueCount) + '</strong></article><article class="mobile-action-stat"><span>Insurance checks</span><strong>' + num(insuranceCount) + '</strong></article><article class="mobile-action-stat"><span>Class signups</span><strong>' + num(signups.length) + '</strong></article><button type="button" class="mobile-action-stat" id="mobile-whatsapp-stat"><span>WhatsApp opens</span><strong>' + num(whatsappOpens) + '</strong></button><button type="button" class="mobile-action-stat" id="mobile-kalix-stat"><span>Kalix opens</span><strong>' + num(kalixOpens) + '</strong></button><button type="button" class="mobile-action-stat" id="mobile-community-stat"><span>Community inquiries</span><strong>' + num(communityCount) + '</strong></button></section>'
         + '<div class="mobile-section-heading"><h2>Recent bookings</h2><button type="button" id="mobile-view-all-bookings">View all</button></div><div id="mobile-recent-bookings"></div>';
       const recentContainer = $("mobile-recent-bookings");
       recentContainer.innerHTML = '<div class="mobile-list">' + (bookings.length ? bookings.slice(0, 4).map(function (booking) { return mobileBookingCard(booking, true); }).join("") : '<div class="mobile-empty">No recent bookings.</div>') + '</div>';
@@ -1421,6 +1464,57 @@ export function adminPage(request: Request, env: Env) {
       $("mobile-view-all-bookings").addEventListener("click", function () { setView("bookings"); });
       $("mobile-whatsapp-stat").addEventListener("click", function () { setView("whatsapp"); });
       $("mobile-kalix-stat").addEventListener("click", function () { setView("kalix"); });
+      $("mobile-community-stat").addEventListener("click", function () { setView("communityInquiries"); });
+    }
+    const communityStatusLabels = { new: "New", contacted: "Contacted", planning: "Planning", proposal_sent: "Proposal sent", confirmed: "Confirmed", closed: "Closed" };
+    async function saveCommunityInquiry(inquiry, changes) {
+      const body = { id: inquiry.id, leadStatus: inquiry.lead_status || "new", assignedTo: inquiry.assigned_to || "", followUpAt: inquiry.follow_up_at || "", notes: inquiry.internal_notes || "", ...changes };
+      await api("/admin/api/community-inquiries/update", { method: "POST", body: JSON.stringify(body) });
+      Object.assign(inquiry, { lead_status: body.leadStatus, assigned_to: body.assignedTo, follow_up_at: body.followUpAt, internal_notes: body.notes });
+    }
+    function communityInquiryForm(inquiry) {
+      openMobileSheet("Update community inquiry", '<form class="mobile-sheet-form" id="mobile-community-form"><label>Status<select id="mobile-community-status">' + Object.keys(communityStatusLabels).map(function (status) { return '<option value="' + status + '"' + (status === (inquiry.lead_status || "new") ? ' selected' : '') + '>' + communityStatusLabels[status] + '</option>'; }).join("") + '</select></label><label>Assigned to<input id="mobile-community-owner" value="' + escapeHtml(inquiry.assigned_to || "") + '"></label><label>Next follow-up<input id="mobile-community-followup" type="datetime-local" value="' + escapeHtml(mobileDateValue(inquiry.follow_up_at)) + '"></label><label>Internal notes<textarea id="mobile-community-notes">' + escapeHtml(inquiry.internal_notes || "") + '</textarea></label><button class="primary" type="submit">Save changes</button></form>');
+      $("mobile-community-form").addEventListener("submit", async function (event) {
+        event.preventDefault();
+        const button = event.currentTarget.querySelector("button[type=submit]");
+        button.disabled = true;
+        try { await saveCommunityInquiry(inquiry, { leadStatus: $("mobile-community-status").value, assignedTo: $("mobile-community-owner").value.trim(), followUpAt: $("mobile-community-followup").value, notes: $("mobile-community-notes").value.trim() }); closeMobileSheet(); showToast("Community inquiry updated"); await loadCommunityInquiries(); }
+        catch (error) { showToast(error.message); button.disabled = false; }
+      });
+    }
+    function communityInquiryDetails(inquiry) {
+      openMobileSheet(inquiry.organization || "Community inquiry", mobileDetailGrid([
+        { label: "Status", value: communityStatusLabels[inquiry.lead_status || "new"] }, { label: "Submitted", value: date(inquiry.created_at) },
+        { label: "Contact", value: inquiry.contact_name }, { label: "Phone", value: inquiry.phone }, { label: "Email", value: inquiry.email, wide: true },
+        { label: "Organization type", value: inquiry.organization_type }, { label: "Audience size", value: inquiry.audience_size }, { label: "Audience age", value: inquiry.audience_age },
+        { label: "Language", value: inquiry.preferred_language }, { label: "Format", value: inquiry.program_format }, { label: "Delivery", value: inquiry.delivery },
+        { label: "Preferred date", value: inquiry.preferred_date, wide: true }, { label: "Location", value: inquiry.location, wide: true }, { label: "Budget", value: inquiry.budget, wide: true },
+        { label: "Topics", value: inquiry.topic, wide: true }, { label: "Request notes", value: inquiry.notes, wide: true }, { label: "Assigned", value: inquiry.assigned_to || "Unassigned" },
+        { label: "Follow-up", value: inquiry.follow_up_at ? date(inquiry.follow_up_at) : "Not set", wide: true }
+      ]) + (inquiry.internal_notes ? '<div class="mobile-detail-note">' + escapeHtml(inquiry.internal_notes) + '</div>' : '') + '<div class="mobile-inline-actions"><a href="mailto:' + escapeHtml(inquiry.email) + '">Email</a><button type="button" class="primary" id="mobile-edit-community">Edit follow-up</button></div>');
+      $("mobile-edit-community").addEventListener("click", function () { communityInquiryForm(inquiry); });
+    }
+    async function loadCommunityInquiries() {
+      $("title").textContent = "Community Inquiries";
+      $("range-caption").textContent = "Requests from churches, community groups, employers, and event organizers.";
+      const data = await api("/admin/api/community-inquiries?limit=100");
+      const inquiries = data.inquiries || [];
+      if (isMobileAdmin()) {
+        $("content").innerHTML = '<div class="mobile-list">' + (inquiries.length ? inquiries.map(function (inquiry, index) { return '<article class="mobile-card"><div class="mobile-card-head"><div><h2>' + escapeHtml(inquiry.organization) + '</h2><div class="mobile-card-meta">' + escapeHtml(date(inquiry.created_at)) + ' · ' + escapeHtml(inquiry.organization_type) + '</div></div><span class="badge">' + escapeHtml(communityStatusLabels[inquiry.lead_status || "new"]) + '</span></div><div class="mobile-card-summary"><div><span>Contact</span><strong>' + escapeHtml(inquiry.contact_name) + '</strong></div><div><span>Audience</span><strong>' + escapeHtml(inquiry.audience_size) + '</strong></div><div><span>Format</span><strong>' + escapeHtml(inquiry.program_format) + '</strong></div><div><span>Date</span><strong>' + escapeHtml(inquiry.preferred_date) + '</strong></div></div><div class="mobile-card-actions"><a href="tel:' + escapeHtml(inquiry.phone) + '">Call</a><a href="mailto:' + escapeHtml(inquiry.email) + '">Email</a><button type="button" class="mobile-detail-button" data-community-detail="' + index + '">Details</button></div></article>'; }).join("") : '<div class="mobile-empty">No community inquiries yet.</div>') + '</div>';
+        document.querySelectorAll("[data-community-detail]").forEach(function (button) { button.addEventListener("click", function () { communityInquiryDetails(inquiries[Number(button.dataset.communityDetail)]); }); });
+        return;
+      }
+      const rows = inquiries.map(function (inquiry) {
+        const tr = document.createElement("tr");
+        const select = document.createElement("select");
+        Object.keys(communityStatusLabels).forEach(function (status) { const option = document.createElement("option"); option.value = status; option.textContent = communityStatusLabels[status]; option.selected = status === (inquiry.lead_status || "new"); select.appendChild(option); });
+        select.addEventListener("change", async function () { select.disabled = true; try { await saveCommunityInquiry(inquiry, { leadStatus: select.value }); } catch (error) { alert(error.message); } finally { select.disabled = false; } });
+        const statusTd = document.createElement("td"); statusTd.appendChild(select); tr.appendChild(statusTd);
+        [date(inquiry.created_at), inquiry.organization, inquiry.organization_type, inquiry.contact_name, inquiry.email, inquiry.phone, inquiry.audience_size, inquiry.audience_age, inquiry.preferred_language, inquiry.topic, inquiry.program_format, inquiry.delivery, inquiry.preferred_date, inquiry.location, inquiry.budget, inquiry.assigned_to, inquiry.follow_up_at ? date(inquiry.follow_up_at) : "", inquiry.internal_notes].forEach(function (cell) { const td = document.createElement("td"); td.textContent = text(cell); tr.appendChild(td); });
+        const actionTd = document.createElement("td"); const button = document.createElement("button"); button.type = "button"; button.textContent = "Edit follow-up"; button.addEventListener("click", async function () { const assignedTo = prompt("Assigned to", inquiry.assigned_to || ""); if (assignedTo === null) return; const followUpAt = prompt("Follow-up date/time", inquiry.follow_up_at || ""); if (followUpAt === null) return; const notes = prompt("Internal notes", inquiry.internal_notes || ""); if (notes === null) return; await saveCommunityInquiry(inquiry, { assignedTo, followUpAt, notes }); await loadCommunityInquiries(); }); actionTd.appendChild(button); tr.appendChild(actionTd);
+        return tr;
+      });
+      renderRows(["Status", "Submitted", "Organization", "Type", "Contact", "Email", "Phone", "Audience", "Age group", "Language", "Topics", "Format", "Delivery", "Preferred date", "Location", "Budget", "Assigned", "Follow-up", "Internal notes", "Actions"], rows);
     }
     async function loadLeads() {
       $("title").textContent = "Contact Leads";
@@ -1676,6 +1770,7 @@ export function adminPage(request: Request, env: Env) {
       if (state.view === "bookings") return loadBookings();
       if (state.view === "whatsapp") return loadWhatsappClicks();
       if (state.view === "kalix") return loadKalixClicks();
+      if (state.view === "communityInquiries") return loadCommunityInquiries();
       if (state.view === "classSignups") return loadClassSignups();
       if (state.view === "ads") return renderAds();
       return loadAnalyticsView();
@@ -1698,7 +1793,7 @@ export function adminPage(request: Request, env: Env) {
     document.querySelectorAll("[data-view]").forEach(function (button) { button.addEventListener("click", function () { setView(button.dataset.view); }); });
     document.querySelectorAll("[data-mobile-view]").forEach(function (button) { button.addEventListener("click", function () { setView(button.dataset.mobileView); }); });
     $("mobile-more").addEventListener("click", function () {
-      openMobileSheet("More", '<div class="mobile-menu"><button type="button" data-more-view="whatsapp">WhatsApp opens</button><button type="button" data-more-view="kalix">Kalix opens</button><button type="button" data-more-view="leads">Contact leads</button><button type="button" data-more-view="members">Members</button><button type="button" id="mobile-email-system">Email system</button><button type="button" class="danger" id="mobile-sign-out">Sign out</button></div><div class="mobile-detail-note">Signed in as ' + escapeHtml(state.admin?.email || "") + '</div>');
+      openMobileSheet("More", '<div class="mobile-menu"><button type="button" data-more-view="communityInquiries">Community inquiries</button><button type="button" data-more-view="whatsapp">WhatsApp opens</button><button type="button" data-more-view="kalix">Kalix opens</button><button type="button" data-more-view="leads">Contact leads</button><button type="button" data-more-view="members">Members</button><button type="button" id="mobile-email-system">Email system</button><button type="button" class="danger" id="mobile-sign-out">Sign out</button></div><div class="mobile-detail-note">Signed in as ' + escapeHtml(state.admin?.email || "") + '</div>');
       document.querySelectorAll("[data-more-view]").forEach(function (button) { button.addEventListener("click", function () { setView(button.dataset.moreView); }); });
       $("mobile-email-system").addEventListener("click", openMobileEmailSystem);
       $("mobile-sign-out").addEventListener("click", function () { $("logout").click(); });

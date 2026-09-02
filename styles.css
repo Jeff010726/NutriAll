@@ -5560,7 +5560,7 @@ body { font-size: 18px; line-height: 1.72; }
 /* Community program contracting */
 .community-home-band { width: 100%; min-height: 590px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); background: #edf3ef; }
 .community-home-media { position: relative; min-height: 590px; overflow: hidden; }
-.community-home-media img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center; }
+.community-home-media img { width: 100%; height: 100%; display: block; object-fit: cover; object-position: center 58%; }
 .community-home-media > span { position: absolute; left: 28px; bottom: 28px; max-width: calc(100% - 56px); padding: 11px 14px; border: 1px solid rgba(255,255,255,.76); border-radius: 6px; background: rgba(255,255,255,.88); color: var(--clinic-green); font-size: 14px; font-weight: 800; line-height: 1.4; backdrop-filter: blur(10px); }
 .community-home-copy { padding: 82px max(28px, calc((100vw - 1240px) / 2)) 82px 64px; align-self: center; }
 .community-home-copy h2 { max-width: 610px; font-size: 40px; line-height: 1.16; }
@@ -5578,7 +5578,7 @@ body { font-size: 18px; line-height: 1.72; }
 .community-gallery-heading > p:last-child { grid-column: 2; grid-row: 1 / span 2; max-width: 650px; margin: 0; align-self: end; color: var(--clinic-muted); font-size: 18px; line-height: 1.72; }
 .community-gallery-rows { display: grid; gap: 16px; }
 .community-gallery-rail { width: 100%; overflow: hidden; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%); mask-image: linear-gradient(to right, transparent 0, #000 4%, #000 96%, transparent 100%); }
-.community-gallery-track { width: max-content; display: flex; animation: community-gallery-scroll 174s linear infinite; will-change: transform; }
+.community-gallery-track { width: max-content; display: flex; animation: community-gallery-scroll 104s linear infinite; will-change: transform; }
 .community-gallery-rail-2 .community-gallery-track { animation-duration: 198s; animation-direction: reverse; }
 .community-gallery-group { display: flex; gap: 16px; padding-right: 16px; }
 .community-gallery-item { height: 300px; flex: 0 0 auto; margin: 0; overflow: hidden; border-radius: 6px; background: #e7ece9; }
@@ -5629,6 +5629,63 @@ body { font-size: 18px; line-height: 1.72; }
 .community-process li > span { color: var(--clinic-coral-dark); font-size: 14px; font-weight: 850; }
 .community-process li p { margin: 30px 0 0; color: var(--clinic-text); font-size: 18px; line-height: 1.65; }
 .community-final-cta { margin-bottom: 92px; }
+.community-final-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+.clinic-capability-action { margin-top: 28px; display: flex; justify-content: center; }
+.community-gallery-link { grid-column: 2; justify-self: start; color: var(--clinic-green); font-size: 16px; font-weight: 800; text-underline-offset: 4px; }
+
+/* Service directory, organization inquiries, events, and policy pages. */
+.expansion-page { background: #fff; }
+.expansion-hero { width: min(1240px, calc(100% - 56px)); min-height: 440px; margin: 0 auto; padding: 82px 0; display: flex; align-items: center; border-bottom: 1px solid var(--clinic-line); }
+.expansion-hero.compact { min-height: 330px; }
+.expansion-hero > div { max-width: 850px; }
+.expansion-hero h1 { max-width: 820px; margin: 10px 0 22px; font-size: 50px; line-height: 1.1; }
+.expansion-hero p:not(.eyebrow) { max-width: 760px; margin: 0 0 28px; color: var(--clinic-muted); font-size: 19px; line-height: 1.75; }
+.services-groups { width: min(1240px, calc(100% - 56px)); margin: 0 auto; padding: 74px 0 92px; }
+.service-group { padding: 34px 0 46px; display: grid; grid-template-columns: minmax(220px,.38fr) minmax(0,1fr); gap: 54px; border-bottom: 1px solid var(--clinic-line); }
+.service-group h2 { margin: 4px 0 0; font-size: 28px; line-height: 1.25; }
+.service-group > div { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.service-directory-item { min-height: 154px; padding: 22px; display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; border: 1px solid var(--clinic-line); border-radius: 8px; color: inherit; text-decoration: none; }
+.service-directory-item:hover { border-color: #9db7ab; background: #f6f9f7; }
+.service-directory-item strong, .service-directory-item small { display: block; }
+.service-directory-item strong { color: var(--clinic-ink); font-size: 20px; }
+.service-directory-item small { margin-top: 9px; color: var(--clinic-muted); font-size: 15px; line-height: 1.65; }
+.service-directory-item svg { flex: 0 0 auto; color: var(--clinic-coral); }
+.service-diabetes-route { width: min(1240px, calc(100% - 56px)); margin: 0 auto 92px; padding: 48px; display: grid; grid-template-columns: minmax(0,1fr) auto; align-items: center; gap: 40px; background: #edf3ef; }
+.service-diabetes-route h2 { margin: 8px 0 12px; font-size: 32px; }
+.service-diabetes-route p:not(.eyebrow) { max-width: 760px; margin: 0; color: var(--clinic-muted); }
+.community-inquiry-shell { width: min(980px, calc(100% - 56px)); margin: 0 auto; padding: 68px 0 100px; }
+.community-inquiry-form { padding: 34px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px 22px; border: 1px solid var(--clinic-line); border-radius: 8px; background: #fff; }
+.community-inquiry-form label { margin: 0; color: var(--clinic-ink); font-size: 16px; }
+.community-inquiry-form .wide { grid-column: 1 / -1; }
+.community-inquiry-form input, .community-inquiry-form select, .community-inquiry-form textarea { width: 100%; min-height: 48px; padding: 11px 12px; border: 1px solid #b9c9c1; border-radius: 6px; background: #fff; color: var(--clinic-ink); font: inherit; }
+.community-inquiry-form textarea { min-height: 124px; resize: vertical; }
+.community-inquiry-form .community-consent { display: grid; grid-template-columns: 24px minmax(0,1fr); align-items: start; gap: 10px; }
+.community-consent input { width: 22px; min-height: 22px; margin: 3px 0 0; }
+.community-inquiry-form > .button { width: fit-content; min-width: 240px; }
+.community-inquiry-form .form-disclaimer { margin: 0; }
+.community-inquiry-form .form-disclaimer a { color: var(--clinic-green); font-weight: 800; }
+.events-grid { width: min(1240px, calc(100% - 56px)); margin: 0 auto; padding: 64px 0 104px; columns: 3; column-gap: 18px; }
+.events-grid figure { margin: 0 0 26px; break-inside: avoid; }
+.events-grid img { width: 100%; aspect-ratio: 4 / 3; display: block; border-radius: 6px; object-fit: cover; }
+.events-grid figure:nth-child(4n+1) img { aspect-ratio: 3 / 4; }
+.events-grid figcaption { padding: 10px 2px 0; color: var(--clinic-text); font-size: 16px; font-weight: 750; }
+.policy-page { width: min(1040px, calc(100% - 56px)); margin: 0 auto; padding: 84px 0 110px; display: grid; grid-template-columns: minmax(260px,.55fr) minmax(0,1fr); gap: 80px; }
+.policy-page header { position: sticky; top: 120px; align-self: start; }
+.policy-page h1 { margin: 10px 0 20px; font-size: 45px; line-height: 1.12; }
+.policy-page header > p:not(.eyebrow) { color: var(--clinic-muted); font-size: 17px; }
+.policy-page header small { display: block; margin-top: 18px; color: var(--clinic-muted); }
+.policy-page > div section { padding: 0 0 28px; margin-bottom: 28px; border-bottom: 1px solid var(--clinic-line); }
+.policy-page h2 { margin: 0 0 10px; font-size: 24px; }
+.policy-page section p, .policy-contact { margin: 0; color: var(--clinic-text); font-size: 17px; line-height: 1.75; }
+.policy-contact { font-weight: 750; }
+.diabetes-choice-grid { width: min(1100px, calc(100% - 56px)); margin: 74px auto 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.diabetes-choice-grid article { padding: 38px; border: 1px solid var(--clinic-line); border-radius: 8px; }
+.diabetes-choice-grid article:last-child { background: #edf3ef; }
+.diabetes-choice-grid h2 { margin: 8px 0 20px; font-size: 30px; }
+.diabetes-choice-grid ul { min-height: 210px; margin: 0 0 26px; padding: 0; display: grid; gap: 13px; list-style: none; }
+.diabetes-choice-grid li { display: flex; align-items: flex-start; gap: 10px; color: var(--clinic-text); font-size: 17px; }
+.diabetes-choice-grid li svg { flex: 0 0 auto; margin-top: 3px; color: var(--clinic-green); }
+.external-service-note { width: min(1100px, calc(100% - 56px)); margin: 0 auto 100px; color: var(--clinic-muted); font-size: 15px; }
 
 @media (max-width: 900px) {
   .community-home-band { min-height: 0; grid-template-columns: 1fr; }
@@ -5636,6 +5693,12 @@ body { font-size: 18px; line-height: 1.72; }
   .community-home-copy { padding: 56px max(28px, calc((100vw - 760px) / 2)); }
   .community-gallery-heading { grid-template-columns: 1fr; gap: 16px; }
   .community-gallery-heading .eyebrow, .community-gallery-heading h2, .community-gallery-heading > p:last-child { grid-column: 1; grid-row: auto; }
+  .community-gallery-link { grid-column: 1; }
+  .service-group { grid-template-columns: 1fr; gap: 22px; }
+  .service-diabetes-route { grid-template-columns: 1fr; }
+  .events-grid { columns: 2; }
+  .policy-page { grid-template-columns: 1fr; gap: 48px; }
+  .policy-page header { position: static; }
   .community-program-hero { grid-template-columns: 1fr; gap: 38px; }
   .community-program-hero img { height: auto; aspect-ratio: 16 / 10; }
   .community-audiences > div:last-child { grid-template-columns: 1fr 1fr; }
@@ -5687,6 +5750,30 @@ body { font-size: 18px; line-height: 1.72; }
   .community-process li:last-child { border-bottom: 0; }
   .community-process li p { margin-top: 18px; font-size: 17px; }
   .community-final-cta { width: 100%; margin-bottom: 0; }
+  .community-final-actions { display: grid; }
+  .expansion-hero, .services-groups, .service-diabetes-route, .community-inquiry-shell, .events-grid, .policy-page, .diabetes-choice-grid, .external-service-note { width: calc(100% - 32px); }
+  .expansion-hero { min-height: 0; padding: 52px 0; }
+  .expansion-hero h1 { font-size: 36px; }
+  .expansion-hero p:not(.eyebrow) { font-size: 17px; }
+  .services-groups { padding: 42px 0 64px; }
+  .service-group { padding: 26px 0 34px; }
+  .service-group h2 { font-size: 25px; }
+  .service-group > div { grid-template-columns: 1fr; }
+  .service-directory-item { min-height: 0; padding: 18px; }
+  .service-diabetes-route { margin-bottom: 64px; padding: 30px 22px; }
+  .service-diabetes-route h2 { font-size: 27px; }
+  .community-inquiry-shell { padding: 36px 0 72px; }
+  .community-inquiry-form { padding: 20px 16px; grid-template-columns: 1fr; }
+  .community-inquiry-form .wide { grid-column: 1; }
+  .community-inquiry-form > .button { width: 100%; min-width: 0; }
+  .events-grid { padding: 34px 0 72px; columns: 1; }
+  .events-grid img, .events-grid figure:nth-child(4n+1) img { aspect-ratio: 4 / 3; }
+  .policy-page { padding: 54px 0 78px; }
+  .policy-page h1 { font-size: 34px; }
+  .diabetes-choice-grid { margin-top: 44px; grid-template-columns: 1fr; }
+  .diabetes-choice-grid article { padding: 26px 20px; }
+  .diabetes-choice-grid ul { min-height: 0; }
+  .external-service-note { margin-bottom: 72px; }
 }
 
 @media (min-width: 901px) and (max-width: 1180px) {

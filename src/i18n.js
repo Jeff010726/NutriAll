@@ -357,6 +357,71 @@ Object.assign(resources.es.translation.community, {
   galleryVideoLabel: "Momentos de NutriAll en una feria de salud comunitaria",
 });
 
+Object.assign(resources.en.translation.nav, { allServices: "All nutrition services", events: "Community events", diabetes: "Diabetes education", privacy: "Privacy", terms: "Website terms", book: "Book a free 15-minute consultation", weightIntro: "Browse weight care and the full range of nutrition services." });
+Object.assign(resources["zh-CN"].translation.nav, { allServices: "全部营养服务", events: "社区活动", diabetes: "糖尿病专项教育", privacy: "隐私说明", terms: "网站使用说明", book: "免费预约 15 分钟咨询", weightIntro: "查看体重管理及其他营养服务。" });
+Object.assign(resources["zh-TW"].translation.nav, { allServices: "全部營養服務", events: "社區活動", diabetes: "糖尿病專項教育", privacy: "隱私說明", terms: "網站使用說明", book: "免費預約 15 分鐘諮詢" });
+Object.assign(resources.es.translation.nav, { allServices: "Todos los servicios", events: "Eventos comunitarios", diabetes: "Educación sobre diabetes", privacy: "Privacidad", terms: "Términos del sitio", book: "Consulta gratuita de 15 minutos", weightIntro: "Consulte control del peso y todos los servicios de nutrición." });
+
+Object.assign(resources.en.translation.home, {
+  title: "Multilingual nutrition care with registered dietitians",
+  intro: "We help with weight loss, GLP-1 treatment, PCOS, digestive symptoms, heart health, and other nutrition concerns. Visits are practical, multilingual, and built around the food you already eat.",
+  primary: "Book a free 15-minute consultation", journeyAction: "Book a free 15-minute consultation", allServices: "See all nutrition services",
+  processTitle: "Here is what happens after you contact us.", processIntro: "We review your needs, check relevant insurance benefits, and arrange the right next appointment.",
+  clinicalTitle: "Three ways to get help with weight management.", clinicalIntro: "Choose one-to-one nutrition, GLP-1 support, or medical weight care. We can help you decide during the free consultation.",
+  teamEyebrow: "Our care team", teamTitle: "Meet the dietitians who will work with you.", teamText: "Our dietitians explain the medical details clearly and adjust recommendations to your food, culture, schedule, symptoms, and health history.",
+  finalTitle: "Have questions about the service or your insurance?", finalText: "Use the free 15-minute consultation to tell us what you need and ask what the next appointment may involve.", finalButton: "Book a free 15-minute consultation",
+});
+Object.assign(resources["zh-CN"].translation.home, {
+  title: "多语言注册营养师咨询",
+  intro: "我们可以帮助处理减重、GLP-1 用药期间的饮食、多囊、肠胃不适、心脏健康和其他营养问题。建议会结合你平时吃的食物、语言、作息和健康情况。",
+  primary: "免费预约 15 分钟咨询", journeyAction: "免费预约 15 分钟咨询", allServices: "查看全部营养服务",
+  pathsEyebrow: "按需要查找服务", pathsTitle: "你现在想咨询哪方面的营养问题？", pathsIntro: "可以直接选择一个主题。拿不准该选哪项时，我们会在免费咨询中帮你确认。", needsAction: "请帮我确认该预约哪项服务",
+  processEyebrow: "联系后会怎样", processTitle: "提交申请后，我们会核对需求、保险和预约安排。", processIntro: "你会在正式服务开始前知道接下来联系谁、需要准备什么，以及可能涉及的费用。",
+  clinicalEyebrow: "体重管理服务", clinicalTitle: "体重管理目前有三种预约方式。", clinicalIntro: "可以选择一对一营养咨询、GLP-1 营养支持或医学减重。免费咨询时也可以请我们协助判断。",
+  teamEyebrow: "营养师团队", teamTitle: "先了解会和你一起工作的营养师。", teamText: "营养师会把医学和营养内容说明白，再根据你平时的饮食、文化、作息、症状和健康史调整建议。",
+  finalTitle: "对服务或保险还有问题？", finalText: "可以预约一次免费的 15 分钟咨询，说明你的需要，并了解下一次正式预约会怎样安排。", finalButton: "免费预约 15 分钟咨询",
+});
+Object.assign(resources.es.translation.home, {
+  title: "Atención nutricional multilingüe con dietistas registradas",
+  intro: "Ayudamos con peso, GLP-1, SOP, síntomas digestivos, salud cardíaca y otras necesidades nutricionales. Las visitas se adaptan a sus alimentos, idioma, horario e historial de salud.",
+  primary: "Consulta gratuita de 15 minutos", journeyAction: "Consulta gratuita de 15 minutos", allServices: "Ver todos los servicios",
+  processTitle: "Esto ocurre después de contactarnos.", processIntro: "Revisamos sus necesidades, verificamos los beneficios relevantes y coordinamos la cita adecuada.",
+  clinicalTitle: "Tres opciones para recibir ayuda con el peso.", clinicalIntro: "Puede elegir nutrición individual, apoyo con GLP-1 o atención médica del peso. Le ayudamos a decidir durante la consulta gratuita.",
+  teamEyebrow: "Equipo de atención", teamTitle: "Conozca a las dietistas que trabajarán con usted.", teamText: "Explicamos los detalles médicos y adaptamos las recomendaciones a su comida, cultura, horario, síntomas e historial.",
+  finalTitle: "¿Tiene preguntas sobre el servicio o el seguro?", finalText: "Use la consulta gratuita para explicar qué necesita y saber cómo sería la próxima cita.", finalButton: "Consulta gratuita de 15 minutos",
+});
+Object.assign(resources.en.translation.faq, { cta1: "Book a free 15-minute consultation", cta2: "Book a free 15-minute consultation", cta3: "Book a free 15-minute consultation", cta4: "Book a free 15-minute consultation", cta5: "Book a free 15-minute consultation" });
+Object.assign(resources["zh-CN"].translation.faq, { cta1: "免费预约 15 分钟咨询", cta2: "免费预约 15 分钟咨询", cta3: "免费预约 15 分钟咨询", cta4: "免费预约 15 分钟咨询", cta5: "免费预约 15 分钟咨询" });
+Object.assign(resources.es.translation.faq, { cta1: "Consulta gratuita de 15 minutos", cta2: "Consulta gratuita de 15 minutos", cta3: "Consulta gratuita de 15 minutos", cta4: "Consulta gratuita de 15 minutos", cta5: "Consulta gratuita de 15 minutos" });
+resources.en.translation.mobileCta = "Free 15-minute consultation";
+resources["zh-CN"].translation.mobileCta = "免费预约 15 分钟咨询";
+resources.es.translation.mobileCta = "Consulta gratuita de 15 minutos";
+
+Object.assign(resources.en.translation.community, { contractBadge: "Course planning, dietitian speaker, and event delivery", title: "Need a nutrition class for your community or organization?", intro: "NutriAll works with churches, community and senior centers, nonprofits, employers, and event organizers. Tell us who will attend, the topic, language, timing, and budget; we will reply with an appropriate format and scope.", book: "Ask about a community program", homeTitle: "Planning a nutrition class for members or residents?", homeText: "NutriAll can provide the topic plan, registered dietitian, teaching materials, and live questions for a single class, a series, or a larger event.", audiencesTitle: "We work with the following types of organizations.", formatsTitle: "Choose a single class, a series, or support for a larger event.", deliveryTitle: "NutriAll can manage the course plan, speaker, materials, and delivery.", processTitle: "Send us the event details to get started.", finalTitle: "Do you need a dietitian for an upcoming class or health event?", finalText: "Share the organization, audience, preferred language, topic, timing, and budget. We will contact you to discuss scope and availability.", eventsAction: "View classes and events", galleryTitle: "Recent community classes and professional events", galleryIntro: "A selection of classes, health fairs, outreach events, and professional presentations led or attended by the NutriAll team." });
+Object.assign(resources["zh-CN"].translation.community, { contractBadge: "课程策划、营养师讲师和现场执行", title: "需要为社区、教会或机构安排营养课程？", intro: "NutriAll 与教会、社区和老人中心、非营利机构、企业及活动主办方合作。请告诉我们参与人群、主题、语言、时间和预算，我们会回复可行的课程形式和承办范围。", book: "咨询社区课程合作", homeTitle: "需要为会员或居民安排营养课程？", homeText: "单场讲座、系列课程或大型活动都可以合作。NutriAll 可以负责课程主题、注册营养师讲师、讲义和现场问答。", audiencesTitle: "以下机构都可以联系我们讨论课程。", formatsTitle: "可以安排单场讲座、系列课程，也可以配合大型活动。", deliveryTitle: "NutriAll 可以负责课程策划、讲师、材料和现场执行。", processTitle: "请先把活动需求发给我们。", finalTitle: "近期有课程或健康活动需要营养师参与？", finalText: "请填写机构、参与人群、语言、主题、时间和预算。我们会联系你确认范围和档期。", eventsAction: "查看课程与活动照片", galleryTitle: "近期社区课程与专业活动", galleryIntro: "这里展示 NutriAll 团队参与的社区课程、健康活动和专业会议。" });
+Object.assign(resources.es.translation.community, { contractBadge: "Planificación, dietista y ejecución", title: "¿Necesita una clase de nutrición para su comunidad u organización?", intro: "Trabajamos con iglesias, centros comunitarios, organizaciones, empresas y eventos. Comparta el público, tema, idioma, fecha y presupuesto; responderemos con el formato y alcance disponibles.", book: "Consultar sobre un programa", homeTitle: "¿Está organizando una clase para miembros o residentes?", homeText: "NutriAll puede encargarse del tema, la dietista, los materiales y las preguntas para una clase, una serie o un evento.", audiencesTitle: "Trabajamos con estos tipos de organizaciones.", formatsTitle: "Puede solicitar una clase, una serie o apoyo para un evento.", deliveryTitle: "NutriAll puede coordinar el plan, la ponente, los materiales y la sesión.", processTitle: "Envíenos los datos del evento para comenzar.", finalTitle: "¿Necesita una dietista para una clase o evento?", finalText: "Comparta organización, público, idioma, tema, fecha y presupuesto. Le contactaremos sobre alcance y disponibilidad.", eventsAction: "Ver clases y eventos", galleryTitle: "Clases comunitarias y eventos profesionales recientes", galleryIntro: "Una selección de clases, ferias de salud, actividades comunitarias y presentaciones profesionales del equipo NutriAll." });
+
+Object.assign(resources.en.translation.book, { privacyLink: "Read our privacy notice." });
+Object.assign(resources["zh-CN"].translation.book, { privacyLink: "查看隐私说明。" });
+Object.assign(resources["zh-TW"].translation.book, { privacyLink: "查看隱私說明。" });
+Object.assign(resources.es.translation.book, { privacyLink: "Lea el aviso de privacidad." });
+Object.assign(resources.en.translation.about, { readProfile: "Read profile", storyTitle: "Why we started NutriAll", cta: "Book a free 15-minute consultation" });
+Object.assign(resources.en.translation.about, { title: "Registered dietitians for multilingual, culturally informed care", intro: "The team works across weight management, GLP-1 nutrition, digestive health, women's health, chronic conditions, sports nutrition, and eating concerns.", valuesTitle: "How we approach nutrition care" });
+Object.assign(resources["zh-CN"].translation.about, { readProfile: "查看介绍", storyTitle: "我们为什么创办 NutriAll", cta: "免费预约 15 分钟咨询", title: "提供多语言服务的注册营养师团队", intro: "团队的服务范围包括体重管理、GLP-1 营养、肠胃健康、女性健康、慢性病、运动营养和进食问题。", valuesTitle: "我们的营养服务原则", storyParagraphs: ["我们见过一位奶奶在诊室里礼貌地点头。她愿意认真听，可当时没有人会说粤语或福州话，她几乎听不懂那些医学术语。", "一些妈妈拿到严格的饮食单，上面全是她们平时不会做的食物，熟悉的家乡菜也被笼统地归为不健康。还有一些家庭因为自费金额太高，放弃了原本可以使用的医学营养治疗（MNT）。", "三位营养师因此共同创办 NutriAll，希望减少语言、饮食文化和费用带来的阻碍，让家庭更容易使用专业营养服务。", "创办初期，我们花了很多时间研究保险网络，帮助符合条件的客户使用保险，并在服务开始前说明可能的费用。我们也把营养知识改成日常饭桌上能操作的方法，并接收来自 NYU、Columbia University、CUNY 等院校的年轻临床人员实习和学习。", "目前团队可以用英语、普通话、粤语、福州话和客家话提供一对一服务。咨询时会同时了解语言、饮食习惯、作息和健康情况，再讨论接下来可以做哪些调整。"] });
+Object.assign(resources["zh-TW"].translation.about, { readProfile: "查看介紹", storyTitle: "我們為什麼創辦 NutriAll", cta: "免費預約 15 分鐘諮詢" });
+Object.assign(resources.es.translation.about, { readProfile: "Ver perfil", storyTitle: "Por qué fundamos NutriAll", cta: "Consulta gratuita de 15 minutos" });
+Object.assign(resources.es.translation.about, { title: "Dietistas registradas con atención multilingüe y cultural", intro: "El equipo trabaja en peso, nutrición con GLP-1, digestión, salud de la mujer, enfermedades crónicas, deporte y problemas alimentarios.", valuesTitle: "Cómo ofrecemos la atención nutricional" });
+resources.en.translation.weightServices.insurance.title = "Insurance Coverage";
+resources["zh-CN"].translation.weightServices.insurance.title = "保险报销";
+resources["zh-TW"].translation.weightServices.insurance.title = "保險報銷";
+resources.es.translation.weightServices.insurance.title = "Cobertura del seguro";
+Object.assign(resources.en.translation.weightServices.insurance, { summary: "Review possible coverage before scheduling care.", points: ["Dietitian visits: network, diagnosis, visit limits, and referral rules", "Medical weight visits: medical benefits and specialist cost sharing", "GLP-1 medicines: pharmacy coverage checked separately from visits", "Prior authorization or referral requirements when the plan requires them"], steps: ["Share the insurance details you are comfortable providing", "We check benefits related to the service you requested", "We explain the available next step before care begins"], note: "Coverage and out-of-pocket cost vary by plan, network, diagnosis, eligibility, service, and location. A benefits check is not a guarantee of payment." });
+Object.assign(resources["zh-CN"].translation.weightServices.insurance, { summary: "预约前先了解可能适用的保险报销。", points: ["营养师就诊：查看网络、诊断、次数限制和转诊规则", "医学减重就诊：查看医疗福利和专科就诊费用", "GLP-1 药物：处方药福利需要与就诊费用分开查询", "保险要求时确认预授权或转诊"], steps: ["填写你愿意提供的保险资料", "我们查询与你申请服务相关的福利", "开始服务前说明可以安排的下一步"], note: "报销和自付费用取决于保险计划、网络、诊断、资格、服务和所在地。保险福利查询不等于保险公司保证付款。" });
+Object.assign(resources.es.translation.weightServices.insurance, { summary: "Revise la posible cobertura antes de programar la atención.", points: ["Visitas de nutrición: red, diagnóstico, límites y referidos", "Visitas médicas de peso: beneficios médicos y costos de especialista", "Medicamentos GLP-1: la cobertura de farmacia se revisa por separado", "Autorización previa o referido cuando el plan lo exige"], steps: ["Comparta los datos del seguro que desee proporcionar", "Revisamos los beneficios relacionados con el servicio", "Explicamos el siguiente paso antes de comenzar"], note: "La cobertura y el costo dependen del plan, red, diagnóstico, elegibilidad, servicio y ubicación. Verificar beneficios no garantiza el pago." });
+resources.en.translation.footer.note = "Nutrition care for weight, medications, digestive health, women's health, and chronic conditions.";
+resources["zh-CN"].translation.footer.note = "提供体重、用药期间饮食、肠胃、女性健康和慢性病相关营养服务。";
+resources.es.translation.footer.note = "Atención nutricional para peso, medicamentos, digestión, salud de la mujer y enfermedades crónicas.";
+
 i18n.use(LanguageDetector).use(initReactI18next).init({
   resources,
   fallbackLng: "en",
