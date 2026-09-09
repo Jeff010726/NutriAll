@@ -161,7 +161,8 @@ test("weight, GLP-1, and medical weight pages include the full guide", async ({ 
   await page.setViewportSize({ width: 390, height: 844 });
   for (const route of ["one-to-one-weight-loss", "glp1-care", "medical-weight-loss"]) {
     await page.goto(`./${route}?lng=en`, { waitUntil: "networkidle" });
-    await expect(page.locator(".clinical-service-hero").getByRole("link", { name: "Book Now" })).toHaveAttribute("href", "https://app.kalixhealth.com/calendar?calendar_token=06d2246dd9ed72a6228706d8c2dcac8f");
+    await expect(page.locator(".clinical-service-actions a")).toHaveCount(1);
+    await expect(page.locator(".clinical-service-actions a")).toHaveAttribute("href", /^\/book\?service=/);
     await expect(page.locator(".care-guide-overview-copy p")).toHaveCount(2);
     await expect(page.locator(".care-guide-focus-grid article")).toHaveCount(4);
     await expect(page.locator(".care-guide-faq details").first()).toBeVisible();
@@ -385,7 +386,8 @@ test("validated booking form submits the expected contract", async ({ page }) =>
   });
   await page.goto("./?utm_source=facebook&utm_medium=paid_social&utm_campaign=weight-loss", { waitUntil: "networkidle" });
   await page.goto("./book?service=glp1", { waitUntil: "networkidle" });
-  await expect(page.getByText("GLP-1 support", { exact: true })).toBeVisible();
+  await expect(page.locator("h1")).toHaveText("Book a free 15-minute phone consultation");
+  await expect(page.locator(".booking-hero-new, .insurance-logo-band")).toHaveCount(0);
   const pixelQueueBeforeSubmit = await page.evaluate(() => window.fbq?.queue || []);
   expect(pixelQueueBeforeSubmit).not.toContainEqual(["trackCustom", "ExternalLinkClick"]);
   await page.getByLabel("Full name").fill("Jane Test");
@@ -421,7 +423,7 @@ test("legacy booking confirmation resolves to the conversion route", async ({ pa
   await expect(page.getByRole("heading", { name: "We will be in touch shortly." })).toBeVisible();
 });
 
-test("WhatsApp booking route records attribution before redirecting", async ({ page }) => {
+test("legacy WhatsApp links lead to the form without handoff or conversion events", async ({ page }) => {
   const analyticsEvents = [];
   await page.unroute("**/api/analytics/collect");
   await page.route("**/api/analytics/collect", async (route) => {
@@ -430,21 +432,30 @@ test("WhatsApp booking route records attribution before redirecting", async ({ p
   });
   await page.route("https://wa.me/**", (route) => route.abort());
   await page.goto("./booking-whatsapp?utm_source=facebook&utm_medium=paid_social&utm_campaign=weight-loss&utm_content=creative-01", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { name: "Opening WhatsApp..." })).toBeVisible();
-  await expect.poll(() => analyticsEvents.some((event) => event.eventType === "whatsapp_booking_click")).toBe(true);
-  const event = analyticsEvents.find((item) => item.eventType === "whatsapp_booking_click");
+  await expect(page).toHaveURL(/\/book\?utm_source=facebook/);
+  await expect(page.getByLabel("Full name")).toBeVisible();
+  await expect.poll(() => analyticsEvents.some((event) => event.eventType === "page_view")).toBe(true);
+  const event = analyticsEvents.find((item) => item.eventType === "page_view");
   expect(event.utmCampaign).toBe("weight-loss");
   expect(event.utmContent).toBe("creative-01");
   const pixelQueue = await page.evaluate(() => window.fbq?.queue || []);
-  expect(pixelQueue).toContainEqual(["trackCustom", "WhatsAppOpen"]);
+  expect(analyticsEvents.some((item) => item.eventType === "whatsapp_booking_click")).toBe(false);
+  expect(pixelQueue).not.toContainEqual(["trackCustom", "WhatsAppOpen"]);
   expect(pixelQueue).not.toContainEqual(["trackCustom", "ExternalLinkClick"]);
 });
 
-test("Kalix booking uses its own Meta event", async ({ page }) => {
-  await page.goto("./glp1-care", { waitUntil: "networkidle" });
-  await page.getByRole("link", { name: "Book Now" }).dispatchEvent("click");
+test("service booking links open the local form instead of Kalix", async ({ page }) => {
+  for (const path of ["/", "/one-to-one-weight-loss", "/glp1-care", "/medical-weight-loss", "/insurance", "/about", "/services", "/conditions/pcos"]) {
+    await page.goto(`.${path}?lng=en`, { waitUntil: "networkidle" });
+    await expect(page.locator('a[href*="kalixhealth"], a[href*="wa.me"], a[href*="booking-whatsapp"], a[href*="api.whatsapp"]')).toHaveCount(0);
+    await expect(page.locator('a[href^="/book"]').first()).toBeVisible();
+  }
+  await page.goto("./glp1-care?lng=en", { waitUntil: "networkidle" });
+  await page.locator(".clinical-service-actions a").click();
+  await expect(page).toHaveURL(/\/book\?service=glp1$/);
+  await expect(page.getByLabel("Full name")).toBeVisible();
   const pixelQueue = await page.evaluate(() => window.fbq?.queue || []);
-  expect(pixelQueue).toContainEqual(["trackCustom", "KalixOpen"]);
+  expect(pixelQueue).not.toContainEqual(["trackCustom", "KalixOpen"]);
   expect(pixelQueue).not.toContainEqual(["trackCustom", "ExternalLinkClick"]);
 });
 
@@ -452,8 +463,35 @@ test("mobile booking form is usable without overflow", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("./book?service=one-to-one", { waitUntil: "networkidle" });
   await expect(page.getByLabel("Full name")).toBeVisible();
+  const nameBox = await page.getByLabel("Full name").boundingBox();
+  expect(nameBox.y + nameBox.height).toBeLessThan(600);
+  await expect(page.locator(".booking-hero-new, .insurance-logo-band, .mobile-booking-bar, .clinic-nav")).toHaveCount(0);
   await expectNoHorizontalOverflow(page);
   await page.screenshot({ path: "test-results/booking-mobile.png", fullPage: true });
+  for (const language of ["zh-CN", "es"]) {
+    await page.goto(`./book/?lng=${language}`, { waitUntil: "networkidle" });
+    await expect(page.locator("#booking-name")).toBeVisible();
+    await expect(page.locator(".mobile-booking-bar")).toHaveCount(0);
+    await expectNoHorizontalOverflow(page);
+  }
+});
+
+test("failed booking keeps entries and does not report success or suggest WhatsApp", async ({ page }) => {
+  await page.route("**/api/contact", (route) => route.fulfill({ status: 500, json: { error: "Please retry" } }));
+  await page.goto("./book?lng=en", { waitUntil: "networkidle" });
+  await page.getByLabel("Full name").fill("Jane Test");
+  await page.getByLabel("Email").fill("jane@example.com");
+  await page.getByLabel("Phone").fill("2125550198");
+  await page.getByLabel("Age", { exact: true }).fill("42");
+  await page.getByLabel("Preferred language").selectOption("English");
+  await page.getByLabel("I'm a new patient").check();
+  await page.getByLabel("Best time to reach you").selectOption("10AM - 12PM");
+  await page.getByRole("button", { name: "Request my free consultation" }).click();
+  await expect(page.getByRole("alert")).toContainText("please try again");
+  await expect(page.getByLabel("Full name")).toHaveValue("Jane Test");
+  await expect(page.getByRole("button", { name: "Request my free consultation" })).toBeEnabled();
+  await expect(page.locator("main")).not.toContainText("WhatsApp");
+  expect(await page.evaluate(() => window.fbq?.queue || [])).not.toContainEqual(["trackCustom", "ExternalLinkClick"]);
 });
 
 test("about page presents one unified dietitian team", async ({ page }) => {

@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { pageTitles } from "../lib";
+import { asset, pageTitles } from "../lib";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import { SiteLink } from "./SiteLink";
@@ -10,7 +11,7 @@ import { useTranslation } from "react-i18next";
 
 const defaultDescription = "Physician-led medical weight loss, GLP-1 care, and one-to-one nutrition support from NutriAll.";
 
-export function Layout({ children, description = defaultDescription, footerProps, title }) {
+export function Layout({ children, description = defaultDescription, footerProps, title, bookingOnly = false }) {
   const { i18n, t } = useTranslation();
   const { pathname, hash } = useLocation();
   useEffect(() => {
@@ -41,6 +42,7 @@ export function Layout({ children, description = defaultDescription, footerProps
     return () => window.clearTimeout(timer);
   }, [pathname]);
 
-  const hideMobileBookingBar = ["/book", "/booking-redirect", "/booking-whatsapp", "/community-programs/inquiry", "/community-programs/thanks"].includes(pathname);
+  const hideMobileBookingBar = ["/book", "/booking-redirect", "/booking-whatsapp", "/community-programs/inquiry", "/community-programs/thanks"].includes(pathname.replace(/\/+$/, ""));
+  if (bookingOnly) return <div className="booking-simple-shell"><header className="booking-simple-header"><SiteLink to="/" aria-label="NutriAll Wellness"><img src={asset("nutriall-logo.png")} alt="NutriAll Wellness" /></SiteLink><LanguageSwitcher /></header>{children}<footer className="booking-simple-footer"><span>© {new Date().getFullYear()} NutriAll Wellness</span><SiteLink to="/privacy">{t("nav.privacy")}</SiteLink><SiteLink to="/terms">{t("nav.terms")}</SiteLink></footer></div>;
   return <><Header />{children}<Footer {...footerProps} />{!hideMobileBookingBar && <SiteLink className="mobile-booking-bar" to="/book?service=general"><span>{t("insurance.badge")}</span><strong>{t("mobileCta")}</strong></SiteLink>}</>;
 }

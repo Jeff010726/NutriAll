@@ -422,6 +422,11 @@ resources.en.translation.footer.note = "Nutrition care for weight, medications, 
 resources["zh-CN"].translation.footer.note = "提供体重、用药期间饮食、肠胃、女性健康和慢性病相关营养服务。";
 resources.es.translation.footer.note = "Atención nutricional para peso, medicamentos, digestión, salud de la mujer y enfermedades crónicas.";
 
+Object.assign(resources.en.translation.book, { formTitle: "Book a free 15-minute phone consultation", formIntro: "Leave your contact details and a convenient time to call. Insurance details are optional.", error: "We could not submit your request. Your entries are still here; please try again." });
+Object.assign(resources["zh-CN"].translation.book, { formTitle: "预约免费 15 分钟电话咨询", formIntro: "留下联系方式和方便接听电话的时间，我们会联系你。保险资料可以选填。", error: "提交暂未成功，已填写的内容仍在，请稍后重试。" });
+Object.assign(resources["zh-TW"].translation.book, { formTitle: "預約免費 15 分鐘電話諮詢", formIntro: "留下聯絡方式和方便接聽電話的時間，我們會聯絡你。保險資料可以選填。", error: "提交暫未成功，已填寫的內容仍在，請稍後重試。" });
+Object.assign(resources.es.translation.book, { formTitle: "Reserve una consulta telefónica gratuita de 15 minutos", formIntro: "Deje sus datos de contacto y un horario conveniente para llamarle. Los datos del seguro son opcionales.", error: "No pudimos enviar su solicitud. Sus datos siguen en el formulario; inténtelo de nuevo." });
+
 i18n.use(LanguageDetector).use(initReactI18next).init({
   resources,
   fallbackLng: "en",

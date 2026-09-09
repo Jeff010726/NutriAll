@@ -1,10 +1,9 @@
-import { ArrowRight, CheckCircle2, MessageCircle, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiRequest } from "../api";
 import { getAttribution, trackEvent } from "../analytics";
-import { InsuranceLogos } from "../components/InsuranceLogos";
 import { Layout } from "../components/Layout";
 import { SiteLink } from "../components/SiteLink";
 
@@ -22,8 +21,6 @@ const serviceLabels = {
   community: "Community and church program partnership",
   general: "General consultation",
 };
-
-const whatsappUrl = `${import.meta.env.BASE_URL}booking-whatsapp`;
 
 export function BookPage() {
   const { t } = useTranslation();
@@ -69,26 +66,9 @@ export function BookPage() {
     }
   };
 
-  return <Layout footerProps={{ note: "Insurance benefits are verified before care begins. Coverage and out-of-pocket cost vary by plan." }}><main className="booking-page-new">
-    <section className="booking-hero-new">
-      <div className="booking-hero-copy">
-        <p className="eyebrow"><ShieldCheck size={17} aria-hidden="true" /> {t("book.badge")}</p>
-        <h1>{t("book.title")}</h1>
-        <p>{t("book.intro")}</p>
-        <div className="booking-hero-highlights">
-          <span><CheckCircle2 aria-hidden="true" /> {t("book.short")}</span>
-          <span><CheckCircle2 aria-hidden="true" /> {t("book.noCommitment")}</span>
-          <span><CheckCircle2 aria-hidden="true" /> {t("book.verification")}</span>
-        </div>
-        <a className="button booking-whatsapp" href={whatsappUrl}><MessageCircle size={19} aria-hidden="true" /> {t("book.whatsapp")}</a>
-      </div>
-      <div className="booking-hero-image" role="img" aria-label="Dietitian speaking with a client during a one-to-one nutrition consultation"><div><span>{t("book.starting")}</span><strong>{serviceInterest}</strong><small>{t("book.adjust")}</small></div></div>
-    </section>
-
-    <InsuranceLogos compact />
-
+  return <Layout bookingOnly title={`${t("book.formTitle")} | NutriAll`} description={t("book.formIntro")}><main className="booking-page-new booking-page-simple">
     <section className="booking-form-section" id="booking-form">
-      <div className="booking-form-intro"><p className="eyebrow">{t("book.request")}</p><h2>{t("book.timeTitle")}</h2><p>{t("book.required")}</p></div>
+      <div className="booking-form-intro"><h1>{t("book.formTitle")}</h1><p>{t("book.formIntro")}</p></div>
       <form className="intake-form" onSubmit={submit} onFocus={() => { if (!started) { setStarted(true); trackEvent("form_start", "booking_form", { service: requestedService }); } }}>
         <div className="form-field full"><label htmlFor="booking-name">{t("book.name")}</label><input id="booking-name" type="text" value={form.name} onChange={updateField("name")} autoComplete="name" required /></div>
         <div className="form-field"><label htmlFor="booking-email">{t("book.email")}</label><input id="booking-email" type="email" value={form.email} onChange={updateField("email")} autoComplete="email" required placeholder="you@example.com" /></div>
