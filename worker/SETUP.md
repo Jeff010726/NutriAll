@@ -57,3 +57,14 @@ in the authenticated admin dashboard.
 Columns P:S contain editable status, owner, next contact, and notes, seeded once from the
 website record. Sync appends new rows and does not replace existing rows. Manual sheet
 edits do not sync back into D1. No scheduled retry or two-way synchronization is enabled.
+
+For an authorized initial setup from an operator machine, use
+`node scripts/connect-booking-sheet.mjs <mode> <absolute-key-file-path>`.
+Run `inspect`, `prepare`, `configure`, `backfill`, then `verify` in order.
+The script uses the destination in `wrangler.toml` and the existing Wrangler OAuth
+session. It sends credentials to Wrangler via standard input, keeps client records
+in memory, and prints only connection metadata and aggregate progress.
+`prepare` creates/validates the dedicated tab and sets its header styling and widths.
+`backfill` uses the same D1 lease and Booking ID deduplication as the Worker.
+`verify` compares Google row IDs with D1 bookings and reports missing/duplicate rows.
+The key file is not copied into the project or committed.
