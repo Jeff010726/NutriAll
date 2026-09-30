@@ -5,11 +5,10 @@ import type { Env } from "./types";
 type BookingSheetRow = Record<string, string | number | null> & { id: string };
 
 export function bookingSheetValues(row: BookingSheetRow): string[] {
-  // A:M preserves the original export layout. N is the permanent identity key.
+  // Column M is the permanent identity key; campaign data stays in the admin system.
   // Follow-up fields are seeded once; sheet edits are never overwritten or imported.
   return [row.created_at, "NutriAll", row.service_interest, row.name, row.email, row.phone, row.age,
     row.preferred_language, row.availability, row.time_zone, row.source_page,
-    [row.utm_source, row.utm_medium, row.utm_campaign].filter(Boolean).join(" / "),
     row.patient_type === "returning" ? "Returning patient" : row.patient_type === "new" ? "New patient" : "",
     row.id, row.insurance_company, row.lead_status || "new", row.assigned_to, row.follow_up_at, row.notes,
   ].map((value) => value == null ? "" : String(value));

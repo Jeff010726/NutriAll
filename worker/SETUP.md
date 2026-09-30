@@ -43,18 +43,18 @@ Existing tabs and nonmatching headers are never overwritten.
 New bookings are committed to D1 before background Google sync begins. Google errors cannot
 turn a saved booking into a failed form submission. Errors/pending records remain in D1;
 use the same admin action to retry. An interrupted sync lease can be retried after five minutes.
-The integration checks Booking ID in column N before appending, including retries after
+The integration checks Booking ID in column M before appending, including retries after
 a lost Google response. Keep that ID column intact. Do not delete or manually duplicate
 synced rows; rows are not recreated while their D1 status is already synced.
 
-Columns A:O contain submission time in UTC, brand, requested service, name, email, phone,
-age, language, callback window, client time zone, source page, campaign attribution,
+Columns A:N contain submission time in UTC, brand, requested service, name, email, phone,
+age, language, callback window, client time zone, source page,
 patient type, Booking ID, and insurance company. Dates/times remain explicit UTC text;
 phone numbers and user text are written with RAW input mode so Google does not interpret
 them as formulas or drop leading zeroes. Insurance member IDs and birth dates remain
 in the authenticated admin dashboard.
 
-Columns P:S contain editable status, owner, next contact, and notes, seeded once from the
+Columns O:R contain editable status, owner, next contact, and notes, seeded once from the
 website record. Sync appends new rows and does not replace existing rows. Manual sheet
 edits do not sync back into D1. No scheduled retry or two-way synchronization is enabled.
 

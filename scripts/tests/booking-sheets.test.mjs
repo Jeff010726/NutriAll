@@ -53,11 +53,11 @@ function google({ failure = false, ids = [], loseResponse = false, checkSaved } 
     if (failure) return new Response("failure", { status: 503 });
     if (endpoint.includes(":append")) {
       const row = JSON.parse(init.body).values[0];
-      appended.push(row); ids.push(row[13]);
+      appended.push(row); ids.push(row[12]);
       if (loseResponse) throw new Error("Response lost");
       return Response.json({ updates: { updatedRows: 1 } });
     }
-    return Response.json({ values: [[bookingSheetHeaders[13]], ...ids.map((id) => [id])] });
+    return Response.json({ values: [[bookingSheetHeaders[12]], ...ids.map((id) => [id])] });
   };
   return { appended, calls };
 }
@@ -81,21 +81,25 @@ test("saved booking survives Google failure; retry copies once and preserves man
   assert.equal(sqlite.prepare("SELECT sheet_status FROM contact_leads WHERE id = ?").get(data.id).sheet_status, "failed");
   const good = google();
   assert.equal(await syncBookingToSheet(env, data.id), "synced");
-  good.appended[0][18] = "Manually edited follow-up note";
+  good.appended[0][17] = "Manually edited follow-up note";
   assert.equal(await syncBookingToSheet(env, data.id), "skipped");
   assert.equal(good.appended.length, 1);
-  assert.equal(good.appended[0][18], "Manually edited follow-up note");
+  assert.equal(good.appended[0][17], "Manually edited follow-up note");
   sqlite.close();
 });
 
 test("RAW input retains plus/zero phone numbers and prevents formula execution", async () => {
   const { sqlite, env } = await database();
   const fake = google();
-  await submit(env, { name: '=HYPERLINK("https://example.com")', insuranceMemberId: "PRIVATE-MEMBER-ID", dateOfBirth: "1980-01-01" });
+  await submit(env, { name: '=HYPERLINK("https://example.com")', insuranceMemberId: "PRIVATE-MEMBER-ID", dateOfBirth: "1980-01-01", utmCampaign: "CAMPAIGN-NOT-EXPORTED" });
   assert.match(fake.calls.find((call) => call.endpoint.includes(":append")).endpoint, /valueInputOption=RAW/);
   assert.equal(fake.appended[0][5], "+1 0123456789");
   assert.equal(fake.appended[0][3], '=HYPERLINK("https://example.com")');
-  assert.equal(fake.appended[0].length, 19);
+  assert.equal(fake.appended[0].length, 18);
+  assert.ok(!fake.appended[0].includes("CAMPAIGN-NOT-EXPORTED"));
+  assert.equal(fake.appended[0][11], "New patient");
+  assert.match(fake.appended[0][12], /^lead_/);
+  assert.equal(fake.appended[0][14], "new");
   assert.ok(!fake.appended[0].includes("PRIVATE-MEMBER-ID"));
   assert.ok(!fake.appended[0].includes("1980-01-01"));
   sqlite.close();

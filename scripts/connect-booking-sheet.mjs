@@ -10,8 +10,8 @@ const require = createRequire(import.meta.url);
 const wrangler = path.join(path.dirname(require.resolve("wrangler/package.json")), "bin/wrangler.js");
 const { build } = require(require.resolve("esbuild", { paths: [path.dirname(require.resolve("wrangler/package.json"))] }));
 const [mode, keyPath] = process.argv.slice(2);
-if (!["inspect", "prepare", "configure", "backfill", "verify"].includes(mode) || !keyPath) {
-  throw new Error("Usage: node scripts/connect-booking-sheet.mjs inspect|prepare|configure|backfill|verify <key-file-path>");
+if (!["inspect", "prepare", "configure", "backfill", "verify", "remove-ad-column"].includes(mode) || !keyPath) {
+  throw new Error("Usage: node scripts/connect-booking-sheet.mjs inspect|prepare|configure|backfill|verify|remove-ad-column <key-file-path>");
 }
 
 const configText = await readFile(path.join(root, "wrangler.toml"), "utf8");
@@ -99,14 +99,14 @@ if (mode === "prepare") {
   // Set only header presentation and column widths on the dedicated booking tab.
   await google(":batchUpdate", { method: "POST", body: JSON.stringify({ requests: [
     { updateSheetProperties: { properties: { sheetId: tab.sheetId, gridProperties: { frozenRowCount: 1 } }, fields: "gridProperties.frozenRowCount" } },
-    { repeatCell: { range: { sheetId: tab.sheetId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 19 }, cell: { userEnteredFormat: { backgroundColor: { red: .09, green: .21, blue: .18 }, textFormat: { bold: true, foregroundColor: { red: 1, green: 1, blue: 1 } }, wrapStrategy: "WRAP" } }, fields: "userEnteredFormat" } },
+    { repeatCell: { range: { sheetId: tab.sheetId, startRowIndex: 0, endRowIndex: 1, startColumnIndex: 0, endColumnIndex: 18 }, cell: { userEnteredFormat: { backgroundColor: { red: .09, green: .21, blue: .18 }, textFormat: { bold: true, foregroundColor: { red: 1, green: 1, blue: 1 } }, wrapStrategy: "WRAP" } }, fields: "userEnteredFormat" } },
     { updateDimensionProperties: { range: { sheetId: tab.sheetId, dimension: "ROWS", startIndex: 0, endIndex: 1 }, properties: { pixelSize: 48 }, fields: "pixelSize" } },
-    { updateDimensionProperties: { range: { sheetId: tab.sheetId, dimension: "COLUMNS", startIndex: 0, endIndex: 19 }, properties: { pixelSize: 190 }, fields: "pixelSize" } },
-    { updateDimensionProperties: { range: { sheetId: tab.sheetId, dimension: "COLUMNS", startIndex: 18, endIndex: 19 }, properties: { pixelSize: 320 }, fields: "pixelSize" } },
+    { updateDimensionProperties: { range: { sheetId: tab.sheetId, dimension: "COLUMNS", startIndex: 0, endIndex: 18 }, properties: { pixelSize: 190 }, fields: "pixelSize" } },
+    { updateDimensionProperties: { range: { sheetId: tab.sheetId, dimension: "COLUMNS", startIndex: 17, endIndex: 18 }, properties: { pixelSize: 320 }, fields: "pixelSize" } },
   ] }) });
   console.log(JSON.stringify({ prepared: true, columns: integration.bookingSheetHeaders.length, url: `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit#gid=${tab.sheetId}` }));
 } else if (mode === "configure") {
-  const values = await google(`/values/${range("A1:S1")}`);
+  const values = await google(`/values/${range("A1:R1")}`);
   if (JSON.stringify(values.values?.[0]) !== JSON.stringify(integration.bookingSheetHeaders)) throw new Error("Prepare the sheet before configuring automatic delivery");
   await cli(["secret", "bulk"], JSON.stringify({ GOOGLE_SHEETS_CLIENT_EMAIL: key.client_email, GOOGLE_SHEETS_PRIVATE_KEY: key.private_key }));
   console.log(JSON.stringify({ configured: true, secretsWritten: 2 }));
@@ -123,11 +123,34 @@ if (mode === "prepare") {
   }
 } else if (mode === "verify") {
   const records = await sql("SELECT id, sheet_status, sheet_sync_target FROM contact_leads");
-  const sheet = await google(`/values/${range("N2:N")}`);
+  const sheet = await google(`/values/${range("M2:M")}`);
   const ids = (sheet.values || []).map((row) => row[0]).filter(Boolean);
   const missing = records.results.filter((row) => !ids.includes(row.id)).length;
   const pending = records.results.filter((row) => row.sheet_status !== "synced" || row.sheet_sync_target !== target).length;
   const duplicateIds = ids.length - new Set(ids).size;
   console.log(JSON.stringify({ databaseBookings: records.results.length, sheetBookings: ids.length, missing, pending, duplicateIds }));
   if (missing || pending || duplicateIds) process.exitCode = 1;
+} else if (mode === "remove-ad-column") {
+  const tab = workbook.sheets.find((sheet) => sheet.properties.title === tabName)?.properties;
+  if (!tab) throw new Error("Booking tab not found");
+  const before = await google(`/values/${range("A:S")}?valueRenderOption=FORMULA`);
+  const oldHeaders = [...integration.bookingSheetHeaders];
+  oldHeaders.splice(11, 0, "Ad source / medium / campaign");
+  const headers = before.values?.[0] || [];
+  if (JSON.stringify(headers) === JSON.stringify(integration.bookingSheetHeaders)) {
+    console.log(JSON.stringify({ alreadyRemoved: true }));
+    process.exit(0);
+  }
+  if (JSON.stringify(headers) !== JSON.stringify(oldHeaders)) throw new Error("Unexpected sheet layout; no columns were changed");
+  const expected = before.values.map((row) => {
+    const remaining = [...row]; remaining.splice(11, 1);
+    while (remaining.at(-1) === "") remaining.pop();
+    return remaining;
+  });
+  await google(":batchUpdate", { method: "POST", body: JSON.stringify({ requests: [
+    { deleteDimension: { range: { sheetId: tab.sheetId, dimension: "COLUMNS", startIndex: 11, endIndex: 12 } } },
+  ] }) });
+  const after = await google(`/values/${range("A:R")}?valueRenderOption=FORMULA`);
+  if (JSON.stringify(after.values) !== JSON.stringify(expected)) throw new Error("Column removed but content verification changed; review concurrent sheet edits before proceeding");
+  console.log(JSON.stringify({ removed: "Ad source / medium / campaign", retainedRows: after.values.length - 1, otherCellsPreserved: true }));
 }
