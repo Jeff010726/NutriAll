@@ -47,6 +47,8 @@ run_worker_first = true
 [vars]
 APP_ENV = "production"
 BRAND_NAME = "NutriAll"
+GOOGLE_SHEETS_SPREADSHEET_ID = "19D6efp7M1h0KJKf7Gu74iT2PYbWeImLPH4WwrbxNBlA"
+GOOGLE_SHEETS_TAB_NAME = "NutriAll Bookings"
 ADMIN_EMAIL = "xtdiabetescare@outlook.com"
 APP_ORIGIN = "https://nutriallwellness.org"
 ADMIN_HOST = "admin.nutriallwellness.org"

@@ -3,6 +3,8 @@ import { randomId, sha256, verifyPassword } from "./crypto";
 import { badRequest, json, readJson, responseHeaders } from "./http";
 import { checkRateLimit } from "./rateLimit";
 import { sendSmtpEmail, smtpConfigStatus } from "./smtp";
+import { prepareBookingSheet, sheetConfig } from "./googleSheets";
+import { syncBookingToSheet } from "./bookingSheets";
 import type { Env } from "./types";
 
 type LoginPayload = {
@@ -268,6 +270,47 @@ export async function adminBookings(request: Request, env: Env) {
     .all();
 
   return adminJson(request, env, { bookings: rows.results || [] });
+}
+
+export async function adminBookingSheetStatus(request: Request, env: Env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+  const config = sheetConfig(env);
+  const counts = await getDb(env).prepare(
+    `SELECT COUNT(*) AS total,
+       SUM(CASE WHEN sheet_status = 'synced' AND sheet_sync_target = ? THEN 1 ELSE 0 END) AS synced
+     FROM contact_leads`,
+  ).bind(config.target).first<{ total: number; synced: number }>();
+  return adminJson(request, env, { configured: config.configured, missing: config.missing, tabName: config.tabName,
+    spreadsheetUrl: config.spreadsheetUrl, total: counts?.total || 0, synced: counts?.synced || 0,
+    pending: (counts?.total || 0) - (counts?.synced || 0),
+  });
+}
+
+export async function adminBookingSheetSync(request: Request, env: Env) {
+  const unauthorized = await requireAdmin(request, env);
+  if (unauthorized) return unauthorized;
+  const config = sheetConfig(env);
+  if (!config.configured) return adminJson(request, env, { error: "Google Sheets connection is not configured yet" }, { status: 503 });
+  try {
+    await prepareBookingSheet(env);
+    const rows = await getDb(env).prepare(
+      `SELECT id FROM contact_leads
+       WHERE (sheet_status != 'synced' OR COALESCE(sheet_sync_target, '') != ?)
+       AND (sheet_status != 'syncing' OR sheet_sync_started_at IS NULL OR sheet_sync_started_at < ?)
+       ORDER BY created_at ASC LIMIT 5`,
+    ).bind(config.target, new Date(Date.now() - 5 * 60_000).toISOString()).all<{ id: string }>();
+    let synced = 0;
+    let failed = 0;
+    for (const row of rows.results) {
+      const result = await syncBookingToSheet(env, row.id);
+      if (result === "synced") synced++;
+      if (result === "failed") { failed++; break; }
+    }
+    return adminJson(request, env, { synced, failed });
+  } catch (error) {
+    return adminJson(request, env, { error: error instanceof Error ? error.message : "Sheet sync failed" }, { status: 502 });
+  }
 }
 
 export async function adminCommunityInquiries(request: Request, env: Env) {
@@ -1546,15 +1589,36 @@ export function adminPage(request: Request, env: Env) {
       });
       renderRows(["Created", "Name", "Email", "Message", "Source", "Lang", "Sheet", "Sheet Error"], rows);
     }
+    function bookingSheetPanel(status) {
+      const summary = status.unavailable ? "Sheet status could not be loaded. Refresh to try again." : status.configured ? num(status.synced) + " synced · " + num(status.pending) + " waiting to sync" : "Google authorization is needed before bookings can sync.";
+      return '<section class="panel status-panel"><div><strong>Google Sheets</strong><div class="muted">' + summary + '</div><div class="caption">New bookings append automatically after connection. Edits in the sheet stay in the sheet; your follow-up notes will not be overwritten.</div>'
+        + (status.spreadsheetUrl ? '<a href="' + escapeHtml(status.spreadsheetUrl) + '" target="_blank" rel="noopener noreferrer">Open booking sheet</a>' : '')
+        + '<div class="caption" id="sheet-sync-result" role="status"></div></div><button type="button" id="booking-sheet-sync" class="primary"' + (status.configured && status.pending > 0 ? '' : ' disabled') + '>Sync next 5 bookings</button></section>';
+    }
+    function bindBookingSheetSync() {
+      $("booking-sheet-sync")?.addEventListener("click", async function () {
+        const button = $("booking-sheet-sync");
+        button.disabled = true;
+        $("sheet-sync-result").textContent = "Syncing bookings...";
+        try {
+          const result = await api("/admin/api/bookings/sheet-sync", { method: "POST" });
+          await loadBookings();
+          $("sheet-sync-result").textContent = num(result.synced) + " synced." + (result.failed ? " A booking failed to sync. Check Google sharing permissions and try again." : "");
+        } catch (error) { $("sheet-sync-result").textContent = error.message; button.disabled = false; }
+      });
+    }
     async function loadBookings() {
       $("title").textContent = "Bookings";
       $("range-caption").textContent = "Consultation requests, insurance checks, ownership, and follow-up.";
-      const [data, smtp] = await Promise.all([
+      const [data, smtp, sheets] = await Promise.all([
         api("/admin/api/bookings?limit=100"),
         api("/admin/api/smtp-status").catch((error) => ({ configured: false, missing: ["status check failed"], error: error.message })),
+        api("/admin/api/bookings/sheet-status").catch(() => ({ configured: false, unavailable: true })),
       ]);
       if (isMobileAdmin()) {
         renderMobileBookings(data.bookings || [], false);
+        $("content").insertAdjacentHTML("afterbegin", bookingSheetPanel(sheets));
+        bindBookingSheetSync();
         return;
       }
       const rows = data.bookings.map((booking) => {
@@ -1641,7 +1705,8 @@ export function adminPage(request: Request, env: Env) {
         tr.appendChild(actionTd);
         return tr;
       });
-      renderRows(["Status", "Created", "Service", "Patient Type", "Name", "Email", "Phone", "Age", "Date of Birth", "Preferred Language", "Available Time", "Time Zone", "Insurance Company", "Insurance ID", "Assigned", "Follow-up", "Notes", "Source", "Sheet", "Internal Email", "Confirmation Email", "Actions"], rows, smtpPanelHtml(smtp));
+      renderRows(["Status", "Created", "Service", "Patient Type", "Name", "Email", "Phone", "Age", "Date of Birth", "Preferred Language", "Available Time", "Time Zone", "Insurance Company", "Insurance ID", "Assigned", "Follow-up", "Notes", "Source", "Sheet", "Internal Email", "Confirmation Email", "Actions"], rows, bookingSheetPanel(sheets) + smtpPanelHtml(smtp));
+      bindBookingSheetSync();
       bindSmtpTestButton();
     }
     async function loadClassSignups() {

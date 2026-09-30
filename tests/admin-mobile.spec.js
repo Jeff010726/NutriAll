@@ -117,6 +117,7 @@ const communityData = { inquiries: [{
 }] };
 
 async function mockAdmin(page, updates) {
+  let sheetSynced = 0;
   await page.route("**/admin/api/**", async (route) => {
     const request = route.request();
     const path = new URL(request.url()).pathname;
@@ -124,6 +125,12 @@ async function mockAdmin(page, updates) {
     if (path === "/admin/api/analytics/dashboard") return route.fulfill({ json: analytics });
     if (path === "/admin/api/analytics/ads") return route.fulfill({ json: adsAnalytics });
     if (path === "/admin/api/bookings") return route.fulfill({ json: { bookings } });
+    if (path === "/admin/api/bookings/sheet-status") return route.fulfill({ json: { configured: true, spreadsheetUrl: "https://docs.google.com/spreadsheets/d/test-bookings/edit", total: 2, synced: sheetSynced, pending: 2 - sheetSynced } });
+    if (path === "/admin/api/bookings/sheet-sync") {
+      expect(request.method()).toBe("POST");
+      sheetSynced = 2;
+      return route.fulfill({ json: { synced: 2, failed: 0 } });
+    }
     if (path === "/admin/api/bookings/update") {
       updates.push(request.postDataJSON());
       return route.fulfill({ json: { ok: true } });
@@ -172,6 +179,19 @@ test.describe("mobile admin", () => {
     await page.getByRole("button", { name: "Save changes" }).click();
     await expect(page.getByText("Booking updated")).toBeVisible();
     expect(updates.at(-1)).toMatchObject({ id: "booking-1", leadStatus: "contacted", assignedTo: "Xiaofang Tan", notes: "Called and reviewed benefits.", markContacted: true });
+  });
+
+  test("booking sheet sync refreshes status and preserves the booking list", async ({ page }) => {
+    await mockAdmin(page, []);
+    await page.goto("http://127.0.0.1:8790/admin");
+    await page.locator('[data-mobile-view="bookings"]').click();
+    await expect(page.getByText("0 synced · 2 waiting to sync")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Open booking sheet" })).toHaveAttribute("href", "https://docs.google.com/spreadsheets/d/test-bookings/edit");
+    await page.getByRole("button", { name: "Sync next 5 bookings" }).click();
+    await expect(page.getByText("2 synced · 0 waiting to sync")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Sync next 5 bookings" })).toBeDisabled();
+    await expect(page.locator("#content").getByRole("heading", { name: "Mei-Ling Alexandra Chen" })).toBeVisible();
+    await page.screenshot({ path: "test-results/admin-sheets-mobile.png" });
   });
 
   test("shows class files and secondary admin areas", async ({ page }) => {

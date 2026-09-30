@@ -1,6 +1,8 @@
 import { adminAdsAnalytics, adminAnalyticsDashboard, collectAnalytics } from "./analytics";
 import {
   adminBookings,
+  adminBookingSheetStatus,
+  adminBookingSheetSync,
   adminClassSignups,
   adminCommunityInquiries,
   adminContactLeads,
@@ -62,6 +64,8 @@ function adminResponse(request: Request, env: Env) {
   if (url.pathname === "/admin/api/analytics/dashboard" && request.method === "GET") return adminAnalyticsDashboard(request, env);
   if (url.pathname === "/admin/api/analytics/ads" && request.method === "GET") return adminAdsAnalytics(request, env);
   if (url.pathname === "/admin/api/bookings" && request.method === "GET") return adminBookings(request, env);
+  if (url.pathname === "/admin/api/bookings/sheet-status" && request.method === "GET") return adminBookingSheetStatus(request, env);
+  if (url.pathname === "/admin/api/bookings/sheet-sync" && request.method === "POST") return adminBookingSheetSync(request, env);
   if (url.pathname === "/admin/api/bookings/update" && request.method === "POST") return adminUpdateBooking(request, env);
   if (url.pathname === "/admin/api/class-signups" && request.method === "GET") return adminClassSignups(request, env);
   if (url.pathname === "/admin/api/community-inquiries" && request.method === "GET") return adminCommunityInquiries(request, env);

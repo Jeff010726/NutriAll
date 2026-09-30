@@ -1,7 +1,8 @@
 import { badRequest, json, readJson, serverError } from "./http";
 import { randomId } from "./crypto";
 import { getDb } from "./db";
-import { appendContactToSheet } from "./googleSheets";
+import { sheetConfig } from "./googleSheets";
+import { syncBookingToSheet } from "./bookingSheets";
 import { checkRateLimit } from "./rateLimit";
 import { sendSmtpEmail } from "./smtp";
 import type { Env } from "./types";
@@ -133,22 +134,9 @@ export async function submitContact(request: Request, env: Env, ctx?: ExecutionC
     `Available time: ${availability}`,
     `Patient type: ${patientType}`,
   ].join("\n");
-  const sheetRow = [now, "NutriAll", serviceInterest, name, email, phone, String(age), preferredLanguage, availability, timeZone, sourcePage, [utmSource, utmMedium, utmCampaign].filter(Boolean).join(" / "), patientType === "returning" ? "Returning patient" : "New patient"];
-  let sheetStatus = env.GOOGLE_SHEETS_SPREADSHEET_ID ? "pending" : "not_configured";
-  let sheetError: string | null = null;
+  const sheetStatus = sheetConfig(env).configured ? "pending" : "not_configured";
 
   try {
-    if (env.GOOGLE_SHEETS_SPREADSHEET_ID) {
-      try {
-        await appendContactToSheet(env, sheetRow);
-        sheetStatus = "synced";
-      } catch (error) {
-        sheetStatus = "failed";
-        sheetError = error instanceof Error ? error.message.slice(0, 500) : "Google Sheets append failed";
-        console.error("Google Sheets contact append failed", sheetError);
-      }
-    }
-
     const db = getDb(env);
     await db.prepare(
       `INSERT INTO contact_leads
@@ -159,8 +147,13 @@ export async function submitContact(request: Request, env: Env, ctx?: ExecutionC
     ).bind(
       leadId, name, email, phone, age, message, sourcePage, preferredLanguage, availability, serviceInterest,
       patientType, pageLanguage, timeZone, insuranceCompany, insuranceMemberId, dateOfBirth, utmSource, utmMedium,
-      utmCampaign, ip, userAgent, sheetStatus, sheetError, now, now,
+      utmCampaign, ip, userAgent, sheetStatus, null, now, now,
     ).run();
+
+    // The authoritative booking is saved before any external service is contacted.
+    const sheetSync = syncBookingToSheet(env, leadId).catch(() => {
+      console.error("Booking sheet sync interrupted; retry from the admin dashboard");
+    });
 
     const adminUrl = env.ADMIN_URL || `${new URL(request.url).origin}/admin/`;
     const internalNotification = sendSmtpEmail(env, {
@@ -198,16 +191,12 @@ export async function submitContact(request: Request, env: Env, ctx?: ExecutionC
         .bind(message, sentAt, sentAt, leadId).run();
     });
 
-    const notifications = Promise.all([internalNotification, patientConfirmation]);
+    const notifications = Promise.all([internalNotification, patientConfirmation, sheetSync]);
     if (ctx) ctx.waitUntil(notifications);
     else await notifications;
 
     return json(request, env, { ok: true, id: leadId, sheetStatus });
   } catch (error) {
-    if (sheetStatus === "synced") {
-      console.error("Contact lead D1 backup failed after Google Sheets sync", error);
-      return json(request, env, { ok: true, id: leadId, sheetStatus });
-    }
     return serverError(request, env, error instanceof Error ? error.message : undefined);
   }
 }

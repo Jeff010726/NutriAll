@@ -8,6 +8,7 @@ export interface Env {
   GOOGLE_SHEETS_SPREADSHEET_ID?: string;
   GOOGLE_SHEETS_CLIENT_EMAIL?: string;
   GOOGLE_SHEETS_PRIVATE_KEY?: string;
+  GOOGLE_SHEETS_TAB_NAME?: string;
   ADMIN_EMAIL?: string;
   ADMIN_PASSWORD?: string;
   ADMIN_PASSWORD_HASH?: string;
