@@ -18,6 +18,8 @@ import { DiabetesEducationPage } from "./pages/DiabetesEducationPage";
 import { PrivacyPage } from "./pages/PrivacyPage";
 import { ServicesPage } from "./pages/ServicesPage";
 import { TermsPage } from "./pages/TermsPage";
+import { RecipesPage } from "./pages/RecipesPage";
+import { RecipeDetailPage } from "./pages/RecipeDetailPage";
 
 export default function App() {
   return <BrowserRouter basename={import.meta.env.BASE_URL}><Routes>
@@ -31,6 +33,8 @@ export default function App() {
     <Route path="/community-programs/thanks" element={<CommunityInquiryThanksPage />} />
     <Route path="/community-events" element={<CommunityEventsPage />} />
     <Route path="/services" element={<ServicesPage />} />
+    <Route path="/recipes" element={<RecipesPage />} />
+    <Route path="/recipes/:slug" element={<RecipeDetailPage />} />
     <Route path="/diabetes-education" element={<DiabetesEducationPage />} />
     <Route path="/privacy" element={<PrivacyPage />} />
     <Route path="/terms" element={<TermsPage />} />

@@ -270,7 +270,7 @@ test("language switcher temporarily hides Traditional Chinese", async ({ page })
 });
 
 test("retired diabetes routes return visitors to the focused home page", async ({ page }) => {
-  for (const path of ["diabetes-care", "diabetes-classes", "pump-training", "cgm-training", "providers", "recipes", "research"]) {
+  for (const path of ["diabetes-care", "diabetes-classes", "pump-training", "cgm-training", "providers", "research"]) {
     await page.goto(`./${path}?lng=en`, { waitUntil: "networkidle" });
     await expect(page).toHaveURL(/\/$/);
     await expect(page.getByRole("heading", { name: "Multilingual nutrition care with registered dietitians" })).toBeVisible();

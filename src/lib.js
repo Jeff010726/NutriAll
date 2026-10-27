@@ -11,6 +11,7 @@ export const pageTitles = {
   "/community-programs/thanks": "Community Program Request Received | NutriAll",
   "/community-events": "Community Classes and Events | NutriAll",
   "/services": "Nutrition Services | NutriAll",
+  "/recipes": "Recipes | NutriAll",
   "/diabetes-education": "Diabetes Education Options | NutriAll",
   "/privacy": "Privacy Notice | NutriAll",
   "/terms": "Website Terms | NutriAll",

@@ -65,6 +65,7 @@ export function Header() {
         <SiteLink to="/insurance" onClick={closeAll}>{t("nav.insurance")}</SiteLink>
         <SiteLink to="/about" onClick={closeAll}>{t("nav.team")}</SiteLink>
         <SiteLink to="/community-programs" onClick={closeAll}>{t("nav.community")}</SiteLink>
+        <SiteLink to="/recipes" onClick={closeAll}>{t("nav.recipes")}</SiteLink>
       </nav>
 
       <div className="clinic-header-actions">
@@ -87,6 +88,7 @@ export function Header() {
         {links.map(([to, key]) => <SiteLink to={to} onClick={closeAll} key={to}>{t(key)}</SiteLink>)}
       </section>)}
       <section><p>{t("nav.team")}</p><SiteLink to="/about" onClick={closeAll}>{t("nav.about")}</SiteLink><SiteLink to="/community-programs" onClick={closeAll}>{t("nav.community")}</SiteLink><SiteLink to="/community-events" onClick={closeAll}>{t("nav.events")}</SiteLink><SiteLink to="/diabetes-education" onClick={closeAll}>{t("nav.diabetes")}</SiteLink><SiteLink to="/insurance" onClick={closeAll}>{t("nav.insurance")}</SiteLink></section>
+      <SiteLink to="/recipes" onClick={closeAll}>{t("nav.recipes")}</SiteLink>
       <LanguageSwitcher onChange={closeAll} />
       <SiteLink className="button button-primary" to="/book" onClick={closeAll}>{t("nav.book")}</SiteLink>
     </nav>

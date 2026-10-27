@@ -22,6 +22,7 @@ export interface Env {
   DB?: D1Database;
   ASSETS?: Fetcher;
   INSURANCE_CARDS?: R2Bucket;
+  RECIPE_IMAGES?: R2Bucket;
 }
 
 export type JsonValue = string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };

@@ -24,6 +24,7 @@ import {
 } from "./admin";
 import { submitContact } from "./contact";
 import { submitCommunityInquiry } from "./communityInquiry";
+import { manageRecipes, publicRecipes, recipeMedia, recipeSitemap } from "./recipes";
 import { publicBookingActivity } from "./bookingActivity";
 import { responseHeaders, json, serverError } from "./http";
 import {
@@ -165,6 +166,31 @@ async function route(request: Request, env: Env, ctx: ExecutionContext) {
     return new Response(null, { status: 204, headers: responseHeaders(request, env) });
   }
 
+  const recipeHost = url.hostname === "recipes.nutriallwellness.org";
+  const recipeManagerPath = url.pathname === "/recipe-admin" || url.pathname.startsWith("/recipe-admin/");
+  const recipeManageApi = url.pathname.match(/^\/api\/recipe-manage\/recipes(?:\/([^/]+)(?:\/(publish|unpublish))?)?$/);
+  if (url.pathname === "/api/recipe-manage/auth/login" && request.method === "POST") return adminLogin(request, env);
+  if (url.pathname === "/api/recipe-manage/auth/logout" && request.method === "POST") return adminLogout(request, env);
+  if (url.pathname === "/api/recipe-manage/auth/me" && request.method === "GET") return adminMe(request, env);
+  if (recipeManageApi) return manageRecipes(request, env, recipeManageApi[1], recipeManageApi[2]);
+  if (url.pathname === "/api/recipe-manage/images") return recipeMedia(request, env);
+  const mediaMatch = url.pathname.match(/^\/api\/recipes\/media\/(rim_[a-f0-9]{32})$/);
+  if (mediaMatch) return recipeMedia(request, env, mediaMatch[1]);
+  if (url.pathname === "/api/recipes" && request.method === "GET") return publicRecipes(request, env);
+  const recipeMatch = url.pathname.match(/^\/api\/recipes\/([a-z0-9-]+)$/);
+  if (recipeMatch && request.method === "GET") return publicRecipes(request, env, recipeMatch[1]);
+  if (recipeHost && url.pathname === "/") return Response.redirect(`${url.origin}/manage`, 302);
+  if (recipeManagerPath || (recipeHost && (url.pathname === "/manage" || url.pathname.startsWith("/manage/")))) {
+    if (!env.ASSETS) return json(request, env, { error: "Recipe manager is unavailable" }, { status: 503 });
+    const target = new URL(request.url); target.pathname = "/recipes-admin"; target.search = "";
+    const assetResponse = await env.ASSETS.fetch(new Request(target.toString(), request));
+    const response = new Response(assetResponse.body, assetResponse);
+    response.headers.set("Cache-Control", "no-store"); response.headers.set("X-Robots-Tag", "noindex,nofollow");
+    return response;
+  }
+  if (recipeHost && url.pathname === "/robots.txt") return new Response("User-agent: *\nDisallow: /\n", { headers: { "Content-Type": "text/plain" } });
+  if (recipeHost && !/\.[a-z0-9]+$/i.test(url.pathname) && !url.pathname.startsWith("/api/")) return new Response("Not found", { status: 404 });
+
   if (env.APP_ENV !== "production" && url.pathname.startsWith("/survey-api/")) {
     return surveyResponse(request, env, url.pathname.slice("/survey-api".length));
   }
@@ -194,6 +220,7 @@ async function route(request: Request, env: Env, ctx: ExecutionContext) {
   if (url.pathname === "/api/booking-activity" && request.method === "GET") return publicBookingActivity(request, env);
   if (url.pathname === "/api/contact" && request.method === "POST") return submitContact(request, env, ctx);
   if (url.pathname.startsWith("/api/")) return json(request, env, { error: "Not found" }, { status: 404 });
+  if (url.pathname === "/sitemap.xml" && request.method === "GET") return recipeSitemap(request, env);
   if (env.ASSETS) return env.ASSETS.fetch(request);
   return json(request, env, { error: "Not found" }, { status: 404 });
 }

@@ -11,6 +11,7 @@ export function Footer({ note }) {
     ["nav.medical", "/medical-weight-loss"], ["nav.insurance", "/insurance"],
     ["nav.about", "/about"], ["nav.community", "/community-programs"],
     ["nav.events", "/community-events"], ["nav.diabetes", "/diabetes-education"],
+    ["nav.recipes", "/recipes"],
     ["nav.privacy", "/privacy"], ["nav.terms", "/terms"], ["nav.book", "/book"],
   ];
   return <footer className="site-footer clinic-footer">

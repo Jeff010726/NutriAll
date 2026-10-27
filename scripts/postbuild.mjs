@@ -19,6 +19,7 @@ const routes = [
   "community-programs/thanks",
   "community-events",
   "services",
+  "recipes",
   "diabetes-education",
   "privacy",
   "terms",
@@ -48,4 +49,11 @@ for (const route of routes) {
   const routeDir = path.join(distDir, route);
   fs.mkdirSync(routeDir, { recursive: true });
   fs.writeFileSync(path.join(routeDir, "index.html"), indexHtml);
+}
+
+const recipeManifest = JSON.parse(fs.readFileSync(path.resolve("assets/recipe-import-manifest.json"), "utf8"));
+for (const slug of recipeManifest.slugs) {
+  const recipeDir = path.join(distDir, "recipes", slug);
+  fs.mkdirSync(recipeDir, { recursive: true });
+  fs.writeFileSync(path.join(recipeDir, "index.html"), indexHtml);
 }

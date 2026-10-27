@@ -11,6 +11,7 @@
     "worker:migrate:remote": "wrangler d1 migrations apply nutriall-db --remote",
     "worker:types": "tsc --noEmit -p worker/tsconfig.json",
     "test:booking-sheets": "node --test scripts/tests/booking-sheets.test.mjs",
+    "test:recipes": "node --test scripts/tests/recipes.test.mjs",
     "build": "vite build && node scripts/postbuild.mjs",
     "preview": "vite preview",
     "lint": "eslint ."

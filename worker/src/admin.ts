@@ -788,6 +788,7 @@ export function adminPage(request: Request, env: Env) {
         <button type="button" data-view="whatsapp">WhatsApp Opens</button>
         <button type="button" data-view="kalix">Kalix Opens</button>
         <button type="button" data-view="communityInquiries">Community Inquiries</button>
+        <a href="https://recipes.nutriallwellness.org/manage" target="_blank" rel="noopener noreferrer" style="color:inherit;padding:10px 12px;text-decoration:none;font-weight:700">Recipe Manager ↗</a>
         <button type="button" data-view="classSignups">Class Signups</button>
         <button type="button" data-view="leads">Contact Leads</button>
         <button type="button" data-view="members">Members</button>

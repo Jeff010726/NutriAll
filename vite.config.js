@@ -12,6 +12,7 @@ function surveyLocalhost() {
         if (host === "survey.localhost" && !pathname.includes(".") && !pathname.startsWith("/@")) {
           request.url = "/survey.html";
         }
+        if ((host === "recipes.localhost" || pathname.startsWith("/recipe-admin")) && !pathname.includes(".") && !pathname.startsWith("/api/") && !pathname.startsWith("/@")) request.url = "/recipes-admin.html";
         next();
       });
     },
@@ -22,11 +23,13 @@ export default defineConfig({
   base: globalThis.process?.env.VITE_BASE || "/",
   publicDir: "assets",
   plugins: [react(), surveyLocalhost()],
+  server: { proxy: { "/api/recipes": "http://127.0.0.1:8790", "/api/recipe-manage": "http://127.0.0.1:8790" } },
   build: {
     rollupOptions: {
       input: {
         main: path.resolve(import.meta.dirname, "index.html"),
         survey: path.resolve(import.meta.dirname, "survey.html"),
+        recipesAdmin: path.resolve(import.meta.dirname, "recipes-admin.html"),
       },
     },
   },

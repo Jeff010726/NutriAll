@@ -31,6 +31,10 @@ pattern = "survey.nutriallwellness.org"
 custom_domain = true
 
 [[routes]]
+pattern = "recipes.nutriallwellness.org"
+custom_domain = true
+
+[[routes]]
 pattern = "nutriallwellness.org/*"
 zone_name = "nutriallwellness.org"
 
@@ -65,3 +69,7 @@ binding = "DB"
 database_name = "nutriall-db"
 database_id = "d663af50-b387-4937-b5b7-8598d204c318"
 migrations_dir = "worker/migrations"
+
+[[r2_buckets]]
+binding = "RECIPE_IMAGES"
+bucket_name = "nutriall-recipe-images"
