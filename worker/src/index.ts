@@ -25,6 +25,7 @@ import {
 import { submitContact } from "./contact";
 import { submitCommunityInquiry } from "./communityInquiry";
 import { manageRecipes, publicRecipes, recipeMedia, recipeSitemap } from "./recipes";
+import { manageNewsletter } from "./newsletter";
 import { publicBookingActivity } from "./bookingActivity";
 import { responseHeaders, json, serverError } from "./http";
 import {
@@ -165,6 +166,24 @@ async function route(request: Request, env: Env, ctx: ExecutionContext) {
   if (request.method === "OPTIONS") {
     return new Response(null, { status: 204, headers: responseHeaders(request, env) });
   }
+
+  const newsletterHost = url.hostname === "newsletter.nutriallwellness.org";
+  const newsletterApi = "/api/newsletter-manage";
+  if (url.pathname === newsletterApi + "/auth/login" && request.method === "POST") return adminLogin(request, env);
+  if (url.pathname === newsletterApi + "/auth/logout" && request.method === "POST") return adminLogout(request, env);
+  if (url.pathname === newsletterApi + "/auth/me" && request.method === "GET") return adminMe(request, env);
+  if (url.pathname.startsWith(newsletterApi + "/")) return manageNewsletter(request, env, url.pathname.slice(newsletterApi.length));
+  if (newsletterHost && url.pathname === "/") return Response.redirect(`${url.origin}/manage`, 302);
+  if (url.pathname === "/newsletter-admin" || url.pathname.startsWith("/newsletter-admin/") || (newsletterHost && (url.pathname === "/manage" || url.pathname.startsWith("/manage/")))) {
+    if (!env.ASSETS) return json(request, env, { error: "Newsletter manager is unavailable" }, { status: 503 });
+    const target = new URL(request.url); target.pathname = "/newsletter-admin"; target.search = "";
+    const asset = await env.ASSETS.fetch(new Request(target.toString(), request));
+    const response = new Response(asset.body, asset);
+    response.headers.set("Cache-Control", "no-store"); response.headers.set("X-Robots-Tag", "noindex,nofollow");
+    return response;
+  }
+  if (newsletterHost && url.pathname === "/robots.txt") return new Response("User-agent: *\nDisallow: /\n", { headers: { "Content-Type": "text/plain" } });
+  if (newsletterHost && !/\.[a-z0-9]+$/i.test(url.pathname)) return new Response("Not found", { status: 404 });
 
   const recipeHost = url.hostname === "recipes.nutriallwellness.org";
   const recipeManagerPath = url.pathname === "/recipe-admin" || url.pathname.startsWith("/recipe-admin/");

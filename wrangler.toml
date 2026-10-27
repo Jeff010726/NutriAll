@@ -35,6 +35,10 @@ pattern = "recipes.nutriallwellness.org"
 custom_domain = true
 
 [[routes]]
+pattern = "newsletter.nutriallwellness.org"
+custom_domain = true
+
+[[routes]]
 pattern = "nutriallwellness.org/*"
 zone_name = "nutriallwellness.org"
 
@@ -63,6 +67,8 @@ SMTP_PORT = "465"
 SMTP_USER = "3359746636@qq.com"
 SMTP_FROM = "3359746636@qq.com"
 BOOKING_NOTIFY_TO = "xtdiabetescare@gmail.com"
+RESEND_DOMAIN_ID = "2db34310-f6a8-4164-a3d9-df9fc567fcd1"
+NEWSLETTER_FROM = "NutriAll <hello@news.nutriallwellness.org>"
 
 [[d1_databases]]
 binding = "DB"

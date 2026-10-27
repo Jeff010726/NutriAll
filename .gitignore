@@ -8,4 +8,6 @@ test-results/
 playwright-report/
 .dev.vars
 .env.local
+.kit-migration-secrets.json
+tmp/kit-private/
 .npm-cache/
